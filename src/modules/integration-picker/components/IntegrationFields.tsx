@@ -1,4 +1,4 @@
-import { Button, Input, Typography } from '@stackone/malachite';
+import { Button } from '@stackone/malachite';
 import { useMemo, useState } from 'react';
 import { connectAccount } from '../queries';
 import { ConnectorConfig, Integration } from '../types';
@@ -65,22 +65,22 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
     return (
         <div>
-            <Typography variant="subtitle">Link {integration.name} Account</Typography>
+            <h2>Link {integration.name} Account</h2>
             {guide && (
                 <>
                     {guide.supportLink ? (
                         <a href={guide.supportLink} target="_blank">
-                            <Typography variant="link">{guide.description}</Typography>
+                            <p>{guide.description}</p>
                         </a>
                     ) : (
-                        <Typography>{guide.description}</Typography>
+                        <p>{guide.description}</p>
                     )}
                 </>
             )}
 
             {error && (
                 <>
-                    <Typography style={{ color: 'red' }}>{error.message}</Typography>
+                    <p style={{ color: 'red' }}>{error.message}</p>
                     <pre>{error.provider_response}</pre>
                 </>
             )}
@@ -93,17 +93,14 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                     {fields.map((field) => {
                         return (
                             <div key={field.key}>
-                                <Typography>
+                                <p>
                                     {field.label} ({field.type})
-                                </Typography>
+                                </p>
                                 {field.guide && (
                                     <>
                                         <br />
-                                        <Typography type="small">
-                                            {field.guide.tooltip}
-
-                                            {field.guide.description}
-                                        </Typography>
+                                        <p>{field.guide.tooltip}</p>
+                                        <p>{field.guide.description}</p>
                                     </>
                                 )}
                                 {field.type === 'text_area' && (
@@ -135,7 +132,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                     field.type == null) && (
                                     <>
                                         <br />
-                                        <Input
+                                        <input
                                             type={field.type}
                                             name={field.key}
                                             required={field.required}
@@ -148,7 +145,9 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                             </div>
                         );
                     })}
-                    <Button type="submit">Send it</Button>
+                    <Button type="primary" htmlType="submit">
+                        Send it
+                    </Button>
                 </form>
             )}
         </div>

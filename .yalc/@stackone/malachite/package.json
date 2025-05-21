@@ -1,0 +1,37 @@
+{
+  "name": "@stackone/malachite",
+  "version": "0.0.0",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b ./tsconfig.app.json && vite build",
+    "build:watch": "vite build --watch",
+    "build:hot": "concurrently \"tsc -b ./tsconfig.app.json --watch\" \"vite build --watch\"",
+    "lint:check": "biome lint",
+    "lint:fix": "biome lint --fix",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.1.0"
+  },
+  "yalcSig": "b3621bd0c8195b6fd4451f514c72a618"
+}

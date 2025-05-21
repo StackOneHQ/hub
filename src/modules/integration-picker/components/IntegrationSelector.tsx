@@ -1,4 +1,4 @@
-import { Button, Typography } from '@stackone/malachite';
+import { Button } from '@stackone/malachite';
 import { Integration } from '../types';
 
 interface IntegrationRowProps {
@@ -9,10 +9,11 @@ interface IntegrationRowProps {
 const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration, onClick }) => {
     return (
         <Button
-            variant="outline"
-            size="xl"
-            fullWidth
-            flex
+            type="secondary"
+            size="large"
+            fill
+            outline
+            flexGrow
             onClick={() => onClick && integration.version === '2' && onClick(integration)}
         >
             <img
@@ -32,12 +33,8 @@ export const IntegrationSelector: React.FC<{
     return (
         <>
             <div style={{ marginTop: '20px', marginBottom: '50px' }}>
-                <Typography variant="title" className="" align="center">
-                    Select Integration
-                </Typography>
-                <Typography variant="body" className="" align="center">
-                    Choose which integration you'd like to set up.
-                </Typography>
+                <h1>Select Integration</h1>
+                <p>Choose which integration you'd like to set up.</p>
             </div>
             {integrations
                 ?.filter((integration) => integration.active)

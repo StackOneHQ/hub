@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@stackone/malachite';
 import { useEffect, useState } from 'react';
 import { IntegrationForm } from './components/IntegrationFields';
 import { IntegrationSelector } from './components/IntegrationSelector';
@@ -61,27 +60,23 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
 
     return (
         <div style={{ padding: '0px 200px' }}>
-            <Card>
-                <CardContent>
-                    {!connectorData && (
-                        <IntegrationSelector
-                            integrations={hubData?.integrations || []}
-                            onSelect={setSelectedIntegration}
-                        />
-                    )}
-                    {!connectorData && hubData && hubData.integrations.length === 0 && (
-                        <div>No integrations found.</div>
-                    )}
-                    {connectorData && selectedIntegration && (
-                        <IntegrationForm
-                            integration={selectedIntegration}
-                            token={token}
-                            baseUrl={baseUrl}
-                            connectorConfig={connectorData}
-                        />
-                    )}
-                </CardContent>
-            </Card>
+            {!connectorData && (
+                <IntegrationSelector
+                    integrations={hubData?.integrations || []}
+                    onSelect={setSelectedIntegration}
+                />
+            )}
+            {!connectorData && hubData && hubData.integrations.length === 0 && (
+                <div>No integrations found.</div>
+            )}
+            {connectorData && selectedIntegration && (
+                <IntegrationForm
+                    integration={selectedIntegration}
+                    token={token}
+                    baseUrl={baseUrl}
+                    connectorConfig={connectorData}
+                />
+            )}
         </div>
     );
 };

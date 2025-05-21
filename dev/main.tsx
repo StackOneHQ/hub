@@ -1,11 +1,4 @@
-import {
-    Button,
-    Card,
-    CardContent,
-    ModeToggle,
-    ThemeProvider,
-    Typography,
-} from '@stackone/malachite';
+import { Button, ModeToggle, ThemeProvider } from '@stackone/malachite';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { StackOneHub } from '../src/StackOneHub';
@@ -52,50 +45,24 @@ const HubWrapper: React.FC = () => {
 
     return (
         <ThemeProvider>
-            <div className="malachite-theme">
-                <Card className="">
-                    <CardContent className="">
-                        <Typography variant="title" align="left">
-                            StackOneHub Demo
-                        </Typography>
-                        <Typography variant="body" align="left">
-                            Current mode: {mode}
-                        </Typography>
-                        <ModeToggle />
-                        <Button
-                            variant="outline"
-                            size="default"
-                            className=""
-                            onClick={fetchToken}
-                            fullWidth={false}
-                            flex={false}
-                        >
-                            Fetch Token
-                        </Button>
-                        <Button
-                            variant="green"
-                            size="default"
-                            className=""
-                            onClick={() => setMode('integration-picker')}
-                            fullWidth={false}
-                            flex={false}
-                        >
-                            Set Integration Picker mode
-                        </Button>
-                        <Button
-                            variant="orange"
-                            size="default"
-                            className=""
-                            onClick={() => setMode('csv-importer')}
-                            fullWidth={false}
-                            flex={false}
-                        >
-                            Set CSV Importer mode
-                        </Button>
+            <div>
+                <div>
+                    <h1>StackOneHub Demo</h1>
+                    <p>Current mode: {mode}</p>
+                    <button>test</button>
+                    <ModeToggle />
+                    <Button type="primary" onClick={fetchToken}>
+                        Fetch Token
+                    </Button>
+                    <Button type="secondary" onClick={() => setMode('integration-picker')}>
+                        Set Integration Picker mode
+                    </Button>
+                    <Button type="warning" onClick={() => setMode('csv-importer')}>
+                        Set CSV Importer mode
+                    </Button>
 
-                        <StackOneHub mode={mode} token={token} baseUrl={apiUrl} />
-                    </CardContent>
-                </Card>
+                    <StackOneHub mode={mode} token={token} baseUrl={apiUrl} />
+                </div>
             </div>
         </ThemeProvider>
     );

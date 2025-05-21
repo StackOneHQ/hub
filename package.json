@@ -15,6 +15,7 @@
   "author": "StackOne",
   "license": "MIT",
   "dependencies": {
+    "@stackone/malachite": "file:.yalc/@stackone/malachite",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
