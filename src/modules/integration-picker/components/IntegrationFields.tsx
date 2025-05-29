@@ -1,30 +1,20 @@
 import { Button, Input, Spacer, Typography } from '@stackone/malachite';
 import { useMemo, useState } from 'react';
 import { connectAccount } from '../queries';
-import { ConnectorConfig, Integration } from '../types';
+import { ConnectorConfig, ConnectorConfigField, Integration } from '../types';
 
 interface IntegrationFieldsProps {
     integration: Integration;
-    connectorConfig: ConnectorConfig;
+    fields: Array<ConnectorConfigField>;
     token: string;
     baseUrl: string;
 }
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     integration,
-    connectorConfig,
+    fields,
     token,
     baseUrl,
 }) => {
-    const { fields, guide } = useMemo(() => {
-        const authConfig = connectorConfig.authentication?.[integration.authentication_config_key];
-        const authConfigForEnvironment = authConfig?.[integration.environment];
-
-        return {
-            fields: authConfigForEnvironment?.fields || [],
-            guide: authConfigForEnvironment?.guide,
-        };
-    }, [connectorConfig, integration]);
-
     const [loading, setLoading] = useState<boolean>();
     const [error, setError] = useState<{
         message: string;
@@ -67,16 +57,6 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     return (
         <div>
             <Spacer direction="vertical" size={20}>
-                <Typography.PageTitle>Link {integration.name} Account</Typography.PageTitle>
-                {guide && guide.supportLink && (
-                    <Typography.Link href={guide.supportLink} target="_blank">
-                        {guide.description}
-                    </Typography.Link>
-                )}
-                {guide && !guide.supportLink && (
-                    <Typography.SecondaryText>{guide.description}</Typography.SecondaryText>
-                )}
-
                 {error && (
                     <>
                         <Typography.Text color="red">{error.message}</Typography.Text>

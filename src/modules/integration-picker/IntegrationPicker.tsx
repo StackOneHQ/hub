@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { IntegrationForm } from './components/IntegrationFields';
 import { IntegrationSelector } from './components/IntegrationSelector';
 import { getConnectorConfig, getHubData } from './queries';
@@ -8,11 +8,14 @@ import {
     Button,
     Card,
     Flex,
+    FlexAlign,
     FlexDirection,
+    FlexGapSize,
     FlexJustify,
     FooterLinks,
     Padded,
     Spacer,
+    Typography,
 } from '@stackone/malachite';
 
 interface IntegrationPickerProps {
@@ -20,16 +23,79 @@ interface IntegrationPickerProps {
     baseUrl: string;
 }
 
+const Title: React.FC<{
+    selectedIntegration: Integration;
+    onBack: () => void;
+    guide?: { supportLink?: string; description: string };
+}> = ({ selectedIntegration, onBack, guide }) => {
+    return (
+        <Flex
+            direction={FlexDirection.Horizontal}
+            align={FlexAlign.Center}
+            gapSize={FlexGapSize.Small}
+            justify={FlexJustify.SpaceBetween}
+        >
+            <Flex
+                direction={FlexDirection.Horizontal}
+                align={FlexAlign.Center}
+                gapSize={FlexGapSize.Small}
+                justify={FlexJustify.Left}
+            >
+                <Button type="ghost" onClick={onBack} icon="←" size="small"></Button>
+                <img
+                    src={`https://app.stackone.com/assets/logos/${selectedIntegration?.provider}.png`}
+                    alt={selectedIntegration?.provider ?? 'N/A'}
+                    style={{ width: '24px', height: '24px' }}
+                />
+                <Typography.Text fontWeight="semi-bold" size="large">
+                    {selectedIntegration?.name ?? 'N/A'}
+                </Typography.Text>
+            </Flex>
+            <Typography.Link href={guide?.supportLink} target="_blank">
+                <Button type="outline" size="medium">
+                    Connection guide
+                </Button>
+            </Typography.Link>
+        </Flex>
+    );
+};
+
 const Footer: React.FC<{
-    buttons: {
+    selectedIntegration: Integration | null;
+    fullWidth?: boolean;
+    onBack: () => void;
+}> = ({ fullWidth = true, selectedIntegration, onBack }) => {
+    const buttons: Array<{
         label: string;
         type: 'filled' | 'outline';
         onClick: () => void;
         disabled: boolean;
         loading: boolean;
-    }[];
-    fullWidth?: boolean;
-}> = ({ buttons, fullWidth = true }) => {
+    }> = useMemo(() => {
+        return selectedIntegration
+            ? [
+                  {
+                      label: 'Back',
+                      type: 'outline',
+                      onClick: () => {
+                          onBack();
+                      },
+                      disabled: false,
+                      loading: false,
+                  },
+                  {
+                      label: 'Next',
+                      type: 'filled',
+                      onClick: () => {
+                          console.log('Next');
+                      },
+                      disabled: false,
+                      loading: false,
+                  },
+              ]
+            : [];
+    }, [selectedIntegration, onBack]);
+
     return (
         <Spacer direction="horizontal" size={0} justifyContent="space-between">
             <FooterLinks fullWidth={fullWidth} />
@@ -85,6 +151,23 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
         },
     });
 
+    const { fields, guide } = useMemo(() => {
+        if (!connectorData || !selectedIntegration) {
+            return {
+                fields: [],
+            };
+        }
+
+        const authConfig =
+            connectorData.authentication?.[selectedIntegration.authentication_config_key];
+        const authConfigForEnvironment = authConfig?.[selectedIntegration.environment];
+
+        return {
+            fields: authConfigForEnvironment?.fields || [],
+            guide: authConfigForEnvironment?.guide,
+        };
+    }, [connectorData, selectedIntegration]);
+
     if (isLoadingHubData || isLoadingConnectorData) {
         return <div>Loading...</div>;
     }
@@ -92,37 +175,23 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
         return <div>Error: {errorHubData?.message || errorConnectorData?.message}</div>;
     }
 
-    console.log('selectedIntegration', selectedIntegration);
     return (
         <Card
             height="400px"
             footer={
                 <Footer
-                    buttons={
-                        selectedIntegration
-                            ? [
-                                  {
-                                      label: 'Back',
-                                      type: 'outline',
-                                      onClick: () => {
-                                          setSelectedIntegration(null);
-                                      },
-                                      disabled: false,
-                                      loading: false,
-                                  },
-                                  {
-                                      label: 'Next',
-                                      type: 'filled',
-                                      onClick: () => {
-                                          console.log('Next');
-                                      },
-                                      disabled: false,
-                                      loading: false,
-                                  },
-                              ]
-                            : []
-                    }
+                    selectedIntegration={selectedIntegration}
+                    onBack={() => setSelectedIntegration(null)}
                 />
+            }
+            title={
+                !selectedIntegration ? null : (
+                    <Title
+                        selectedIntegration={selectedIntegration}
+                        onBack={() => setSelectedIntegration(null)}
+                        guide={guide}
+                    />
+                )
             }
         >
             {!connectorData && (
@@ -139,7 +208,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
                     integration={selectedIntegration}
                     token={token}
                     baseUrl={baseUrl}
-                    connectorConfig={connectorData}
+                    fields={fields}
                 />
             )}
         </Card>
