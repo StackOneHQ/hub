@@ -1,65 +1,130 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IntegrationForm } from './components/IntegrationFields';
 import { IntegrationSelector } from './components/IntegrationSelector';
 import { getConnectorConfig, getHubData } from './queries';
-import { ConnectorConfig, HubData, Integration } from './types';
+import { Integration } from './types';
+import { useQuery } from '@tanstack/react-query';
+import {
+    Button,
+    Card,
+    Flex,
+    FlexDirection,
+    FlexJustify,
+    FooterLinks,
+    Padded,
+    Spacer,
+} from '@stackone/malachite';
 
 interface IntegrationPickerProps {
     token: string;
     baseUrl: string;
 }
 
+const Footer: React.FC<{
+    buttons: {
+        label: string;
+        type: 'filled' | 'outline';
+        onClick: () => void;
+        disabled: boolean;
+        loading: boolean;
+    }[];
+    fullWidth?: boolean;
+}> = ({ buttons, fullWidth = true }) => {
+    return (
+        <Spacer direction="horizontal" size={0} justifyContent="space-between">
+            <FooterLinks fullWidth={fullWidth} />
+            {buttons.length > 0 && (
+                <Padded vertical="medium" horizontal="medium" fullHeight={false}>
+                    <Flex direction={FlexDirection.Horizontal} justify={FlexJustify.Right}>
+                        <Spacer direction="horizontal" size={10}>
+                            {buttons.map((button) => (
+                                <Button
+                                    key={button.label}
+                                    size="medium"
+                                    type={button.type}
+                                    onClick={button.onClick}
+                                    disabled={button.disabled}
+                                    loading={button.loading}
+                                    iconPosition="end"
+                                >
+                                    {button.label}
+                                </Button>
+                            ))}
+                        </Spacer>
+                    </Flex>
+                </Padded>
+            )}
+        </Spacer>
+    );
+};
+
 export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, baseUrl }) => {
-    const [hubData, setHubData] = useState<HubData>();
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string>();
-    const [connectorData, setConnectorData] = useState<ConnectorConfig>();
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
 
-    useEffect(() => {
-        const loadHubData = async () => {
-            try {
-                setIsLoading(true);
-                const hubData = await getHubData(token, baseUrl);
-                console.log('Hub Data:', hubData);
-                setHubData(hubData);
-            } catch (err: unknown) {
-                setError(err instanceof Error ? err.message : 'Unknown error');
-            } finally {
-                setIsLoading(false);
+    const {
+        data: hubData,
+        isLoading: isLoadingHubData,
+        error: errorHubData,
+    } = useQuery({
+        queryKey: ['hubData'],
+        queryFn: () => getHubData(token, baseUrl),
+    });
+
+    const {
+        data: connectorData,
+        isLoading: isLoadingConnectorData,
+        error: errorConnectorData,
+    } = useQuery({
+        queryKey: ['connectorData', selectedIntegration?.provider],
+        queryFn: () => {
+            if (!selectedIntegration) {
+                return null;
             }
-        };
 
-        loadHubData();
-    }, [token, baseUrl]);
+            return getConnectorConfig(baseUrl, token, selectedIntegration.provider);
+        },
+    });
 
-    useEffect(() => {
-        if (selectedIntegration) {
-            const loadConnectorConfig = async () => {
-                try {
-                    const connectorConfig = await getConnectorConfig(
-                        baseUrl,
-                        token,
-                        selectedIntegration.provider,
-                    );
-                    setConnectorData(connectorConfig);
-                } catch (err: unknown) {
-                    setError(err instanceof Error ? err.message : 'Unknown error');
-                }
-            };
-            loadConnectorConfig();
-        }
-    }, [selectedIntegration, token, baseUrl]);
-
-    if (isLoading) {
+    if (isLoadingHubData || isLoadingConnectorData) {
         return <div>Loading...</div>;
     }
-    if (error) {
-        return <div>Error: {error}</div>;
+    if (errorHubData || errorConnectorData) {
+        return <div>Error: {errorHubData?.message || errorConnectorData?.message}</div>;
     }
 
+    console.log('selectedIntegration', selectedIntegration);
     return (
-        <div style={{ padding: '0px 200px' }}>
+        <Card
+            height="400px"
+            footer={
+                <Footer
+                    buttons={
+                        selectedIntegration
+                            ? [
+                                  {
+                                      label: 'Back',
+                                      type: 'outline',
+                                      onClick: () => {
+                                          setSelectedIntegration(null);
+                                      },
+                                      disabled: false,
+                                      loading: false,
+                                  },
+                                  {
+                                      label: 'Next',
+                                      type: 'filled',
+                                      onClick: () => {
+                                          console.log('Next');
+                                      },
+                                      disabled: false,
+                                      loading: false,
+                                  },
+                              ]
+                            : []
+                    }
+                />
+            }
+        >
             {!connectorData && (
                 <IntegrationSelector
                     integrations={hubData?.integrations || []}
@@ -77,6 +142,6 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
                     connectorConfig={connectorData}
                 />
             )}
-        </div>
+        </Card>
     );
 };

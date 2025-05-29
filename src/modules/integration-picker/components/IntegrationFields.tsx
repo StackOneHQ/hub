@@ -1,4 +1,4 @@
-import { Button } from '@stackone/malachite';
+import { Button, Input, Spacer, Typography } from '@stackone/malachite';
 import { useMemo, useState } from 'react';
 import { connectAccount } from '../queries';
 import { ConnectorConfig, Integration } from '../types';
@@ -18,6 +18,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     const { fields, guide } = useMemo(() => {
         const authConfig = connectorConfig.authentication?.[integration.authentication_config_key];
         const authConfigForEnvironment = authConfig?.[integration.environment];
+
         return {
             fields: authConfigForEnvironment?.fields || [],
             guide: authConfigForEnvironment?.guide,
@@ -65,91 +66,76 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
     return (
         <div>
-            <h2>Link {integration.name} Account</h2>
-            {guide && (
-                <>
-                    {guide.supportLink ? (
-                        <a href={guide.supportLink} target="_blank">
-                            <p>{guide.description}</p>
-                        </a>
-                    ) : (
-                        <p>{guide.description}</p>
-                    )}
-                </>
-            )}
+            <Spacer direction="vertical" size={20}>
+                <Typography.PageTitle>Link {integration.name} Account</Typography.PageTitle>
+                {guide && guide.supportLink && (
+                    <Typography.Link href={guide.supportLink} target="_blank">
+                        {guide.description}
+                    </Typography.Link>
+                )}
+                {guide && !guide.supportLink && (
+                    <Typography.SecondaryText>{guide.description}</Typography.SecondaryText>
+                )}
 
-            {error && (
-                <>
-                    <p style={{ color: 'red' }}>{error.message}</p>
-                    <pre>{error.provider_response}</pre>
-                </>
-            )}
-            {success && (
-                <p style={{ color: 'green' }}>Successfully connected to {integration.provider}</p>
-            )}
-            {loading && <p>Loading...</p>}
-            {!loading && !success && (
-                <form onSubmit={onSubmit}>
-                    {fields.map((field) => {
-                        return (
-                            <div key={field.key}>
-                                <p>
-                                    {field.label} ({field.type})
-                                </p>
-                                {field.guide && (
-                                    <>
-                                        <br />
-                                        <p>{field.guide.tooltip}</p>
-                                        <p>{field.guide.description}</p>
-                                    </>
-                                )}
-                                {field.type === 'text_area' && (
-                                    <textarea
-                                        name={field.key}
-                                        required={field.required}
-                                        placeholder={field.placeholder}
-                                        value={field.value}
-                                        disabled={field.readOnly}
-                                    />
-                                )}
-                                {field.type === 'select' && (
-                                    <select
-                                        name={field.key}
-                                        required={field.required}
-                                        value={field.value}
-                                        disabled={field.readOnly}
-                                    >
-                                        {field.options?.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
-                                {(field.type === 'text' ||
-                                    field.type === 'number' ||
-                                    field.type === 'password' ||
-                                    field.type == null) && (
-                                    <>
-                                        <br />
-                                        <input
-                                            type={field.type}
-                                            name={field.key}
-                                            required={field.required}
-                                            placeholder={field.placeholder}
-                                            value={field.value}
-                                            disabled={field.readOnly}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                        );
-                    })}
-                    <Button type="primary" htmlType="submit">
-                        Send it
-                    </Button>
-                </form>
-            )}
+                {error && (
+                    <>
+                        <Typography.Text color="red">{error.message}</Typography.Text>
+                        <Typography.CodeText>{error.provider_response}</Typography.CodeText>
+                    </>
+                )}
+                {success && (
+                    <Typography.Text color="green">
+                        Successfully connected to {integration.provider}
+                    </Typography.Text>
+                )}
+                {loading && <Typography.Text>Loading...</Typography.Text>}
+
+                {!loading && !success && (
+                    <form onSubmit={onSubmit}>
+                        <Spacer direction="vertical" size={20}>
+                            {fields.map((field) => {
+                                return (
+                                    <div key={field.key}>
+                                        {(field.type === 'text' ||
+                                            field.type === 'number' ||
+                                            field.type === 'password' ||
+                                            field.type === 'text_area') && (
+                                            <Input
+                                                name={field.key}
+                                                required={field.required}
+                                                placeholder={field.placeholder}
+                                                defaultValue={field.value?.toString()}
+                                                disabled={field.readOnly}
+                                                label={field.label}
+                                                tooltip={field.guide?.tooltip}
+                                                description={field.guide?.description}
+                                            />
+                                        )}
+
+                                        {field.type === 'select' && (
+                                            <select
+                                                name={field.key}
+                                                required={field.required}
+                                                value={field.value}
+                                                disabled={field.readOnly}
+                                            >
+                                                {field.options?.map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            {/* <Button type="green" htmlType="submit" fill flexGrow>
+                                Connect
+                            </Button> */}
+                        </Spacer>
+                    </form>
+                )}
+            </Spacer>
         </div>
     );
 };

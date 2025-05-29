@@ -1,4 +1,4 @@
-import { Typography } from '@stackone/malachite';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
 import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import { HubModes } from './types/types';
@@ -13,6 +13,18 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({ mode, token, baseUrl }
     const defaultBaseUrl = 'https://api.stackone.com';
     const apiUrl = baseUrl ?? defaultBaseUrl;
 
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                refetchOnWindowFocus: false,
+                retry: 1,
+                retryDelay: 500,
+                refetchOnMount: false,
+                retryOnMount: false,
+            },
+        },
+    });
+
     if (!token) {
         return <div>Error: No token provided</div>;
     }
@@ -21,9 +33,9 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({ mode, token, baseUrl }
     }
 
     return (
-        <div>
+        <QueryClientProvider client={queryClient}>
             {mode === 'integration-picker' && <IntegrationPicker token={token} baseUrl={apiUrl} />}
             {mode === 'csv-importer' && <CsvImporter />}
-        </div>
+        </QueryClientProvider>
     );
 };

@@ -1,5 +1,17 @@
-import { Button } from '@stackone/malachite';
+import {
+    Button,
+    ButtonList,
+    Flex,
+    FlexAlign,
+    FlexDirection,
+    FlexGapSize,
+    FlexJustify,
+    Padded,
+    Spacer,
+    Typography,
+} from '@stackone/malachite';
 import { Integration } from '../types';
+import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
 
 interface IntegrationRowProps {
     integration: Integration;
@@ -8,21 +20,34 @@ interface IntegrationRowProps {
 
 const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration, onClick }) => {
     return (
-        <Button
-            type="secondary"
-            size="large"
-            fill
-            outline
-            flexGrow
-            onClick={() => onClick && integration.version === '2' && onClick(integration)}
+        <Flex
+            direction={FlexDirection.Horizontal}
+            align={FlexAlign.Center}
+            gapSize={FlexGapSize.Small}
+            justify={FlexJustify.SpaceBetween}
+            width="100%"
         >
-            <img
-                src={`https://app.stackone.com/assets/logos/${integration.provider}.png`}
-                alt={integration.provider}
-                style={{ width: '40px', height: '40px' }}
-            />
-            {integration.name ?? 'N/A'} {integration.type.toUpperCase()}
-        </Button>
+            <Flex
+                direction={FlexDirection.Horizontal}
+                align={FlexAlign.Center}
+                gapSize={FlexGapSize.Small}
+                justify={FlexJustify.Left}
+                width="100%"
+            >
+                <img
+                    src={`https://app.stackone.com/assets/logos/${integration.provider}.png`}
+                    alt={integration.provider}
+                    style={{ width: '24px', height: '24px' }}
+                />
+                <Typography.Text>{integration.name ?? 'N/A'}</Typography.Text>
+            </Flex>
+            <Typography.SecondaryText>
+                {
+                    CATEGORIES_WITH_LABELS.find((category) => category.value === integration.type)
+                        ?.label
+                }
+            </Typography.SecondaryText>
+        </Flex>
     );
 };
 
@@ -32,22 +57,23 @@ export const IntegrationSelector: React.FC<{
 }> = ({ integrations, onSelect }) => {
     return (
         <>
-            <div style={{ marginTop: '20px', marginBottom: '50px' }}>
-                <h1>Select Integration</h1>
-                <p>Choose which integration you'd like to set up.</p>
-            </div>
-            {integrations
-                ?.filter((integration) => integration.active)
-                .map((integration) => (
-                    <>
-                        <IntegrationRow
-                            key={integration.provider}
-                            integration={integration}
-                            onClick={(selectedIntegration) => onSelect(selectedIntegration)}
-                        />
-                        <br />
-                    </>
-                ))}
+            <Padded vertical="medium" horizontal="small" fullHeight={false}>
+                <Typography.SecondaryText>Select integration</Typography.SecondaryText>
+            </Padded>
+            <ButtonList
+                buttons={integrations
+                    ?.filter((integration) => integration.active && integration.name)
+                    .map((integration) => ({
+                        key: integration.provider,
+                        children: (
+                            <IntegrationRow
+                                integration={integration}
+                                onClick={(selectedIntegration) => onSelect(selectedIntegration)}
+                            />
+                        ),
+                        onClick: () => onSelect(integration),
+                    }))}
+            />
         </>
     );
 };

@@ -1,56 +1,24 @@
+import { getRequest, postRequest } from '../../shared/httpClient';
 import { ConnectorConfig, HubData } from './types';
 
 export const getHubData = async (token: string, baseUrl: string) => {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-    };
-
-    if (!token) {
-        throw new Error('Token is required');
-    }
-
-    headers['x-hub-session-token'] = token;
-
-    const hubResponse = await fetch(`${baseUrl}/hub/connectors`, {
-        method: 'GET',
-        headers,
+    return await getRequest<HubData>({
+        url: `${baseUrl}/hub/connectors`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
     });
-
-    if (!hubResponse.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const response = (await hubResponse.json()) as HubData;
-    console.log('Hub dta response:', response);
-    return response;
 };
 
 export const getConnectorConfig = async (baseUrl: string, token: string, connectorKey: string) => {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-    };
-
-    if (!token) {
-        throw new Error('Token is required');
-    }
-
-    headers['x-hub-session-token'] = token;
-
-    const response = await fetch(`${baseUrl}/hub/connectors/${connectorKey}`, {
-        method: 'GET',
-        headers,
+    return await getRequest<ConnectorConfig>({
+        url: `${baseUrl}/hub/connectors/${connectorKey}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
     });
-
-    if (response.status === 403) {
-        throw new Error('Forbidden: You do not have permission to access this resource');
-    }
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    return data.data as ConnectorConfig;
 };
 
 export const connectAccount = async (
@@ -59,35 +27,15 @@ export const connectAccount = async (
     provider: string,
     credentials: Record<string, unknown>,
 ) => {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-    };
-
-    if (!token) {
-        throw new Error('Token is required');
-    }
-
-    headers['x-hub-session-token'] = token;
-
-    const response = await fetch(`${baseUrl}/hub/accounts`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
+    return await postRequest<ConnectorConfig>({
+        url: `${baseUrl}/hub/accounts`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
+        body: {
             provider,
             credentials,
-        }),
+        },
     });
-
-    if (response.status === 403) {
-        throw new Error('Forbidden: You do not have permission to access this resource');
-    }
-
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        console.error('Error response:', errorResponse);
-        throw new Error(errorResponse.message || 'Unknown error');
-    }
-
-    const data = await response.json();
-    return data.data as ConnectorConfig;
 };
