@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
     Button,
     Card,
+    CustomIcons,
     Flex,
     FlexAlign,
     FlexDirection,
@@ -15,12 +16,15 @@ import {
     FooterLinks,
     Padded,
     Spacer,
+    Spinner,
     Typography,
 } from '@stackone/malachite';
+import { Loading } from './components/loading';
 
 interface IntegrationPickerProps {
     token: string;
     baseUrl: string;
+    height?: string;
 }
 
 const Title: React.FC<{
@@ -123,7 +127,11 @@ const Footer: React.FC<{
     );
 };
 
-export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, baseUrl }) => {
+export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
+    token,
+    baseUrl,
+    height = '400px',
+}) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<{
@@ -179,6 +187,10 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
             return;
         }
 
+        console.log('handleConnect', {
+            selectedIntegration,
+            data,
+        });
         setError(undefined);
         setLoading(true);
         await connectAccount(baseUrl, token, selectedIntegration.provider, data)
@@ -206,23 +218,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
             });
     }, [baseUrl, token, selectedIntegration, data]);
 
-    if (isLoadingHubData || isLoadingConnectorData) {
-        return <div>Loading...</div>;
-    }
-    if (errorHubData || errorConnectorData) {
-        return <div>Error: {errorHubData?.message || errorConnectorData?.message}</div>;
-    }
-
-    if (success) {
-        return <div>Successfully connected to {selectedIntegration?.provider}</div>;
-    }
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <Card
-            height="400px"
             footer={
                 <Footer
                     selectedIntegration={selectedIntegration}
@@ -239,17 +236,53 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
                     />
                 )
             }
+            height={height}
         >
-            {!connectorData && (
+            {isLoadingHubData ||
+                (isLoadingConnectorData && (
+                    <Loading
+                        title="Loading integration data"
+                        description="Please wait, this may take a moment."
+                    />
+                ))}
+            {(errorHubData || errorConnectorData) && (
+                <div>Error: {errorHubData?.message || errorConnectorData?.message}</div>
+            )}
+            {success && (
+                <Flex
+                    justify={FlexJustify.Center}
+                    align={FlexAlign.Center}
+                    direction={FlexDirection.Vertical}
+                    gapSize={FlexGapSize.Small}
+                    fullHeight
+                >
+                    <CustomIcons.CheckCircleFilledIcon />
+                    <Typography.Text fontWeight="bold" size="large">
+                        Connection Successful
+                    </Typography.Text>
+                    <Typography.SecondaryText>
+                        Account successfully connected to {selectedIntegration?.name}
+                    </Typography.SecondaryText>
+                </Flex>
+            )}
+            {loading && (
+                <Loading
+                    title={`Connecting to ${selectedIntegration?.name}`}
+                    description="Please wait, this may take a moment."
+                />
+            )}
+            {!loading && !success && !connectorData && (
                 <IntegrationSelector
                     integrations={hubData?.integrations || []}
                     onSelect={setSelectedIntegration}
                 />
             )}
-            {!connectorData && hubData && hubData.integrations.length === 0 && (
-                <div>No integrations found.</div>
-            )}
-            {connectorData && selectedIntegration && (
+            {!loading &&
+                !success &&
+                !connectorData &&
+                hubData &&
+                hubData.integrations.length === 0 && <div>No integrations found.</div>}
+            {!loading && !success && connectorData && selectedIntegration && (
                 <IntegrationForm fields={fields} error={error} onChange={setData} guide={guide} />
             )}
         </Card>

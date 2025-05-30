@@ -25,6 +25,10 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                 data[field.key] = value.toString();
             }
         });
+        console.log('handleOnChange', {
+            data,
+            formData,
+        });
         onChange(data);
     };
 

@@ -1,5 +1,5 @@
 import { Button, ModeToggle } from '@stackone/malachite';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { StackOneHub } from '../src/StackOneHub';
 import { HubModes } from '../src/types/types';
@@ -7,13 +7,13 @@ import { request } from '../src/shared/httpClient';
 import { ThemeProvider } from '@stackone/malachite';
 
 const HubWrapper: React.FC = () => {
-    const [mode, setMode] = useState<HubModes>();
+    const [mode, setMode] = useState<HubModes>('integration-picker');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>();
     const [token, setToken] = useState<string>();
     const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
 
-    const fetchToken = async () => {
+    const fetchToken = useCallback(async () => {
         try {
             setLoading(true);
             const apiKey = import.meta.env.VITE_STACKONE_API_KEY;
@@ -45,32 +45,34 @@ const HubWrapper: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchToken();
+    }, [fetchToken]);
 
     return (
-        <ThemeProvider>
-            <div>
+        <div>
+            <p>Current mode: {mode || 'No mode selected'}</p>
+            {loading && <p> Loading token...</p>}
+            {error && <p>Error loading token: {error}</p>}
+            {token && <p>Token: {token}</p>}
+            <button onClick={fetchToken}>Fetch Token</button>
+            <button onClick={() => setMode('integration-picker')}>
+                Set Integration Picker mode
+            </button>
+            <button onClick={() => setMode('csv-importer')}>Set CSV Importer mode</button>
+            <h1>StackOneHub Demo</h1>
+            <ThemeProvider>
                 <div>
-                    <h1>StackOneHub Demo</h1>
-                    <p>Current mode: {mode || 'No mode selected'}</p>
-                    {loading && <p> Loading token...</p>}
-                    {error && <p>Error loading token: {error}</p>}
-                    {token && <p>Token: {token}</p>}
-                    <ModeToggle />
-                    <Button type="outline" onClick={fetchToken}>
-                        Fetch Token
-                    </Button>
-                    <Button type="green" onClick={() => setMode('integration-picker')}>
-                        Set Integration Picker mode
-                    </Button>
-                    <Button type="orange" onClick={() => setMode('csv-importer')}>
-                        Set CSV Importer mode
-                    </Button>
-                    <div style={{ height: '25px' }} />
-                    <StackOneHub mode={mode} token={token} baseUrl={apiUrl} />
+                    <div>
+                        <ModeToggle />
+                        <div style={{ height: '25px' }} />
+                        <StackOneHub mode={mode} token={token} baseUrl={apiUrl} />
+                    </div>
                 </div>
-            </div>
-        </ThemeProvider>
+            </ThemeProvider>
+        </div>
     );
 };
 
