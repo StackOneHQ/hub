@@ -2,7 +2,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
 import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import { HubModes } from './types/types';
-import { Card, ThemeProvider } from '@stackone/malachite';
+import {
+    Card,
+    Flex,
+    FlexAlign,
+    FlexJustify,
+    FooterLinks,
+    ThemeProvider,
+    Typography,
+} from '@stackone/malachite';
 import ErrorBoundary from './shared/components/errorBoundary';
 import ErrorContainer from './shared/components/error';
 
@@ -12,6 +20,9 @@ interface StackOneHubProps {
     baseUrl?: string;
     height?: string;
     theme?: 'light' | 'dark';
+    onSuccess?: () => void;
+    onClose?: () => void;
+    onCancel?: () => void;
 }
 
 export const StackOneHub: React.FC<StackOneHubProps> = ({
@@ -20,6 +31,9 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     baseUrl,
     height = '500px',
     theme = 'light',
+    onSuccess,
+    onClose,
+    onCancel,
 }) => {
     const defaultBaseUrl = 'https://api.stackone.com';
     const apiUrl = baseUrl ?? defaultBaseUrl;
@@ -37,10 +51,22 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     });
 
     if (!token) {
-        return <div>Error: No token provided</div>;
+        return (
+            <Card height={height} footer={<FooterLinks />}>
+                <Flex justify={FlexJustify.Center} align={FlexAlign.Center} fullHeight>
+                    <Typography.PageTitle>No token provided</Typography.PageTitle>
+                </Flex>
+            </Card>
+        );
     }
     if (!mode) {
-        return <div>No mode selected</div>;
+        return (
+            <Card height={height} footer={<FooterLinks />}>
+                <Flex justify={FlexJustify.Center} align={FlexAlign.Center} fullHeight>
+                    <Typography.PageTitle>No mode selected</Typography.PageTitle>
+                </Flex>
+            </Card>
+        );
     }
 
     return (
@@ -54,9 +80,15 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
             >
                 <QueryClientProvider client={queryClient}>
                     {mode === 'integration-picker' && (
-                        <IntegrationPicker token={token} baseUrl={apiUrl} height={height} />
+                        <IntegrationPicker
+                            token={token}
+                            baseUrl={apiUrl}
+                            height={height}
+                            onSuccess={onSuccess}
+                            onClose={onClose}
+                            onCancel={onCancel}
+                        />
                     )}
-                    {mode === 'csv-importer' && <CsvImporter height={height} />}
                 </QueryClientProvider>
             </ErrorBoundary>
         </ThemeProvider>

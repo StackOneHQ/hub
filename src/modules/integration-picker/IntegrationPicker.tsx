@@ -14,6 +14,9 @@ interface IntegrationPickerProps {
     token: string;
     baseUrl: string;
     height: string;
+    onSuccess?: () => void;
+    onClose?: () => void;
+    onCancel?: () => void;
 }
 
 interface IntegrationPickerContentProps {
@@ -92,7 +95,12 @@ const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> = ({
     return null;
 };
 
-export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, baseUrl, height }) => {
+export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
+    token,
+    baseUrl,
+    height,
+    onSuccess,
+}) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<{
@@ -148,6 +156,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
         try {
             await connectAccount(baseUrl, token, selectedIntegration.provider, formData);
             setSuccess(true);
+            setTimeout(() => {
+                onSuccess?.();
+            }, 2000);
         } catch (error) {
             const parsedError = JSON.parse((error as Error).message) as {
                 status: number;
@@ -166,7 +177,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({ token, bas
         } finally {
             setLoading(false);
         }
-    }, [baseUrl, token, selectedIntegration, formData]);
+    }, [baseUrl, token, selectedIntegration, formData, onSuccess]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData;
     const hasError = !!(errorHubData || errorConnectorData);

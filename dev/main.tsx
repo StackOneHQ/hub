@@ -6,7 +6,7 @@ import { HubModes } from '../src/types/types';
 import { request } from '../src/shared/httpClient';
 
 const HubWrapper: React.FC = () => {
-    const [mode, setMode] = useState<HubModes>('integration-picker');
+    const [mode, setMode] = useState<HubModes | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>();
     const [token, setToken] = useState<string>();
@@ -68,7 +68,16 @@ const HubWrapper: React.FC = () => {
                 </button>
             </div>
             <h1>StackOneHub Demo</h1>
-            <StackOneHub mode={mode} token={token} baseUrl={apiUrl} theme={theme} />
+            <StackOneHub
+                mode={mode}
+                token={token}
+                baseUrl={apiUrl}
+                theme={theme}
+                onSuccess={() => {
+                    console.log('success');
+                    setMode(undefined);
+                }}
+            />
         </div>
     );
 };

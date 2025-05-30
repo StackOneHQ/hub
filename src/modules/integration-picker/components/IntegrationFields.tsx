@@ -46,8 +46,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                 {guide && <Alert type="info" message={guide?.description} hasMargin={false} />}
                 {error && <Alert type="error" message={error.message} hasMargin={false} />}
                 {error && <Typography.CodeText>{error.provider_response}</Typography.CodeText>}
-                <Spacer direction="vertical" size={20}>
-                    <Form>
+                <Form>
+                    <Spacer direction="vertical" size={20}>
                         {fields.map((field) => {
                             return (
                                 <div key={field.key}>
@@ -90,8 +90,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                 </div>
                             );
                         })}
-                    </Form>
-                </Spacer>
+                    </Spacer>
+                </Form>
             </Spacer>
         </div>
     );
