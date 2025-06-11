@@ -11,7 +11,7 @@ import { Integration } from '../types';
 
 interface CardTitleProps {
     selectedIntegration: Integration;
-    onBack: () => void;
+    onBack?: () => void;
     guide?: { supportLink?: string; description: string };
 }
 
@@ -29,7 +29,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guid
                 gapSize={FlexGapSize.Small}
                 justify={FlexJustify.Left}
             >
-                <Button type="ghost" onClick={onBack} icon="←" size="small" />
+                {onBack && <Button type="ghost" onClick={onBack} icon="←" size="small" />}
                 <img
                     src={`https://app.stackone.com/assets/logos/${selectedIntegration.provider}.png`}
                     alt={selectedIntegration.provider}

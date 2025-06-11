@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-import { Integration } from '../types';
 import {
     Button,
     Flex,
@@ -9,11 +7,13 @@ import {
     Padded,
     Spacer,
 } from '@stackone/malachite';
+import { useMemo } from 'react';
+import { Integration } from '../types';
 
 interface CardFooterProps {
     selectedIntegration: Integration | null;
     fullWidth?: boolean;
-    onBack: () => void;
+    onBack?: () => void;
     onNext: () => void;
 }
 
@@ -26,14 +26,13 @@ const CardFooter: React.FC<CardFooterProps> = ({
     const buttons = useMemo(() => {
         if (!selectedIntegration) return [];
 
-        return [
-            {
-                label: 'Back',
-                type: 'outline' as const,
-                onClick: onBack,
-                disabled: false,
-                loading: false,
-            },
+        const buttons: Array<{
+            label: string;
+            type: 'outline' | 'filled';
+            onClick: () => void;
+            disabled: boolean;
+            loading: boolean;
+        }> = [
             {
                 label: 'Next',
                 type: 'filled' as const,
@@ -42,6 +41,18 @@ const CardFooter: React.FC<CardFooterProps> = ({
                 loading: false,
             },
         ];
+
+        if (onBack) {
+            buttons.push({
+                label: 'Back',
+                type: 'outline' as const,
+                onClick: onBack,
+                disabled: false,
+                loading: false,
+            });
+        }
+
+        return buttons;
     }, [selectedIntegration, onBack, onNext]);
 
     if (buttons.length === 0) {

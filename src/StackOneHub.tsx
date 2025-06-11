@@ -1,7 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
-import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
-import { HubModes } from './types/types';
 import {
     Card,
     Flex,
@@ -11,8 +7,12 @@ import {
     ThemeProvider,
     Typography,
 } from '@stackone/malachite';
-import ErrorBoundary from './shared/components/errorBoundary';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
+import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import ErrorContainer from './shared/components/error';
+import ErrorBoundary from './shared/components/errorBoundary';
+import { HubModes } from './types/types';
 
 interface StackOneHubProps {
     mode?: HubModes;
@@ -20,6 +20,7 @@ interface StackOneHubProps {
     baseUrl?: string;
     height?: string;
     theme?: 'light' | 'dark';
+    accountId?: string;
     onSuccess?: () => void;
     onClose?: () => void;
     onCancel?: () => void;
@@ -31,6 +32,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     baseUrl,
     height = '500px',
     theme = 'light',
+    accountId,
     onSuccess,
     onClose,
     onCancel,
@@ -87,6 +89,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                             onSuccess={onSuccess}
                             onClose={onClose}
                             onCancel={onCancel}
+                            accountId={accountId}
                         />
                     )}
                 </QueryClientProvider>

@@ -2,8 +2,8 @@ import './main.css';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { StackOneHub } from '../src/StackOneHub';
-import { HubModes } from '../src/types/types';
 import { request } from '../src/shared/httpClient';
+import { HubModes } from '../src/types/types';
 
 const HubWrapper: React.FC = () => {
     const [mode, setMode] = useState<HubModes | undefined>(undefined);
@@ -12,6 +12,7 @@ const HubWrapper: React.FC = () => {
     const [token, setToken] = useState<string>();
     const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [accountId, setAccountId] = useState<string>('46071458593115456017');
 
     const fetchToken = useCallback(async () => {
         try {
@@ -32,6 +33,7 @@ const HubWrapper: React.FC = () => {
                     origin_owner_name:
                         import.meta.env.VITE_ORIGIN_OWNER_NAME ?? 'dummy_customer_name',
                     origin_username: import.meta.env.VITE_ORIGIN_USERNAME ?? 'dummy_username',
+                    account_id: accountId !== '' && accountId != null ? accountId : undefined,
                 },
             });
             if (!response) {
@@ -45,7 +47,7 @@ const HubWrapper: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [accountId]);
 
     useEffect(() => {
         fetchToken();
@@ -67,6 +69,7 @@ const HubWrapper: React.FC = () => {
                     {theme === 'light' ? '🌞' : '🌚'}
                 </button>
             </div>
+            <input type="text" value={accountId} onChange={(e) => setAccountId(e.target.value)} />
             <h1>StackOneHub Demo</h1>
             <StackOneHub
                 mode={mode}
@@ -77,6 +80,7 @@ const HubWrapper: React.FC = () => {
                     console.log('success');
                     setMode(undefined);
                 }}
+                accountId={accountId}
             />
         </div>
     );

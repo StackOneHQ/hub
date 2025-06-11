@@ -38,6 +38,8 @@ export interface ConnectorConfigField {
 }
 
 export interface ConnectorConfig {
+    key: string;
+    name: string;
     authentication: {
         [authKey: string]: {
             [environment: string]: {
@@ -49,4 +51,10 @@ export interface ConnectorConfig {
             };
         };
     };
+}
+
+export interface AccountData {
+    account_id: string;
+    provider: string;
+    credentials: Record<string, unknown>;
 }
