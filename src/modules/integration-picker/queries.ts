@@ -1,13 +1,20 @@
 import { getRequest, postRequest } from '../../shared/httpClient';
 import { AccountData, ConnectorConfig, HubData } from './types';
 
-export const getHubData = async (token: string, baseUrl: string) => {
+export const getHubData = async (token: string, baseUrl: string, provider?: string) => {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'x-hub-session-token': token,
+    };
+
+    // Add provider header when filtering by specific provider
+    if (provider) {
+        headers['x-hub-provider'] = provider;
+    }
+
     return await getRequest<HubData>({
         url: `${baseUrl}/hub/connectors`,
-        headers: {
-            'Content-Type': 'application/json',
-            'x-hub-session-token': token,
-        },
+        headers,
     });
 };
 
