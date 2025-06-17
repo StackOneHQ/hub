@@ -1,6 +1,6 @@
 import { Alert, Form, Input, Spacer, Typography } from '@stackone/malachite';
+import { useEffect, useState } from 'react';
 import { ConnectorConfigField } from '../types';
-import { useState, useEffect } from 'react';
 
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
@@ -28,6 +28,23 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         });
         return initialData;
     });
+
+    useEffect(() => {
+        const updatedData: Record<string, string> = {};
+        fields.forEach((field) => {
+            if (field.value !== undefined) {
+                updatedData[field.key] = field.value.toString();
+            }
+        });
+
+        const hasChanges =
+            Object.keys(updatedData).some((key) => updatedData[key] !== formData[key]) ||
+            Object.keys(formData).some((key) => !updatedData.hasOwnProperty(key));
+
+        if (hasChanges) {
+            setFormData((prev) => ({ ...prev, ...updatedData }));
+        }
+    }, [fields, formData]);
 
     useEffect(() => {
         onChange(formData);

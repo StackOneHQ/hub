@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from '../../shared/httpClient';
+import { getRequest, patchRequest, postRequest } from '../../shared/httpClient';
 import { AccountData, ConnectorConfig, HubData } from './types';
 
 export const getHubData = async (token: string, baseUrl: string, provider?: string) => {
@@ -36,6 +36,26 @@ export const connectAccount = async (
 ) => {
     return await postRequest<ConnectorConfig>({
         url: `${baseUrl}/hub/accounts`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
+        body: {
+            provider,
+            credentials,
+        },
+    });
+};
+
+export const updateAccount = async (
+    baseUrl: string,
+    accountId: string,
+    token: string,
+    provider: string,
+    credentials: Record<string, unknown>,
+) => {
+    return await patchRequest<ConnectorConfig>({
+        url: `${baseUrl}/hub/accounts/${accountId}`,
         headers: {
             'Content-Type': 'application/json',
             'x-hub-session-token': token,

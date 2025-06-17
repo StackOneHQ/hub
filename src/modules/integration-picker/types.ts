@@ -56,5 +56,5 @@ export interface ConnectorConfig {
 export interface AccountData {
     account_id: string;
     provider: string;
-    credentials: Record<string, unknown>;
+    setupInformation: Record<string, string>;
 }

@@ -1,7 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { connectAccount, getAccountData, getConnectorConfig, getHubData } from '../queries';
+import {
+    connectAccount,
+    getAccountData,
+    getConnectorConfig,
+    getHubData,
+    updateAccount,
+} from '../queries';
 import { Integration } from '../types';
+
+const DUMMY_VALUE = 'totally-fake-value';
 
 interface UseIntegrationPickerProps {
     token: string;
@@ -101,11 +109,29 @@ export const useIntegrationPicker = ({
             connectorData.authentication?.[selectedIntegration.authentication_config_key];
         const authConfigForEnvironment = authConfig?.[selectedIntegration.environment];
 
+        const baseFields = authConfigForEnvironment?.fields || [];
+
+        const fieldsWithPrefilledValues = baseFields.map((field) => {
+            const setupValue = accountData?.setupInformation?.[field.key];
+
+            if (accountData && (field.secret || field.type === 'password')) {
+                return {
+                    ...field,
+                    value: DUMMY_VALUE,
+                };
+            }
+
+            return {
+                ...field,
+                value: setupValue !== undefined ? setupValue : field.value,
+            };
+        });
+
         return {
-            fields: authConfigForEnvironment?.fields || [],
+            fields: fieldsWithPrefilledValues,
             guide: authConfigForEnvironment?.guide,
         };
-    }, [connectorData, selectedIntegration]);
+    }, [connectorData, selectedIntegration, accountData?.setupInformation]);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) return;
@@ -113,7 +139,31 @@ export const useIntegrationPicker = ({
         setConnectionState({ loading: true, success: false });
 
         try {
-            await connectAccount(baseUrl, token, selectedIntegration.provider, formData);
+            // Clean up dummy values for secret fields before submission
+            const cleanedFormData = { ...formData };
+            if (accountData) {
+                fields.forEach((field) => {
+                    if (
+                        (field.secret || field.type === 'password') &&
+                        cleanedFormData[field.key] === DUMMY_VALUE
+                    ) {
+                        delete cleanedFormData[field.key];
+                    }
+                });
+            }
+
+            if (accountId) {
+                await updateAccount(
+                    baseUrl,
+                    accountId,
+                    token,
+                    selectedIntegration.provider,
+                    cleanedFormData,
+                );
+            } else {
+                await connectAccount(baseUrl, token, selectedIntegration.provider, cleanedFormData);
+            }
+
             setConnectionState({ loading: false, success: true });
             setTimeout(() => {
                 onSuccess?.();
@@ -138,7 +188,7 @@ export const useIntegrationPicker = ({
                 },
             });
         }
-    }, [baseUrl, token, selectedIntegration, formData, onSuccess]);
+    }, [baseUrl, token, selectedIntegration, formData, onSuccess, accountData, fields]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
