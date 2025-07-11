@@ -1,11 +1,11 @@
 import {
+    CustomIcons,
     Flex,
     FlexAlign,
     FlexDirection,
     FlexGapSize,
     FlexJustify,
     Typography,
-    CustomIcons,
     useTheme,
 } from '@stackone/malachite';
 

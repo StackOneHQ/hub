@@ -10,7 +10,6 @@ interface ImportMetaEnv {
     readonly VITE_DASHBOARD_URL: string;
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: This is a Vite-specific type definition that gets picked up by the LSP
-interface ImportMeta {
+export interface ImportMeta {
     readonly env: ImportMetaEnv;
 }

@@ -1,5 +1,4 @@
 import {
-    Button,
     ButtonList,
     Flex,
     FlexAlign,
@@ -7,11 +6,10 @@ import {
     FlexGapSize,
     FlexJustify,
     Padded,
-    Spacer,
     Typography,
 } from '@stackone/malachite';
-import { Integration } from '../types';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
+import { Integration } from '../types';
 
 interface IntegrationRowProps {
     integration: Integration;

@@ -1,11 +1,11 @@
 import {
+    CustomIcons,
     Flex,
     FlexAlign,
     FlexDirection,
     FlexGapSize,
     FlexJustify,
     Typography,
-    CustomIcons,
 } from '@stackone/malachite';
 
 interface SuccessProps {

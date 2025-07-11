@@ -131,7 +131,7 @@ export const useIntegrationPicker = ({
             fields: fieldsWithPrefilledValues,
             guide: authConfigForEnvironment?.guide,
         };
-    }, [connectorData, selectedIntegration, accountData?.setupInformation]);
+    }, [connectorData, selectedIntegration, accountData]);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) return;
@@ -188,7 +188,7 @@ export const useIntegrationPicker = ({
                 },
             });
         }
-    }, [baseUrl, token, selectedIntegration, formData, onSuccess, accountData, fields]);
+    }, [baseUrl, token, selectedIntegration, formData, onSuccess, accountData, fields, accountId]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
