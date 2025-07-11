@@ -1,52 +1,108 @@
 # StackOne HUB
 
-StackOne HUB is a React-based project that includes a web component wrapper for easy integration. This README provides instructions on how to set up, build, and run the project.
+> ⚠️ **ALPHA SOFTWARE** ⚠️  
+> This project is currently in **alpha stage**. Features are incomplete, and may break without notice. Use in production environments is not recommended.
 
-## Prerequisites
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Status](https://img.shields.io/badge/status-alpha-orange.svg)
+![Node Version](https://img.shields.io/badge/node-%3E%3D22.14.0-brightgreen.svg)
 
-- [Node.js](https://nodejs.org/) (version specified in `.nvmrc`, e.g., `v22.14.0`)
-- [npm](https://www.npmjs.com/)
+StackOne HUB is a React-based integration component library that provides a web component wrapper for seamless integration into any web application. It enables developers to easily embed StackOne's integrations hub.
 
-## Setup
+## 📋 Table of Contents
 
-1. Clone the repository:
+- [StackOne HUB](#stackone-hub)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [⚠️ Alpha Notice](#️-alpha-notice)
+  - [🚀 Quick Start](#-quick-start)
+  - [📦 Installation](#-installation)
+    - [Prerequisites](#prerequisites)
+    - [Setup](#setup)
+  - [🛠️ Development](#️-development)
+    - [Environment Setup](#environment-setup)
+  - [🏗️ Build](#️-build)
+    - [Build Output](#build-output)
+  - [📖 Usage](#-usage)
+    - [🌐 Web Component Integration](#-web-component-integration)
+    - [⚛️ React Component Integration](#️-react-component-integration)
+    - [💻 Local Development Usage](#-local-development-usage)
+      - [Web Component (Local)](#web-component-local)
+      - [React Component (Local)](#react-component-local)
+  - [🔧 Environment Variables](#-environment-variables)
+    - [Example `.env` file:](#example-env-file)
+  - [🤝 Contributing](#-contributing)
+    - [Getting Started](#getting-started)
+  - [📄 License](#-license)
 
+## ⚠️ Alpha Notice
+
+**This software is in active development and should be considered alpha quality.** 
+
+- 🚧 **Breaking changes** may occur in any release
+- 🐛 **Bugs and incomplete features** are expected
+- 📚 **Documentation** may be outdated or incomplete
+- 🔄 **APIs are subject to change** without prior notice
+- ❌ **Not recommended for production use**
+
+Please report issues and provide feedback to help us improve!
+
+## 🚀 Quick Start
+
+```bash
+# Clone and setup
+git clone <repository-url>
+cd hub
+npm install
+npm run build
+
+# Start development
+npm run dev
+```
+
+## 📦 Installation
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v22.14.0 or higher
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+
+### Setup
+
+1. **Clone the repository:**
    ```bash
    git clone <repository-url>
    cd hub
    ```
 
-2. Install dependencies:
-
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. Build the project:
-
+3. **Build the project:**
    ```bash
    npm run build
    ```
 
-## Development
+## 🛠️ Development
 
-Create a `.env` file based on `.env.example` inside the `dev` directory :
+### Environment Setup
 
-```bash
-cp .env.example .env
-```
+1. **Create environment file:**
+   ```bash
+   cp .env.example .env
+   ```
 
-Update the `.env` file with the appropriate values for your environment.
+2. **Configure your environment variables** (see [Environment Variables](#-environment-variables) section)
 
-To start the development server:
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-```bash
-npm run dev
-```
+The development server will start at [http://localhost:3000](http://localhost:3000) (default port).
 
-This will start a Vite development server at [http://localhost:3000](http://localhost:3000) (default port).
-
-## Build
+## 🏗️ Build
 
 To build the project for production:
 
@@ -54,50 +110,63 @@ To build the project for production:
 npm run build
 ```
 
-The build output will be located in the `dist/` directory. It includes:
+### Build Output
 
-- `StackOneHub.esm.js`: ES module for React-based usage.
-- `StackOneHub.cjs.js`: CommonJS module for React-based usage.
-- `StackOneHub.web.js`: Web component bundle.
+The build generates multiple bundles in the `dist/` directory:
 
-## Usage
+| File | Description | Use Case |
+|------|-------------|----------|
+| `StackOneHub.esm.js` | ES module bundle | Modern React applications |
+| `StackOneHub.cjs.js` | CommonJS module | Node.js/legacy environments |
+| `StackOneHub.web.js` | Web component bundle | Vanilla HTML/JS integration |
 
-### Using the web component
+## 📖 Usage
 
-Include the `StackOneHub.web.js` file in your HTML:
+### 🌐 Web Component Integration
+
+For vanilla HTML/JavaScript applications:
 
 ```html
-<script src="<TBD>/StackOneHub.web.js"></script>
-<my-component></my-component>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StackOne HUB Integration</title>
+</head>
+<body>
+    <script src="<TBD>/StackOneHub.web.js"></script>
+    <my-component></my-component>
+</body>
+</html>
 ```
 
-### Using the React Component
+### ⚛️ React Component Integration
 
-Import the React component in your project:
+For React applications:
 
 ```tsx
 import StackOneHub from "@stackone/StackOneHub";
 
 function App() {
-  return <StackOneHub />;
+  return (
+    <div className="app">
+      <h1>My Application</h1>
+      <StackOneHub />
+    </div>
+  );
 }
+
+export default App;
 ```
 
-## Usage from build output locally
+### 💻 Local Development Usage
 
-### Using the Web Component locally
-
-Include the `StackOneHub.web.js` file in your HTML:
-
+#### Web Component (Local)
 ```html
 <script src="dist/StackOneHub.web.js"></script>
 <my-component></my-component>
 ```
 
-### Using the React Component locally
-
-Import the React component in your project:
-
+#### React Component (Local)
 ```tsx
 import StackOneHub from "dist/StackOneHub.esm";
 
@@ -106,17 +175,51 @@ function App() {
 }
 ```
 
-## Environment Variables
+## 🔧 Environment Variables
 
-The project uses environment variables defined in the `.env` file to run the development test app. Below are the variables you need to configure:
+Create a `.env` file in the `dev` directory with the following variables:
 
-- `STACKONE_API_KEY`: Your API key.
-- `ORIGIN_OWNER_ID`: The owner ID.
-- `ORIGIN_OWNER_NAME`: The owner name.
-- `ORIGIN_USERNAME`: The username.
-- `API_URL`: The backend API URL.
-- `DASHBOARD_URL`: The dashboard URL.
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `STACKONE_API_KEY` | Your StackOne API key | ✅ |
+| `ORIGIN_OWNER_ID` | The origin owner identifier | ✅ |
+| `ORIGIN_OWNER_NAME` | Display name for the owner | ✅ |
+| `ORIGIN_USERNAME` | Username for authentication | ✅ |
+| `API_URL` | Backend API endpoint URL | ✅ |
+| `DASHBOARD_URL` | Dashboard application URL | ✅ |
 
-## License
+### Example `.env` file:
+```bash
+STACKONE_API_KEY=your_api_key_here
+ORIGIN_OWNER_ID=your_owner_id
+ORIGIN_OWNER_NAME=Your Company Name
+ORIGIN_USERNAME=your_username
+API_URL=https://api.stackone.com
+DASHBOARD_URL=https://dashboard.stackone.com
+```
+
+## 🤝 Contributing
+
+Since this project is in alpha, we welcome contributions and feedback! However, please keep in mind:
+
+- 🔄 **Frequent changes**: The codebase may change rapidly
+- 📋 **No formal process yet**: Contribution guidelines are still being established
+- 💬 **Communication is key**: Please open an issue before submitting large changes
+
+### Getting Started
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+  <p><strong>⚠️ Remember: This is alpha software - use at your own risk! ⚠️</strong></p>
+  <p>For questions or support, please open an issue on GitHub.</p>
+</div>

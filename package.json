@@ -11,11 +11,12 @@
         "code:format:fix": "biome format --write ./src ./dev",
         "lint": "biome lint --error-on-warnings ./src ./dev && biome check ./src ./dev",
         "lint:fix": "biome lint --write ./src ./dev && biome check --write ./src ./dev",
-        "publish-release": "npm publish"
+        "publish-release": "npm publish --access=public"
     },
     "author": "StackOne",
     "license": "MIT",
     "dependencies": {
+        "@stackone/malachite": "^0.1.1",
         "@tanstack/react-query": "^5.77.2",
         "react": "^18.0.0",
         "react-dom": "^18.1.0"
