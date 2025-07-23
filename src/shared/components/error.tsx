@@ -6,11 +6,9 @@ import {
     FlexGapSize,
     FlexJustify,
     Typography,
-    useTheme,
 } from '@stackone/malachite';
 
 const ErrorContainer: React.FC = () => {
-    const { colors } = useTheme();
     return (
         <Flex
             justify={FlexJustify.Center}
@@ -19,7 +17,8 @@ const ErrorContainer: React.FC = () => {
             gapSize={FlexGapSize.Small}
             fullHeight
         >
-            <CustomIcons.RejectIcon style={{ color: colors.redForeground }} />
+            {/* TODO: fix */}
+            <CustomIcons.RejectIcon style={{ color: 'red' }} />
             <Typography.Text fontWeight="bold" size="large">
                 Error
             </Typography.Text>

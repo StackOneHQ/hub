@@ -29,7 +29,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guid
                 gapSize={FlexGapSize.Small}
                 justify={FlexJustify.Left}
             >
-                {onBack && <Button type="ghost" onClick={onBack} icon="←" size="small" />}
+                {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
                 <img
                     src={`https://app.stackone.com/assets/logos/${selectedIntegration.provider}.png`}
                     alt={selectedIntegration.provider}
@@ -39,11 +39,13 @@ const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guid
                     {selectedIntegration.name}
                 </Typography.Text>
             </Flex>
-            <Typography.Link href={guide?.supportLink} target="_blank">
-                <Button type="outline" size="medium">
-                    Connection guide
-                </Button>
-            </Typography.Link>
+            {guide?.supportLink && (
+                <Typography.LinkText href={guide?.supportLink} target="_blank">
+                    <Button variant="outline" size="medium">
+                        Connection guide
+                    </Button>
+                </Typography.LinkText>
+            )}
         </Flex>
     );
 };

@@ -69,7 +69,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
                             <Button
                                 key={button.label}
                                 size="small"
-                                type={button.type}
+                                variant={button.type}
                                 onClick={button.onClick}
                                 disabled={button.disabled}
                                 loading={button.loading}

@@ -12,7 +12,7 @@ const HubWrapper: React.FC = () => {
     const [token, setToken] = useState<string>();
     const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
-    const [accountId, setAccountId] = useState<string>('46071458593115456017');
+    const [accountId, setAccountId] = useState<string>();
 
     const fetchToken = useCallback(async () => {
         try {

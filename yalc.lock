@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "@stackone/malachite": {
-      "signature": "b3621bd0c8195b6fd4451f514c72a618",
-      "file": true
-    }
-  }
-}
