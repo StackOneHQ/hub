@@ -121,6 +121,13 @@ export const useIntegrationPicker = ({
                 };
             }
 
+            if (field.key === 'external-trigger-token') {
+                return {
+                    ...field,
+                    value: hubData?.external_trigger_token,
+                };
+            }
+
             return {
                 ...field,
                 value: setupValue !== undefined ? setupValue : field.value,

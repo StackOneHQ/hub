@@ -10,6 +10,7 @@ export interface Integration {
 
 export interface HubData {
     integrations: Array<Integration>;
+    external_trigger_token?: string;
 }
 
 export interface ConnectorConfigField {

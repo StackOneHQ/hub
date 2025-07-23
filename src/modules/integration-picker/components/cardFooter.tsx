@@ -32,15 +32,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
             onClick: () => void;
             disabled: boolean;
             loading: boolean;
-        }> = [
-            {
-                label: 'Next',
-                type: 'filled' as const,
-                onClick: onNext,
-                disabled: false,
-                loading: false,
-            },
-        ];
+        }> = [];
 
         if (onBack) {
             buttons.push({
@@ -52,6 +44,14 @@ const CardFooter: React.FC<CardFooterProps> = ({
             });
         }
 
+        buttons.push({
+            label: 'Confirm',
+            type: 'filled' as const,
+            onClick: onNext,
+            disabled: false,
+            loading: false,
+        });
+
         return buttons;
     }, [selectedIntegration, onBack, onNext]);
 
@@ -62,7 +62,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
     return (
         <Spacer direction="horizontal" size={0} justifyContent="space-between">
             <FooterLinks fullWidth={fullWidth} />
-            <Padded vertical="medium" horizontal="medium" fullHeight={false}>
+            <Padded vertical="none" horizontal="medium" fullHeight={false}>
                 <Flex direction={FlexDirection.Horizontal} justify={FlexJustify.Right}>
                     <Spacer direction="horizontal" size={10}>
                         {buttons.map((button) => (
