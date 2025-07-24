@@ -1,4 +1,4 @@
-import { Alert, Form, Input, Spacer, Typography } from '@stackone/malachite';
+import { Alert, Dropdown, Form, Input, Spacer, TextArea, Typography } from '@stackone/malachite';
 import { useEffect, useState } from 'react';
 import { ConnectorConfigField } from '../types';
 
@@ -29,6 +29,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         return initialData;
     });
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const updatedData: Record<string, string> = {};
         fields.forEach((field) => {
@@ -47,7 +48,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
             }
             return prev;
         });
-    }, [fields]);
+    }, [fields.length]);
 
     useEffect(() => {
         onChange(formData);
@@ -71,8 +72,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                         <div key={field.key} style={{ width: '100%' }}>
                             {(field.type === 'text' ||
                                 field.type === 'number' ||
-                                field.type === 'password' ||
-                                field.type === 'text_area') && (
+                                field.type === 'password') && (
                                 <Input
                                     key={field.key}
                                     name={field.key}
@@ -86,24 +86,44 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                     label={field.label}
                                     tooltip={field.guide?.tooltip}
                                     description={field.guide?.description}
+                                    type={field.type}
                                 />
                             )}
 
-                            {field.type === 'select' && (
-                                <select
+                            {field.type === 'text_area' && (
+                                <TextArea
                                     key={field.key}
                                     name={field.key}
                                     required={field.required}
-                                    value={formData[field.key] || ''}
-                                    onChange={(e) => handleFieldChange(field.key, e.target.value)}
+                                    defaultValue={formData[field.key] || ''}
+                                    placeholder={field.placeholder}
+                                    onChange={(value: string) =>
+                                        handleFieldChange(field.key, value)
+                                    }
                                     disabled={field.readOnly}
-                                >
-                                    {field.options?.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                    label={field.label}
+                                    tooltip={field.guide?.tooltip}
+                                />
+                            )}
+                            {field.type === 'select' && (
+                                <Dropdown
+                                    key={field.key}
+                                    defaultValue={formData[field.key] || ''}
+                                    disabled={field.readOnly}
+                                    items={
+                                        field.options?.map((option) => ({
+                                            id: option.value,
+                                            label: option.label,
+                                        })) ?? []
+                                    }
+                                    onItemSelected={(value) =>
+                                        handleFieldChange(field.key, value ?? '')
+                                    }
+                                    name={field.key}
+                                    label={field.label}
+                                    tooltip={field.guide?.tooltip}
+                                    description={field.guide?.description}
+                                />
                             )}
                         </div>
                     );
