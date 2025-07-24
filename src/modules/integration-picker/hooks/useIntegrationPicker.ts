@@ -165,7 +165,7 @@ export const useIntegrationPicker = ({
             fields: fieldsWithPrefilledValues,
             guide: authConfigForEnvironment?.guide,
         };
-    }, [connectorData, selectedIntegration, accountData]);
+    }, [connectorData, selectedIntegration, accountData, formData, hubData]);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) return;

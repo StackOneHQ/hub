@@ -5,9 +5,14 @@ import {
     FlexJustify,
     FooterLinks,
     MalachiteContext,
+    PartialMalachiteTheme,
     Typography,
+    applyDarkTheme,
+    applyLightTheme,
+    applyTheme,
 } from '@stackone/malachite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
 import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import ErrorContainer from './shared/components/error';
@@ -19,7 +24,7 @@ interface StackOneHubProps {
     token?: string;
     baseUrl?: string;
     height?: string;
-    theme?: 'light' | 'dark';
+    theme?: 'light' | 'dark' | PartialMalachiteTheme;
     accountId?: string;
     onSuccess?: () => void;
     onClose?: () => void;
@@ -39,6 +44,15 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
 }) => {
     const defaultBaseUrl = 'https://api.stackone.com';
     const apiUrl = baseUrl ?? defaultBaseUrl;
+    useEffect(() => {
+        if (theme === 'dark') {
+            applyDarkTheme();
+        } else if (theme === 'light') {
+            applyLightTheme();
+        } else {
+            applyTheme(theme);
+        }
+    }, [theme]);
 
     const queryClient = new QueryClient({
         defaultOptions: {
