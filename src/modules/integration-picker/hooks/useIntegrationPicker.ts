@@ -166,6 +166,7 @@ export const useIntegrationPicker = ({
                 if (accountData && (field.secret || field.type === 'password')) {
                     return {
                         ...field,
+                        key: field.key,
                         value: DUMMY_VALUE,
                     };
                 }
@@ -173,6 +174,7 @@ export const useIntegrationPicker = ({
                 if (field.key === 'external-trigger-token') {
                     return {
                         ...field,
+                        key: field.key,
                         value: hubData?.external_trigger_token,
                     };
                 }
@@ -195,14 +197,22 @@ export const useIntegrationPicker = ({
                 }
 
                 if (!field.value) {
-                    return field;
+                    return {
+                        ...field,
+                        key: field.key,
+                    };
                 }
 
                 const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
-                const evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
+                let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
+
+                if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
+                    evaluatedValue = JSON.stringify(evaluatedValue);
+                }
 
                 return {
                     ...field,
+                    key: field.key,
                     value: evaluatedValue as string | number | undefined,
                 };
             })

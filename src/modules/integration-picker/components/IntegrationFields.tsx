@@ -68,20 +68,21 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
             {error && <Typography.CodeText>{error.provider_response}</Typography.CodeText>}
             <Spacer direction="vertical" size={20} fullWidth>
                 {fields.map((field) => {
+                    const key =
+                        typeof field.key === 'object'
+                            ? JSON.stringify(field.key)
+                            : String(field.key);
                     return (
-                        <div key={field.key} style={{ width: '100%' }}>
+                        <div key={key} style={{ width: '100%' }}>
                             {(field.type === 'text' ||
                                 field.type === 'number' ||
                                 field.type === 'password') && (
                                 <Input
-                                    key={field.key}
-                                    name={field.key}
+                                    name={key}
                                     required={field.required}
                                     placeholder={field.placeholder}
                                     defaultValue={field.value?.toString()}
-                                    onChange={(value: string) =>
-                                        handleFieldChange(field.key, value)
-                                    }
+                                    onChange={(value: string) => handleFieldChange(key, value)}
                                     disabled={field.readOnly}
                                     label={field.label}
                                     tooltip={field.guide?.tooltip}
@@ -92,14 +93,11 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
                             {field.type === 'text_area' && (
                                 <TextArea
-                                    key={field.key}
-                                    name={field.key}
+                                    name={key}
                                     required={field.required}
-                                    defaultValue={formData[field.key] || ''}
+                                    defaultValue={formData[key] || ''}
                                     placeholder={field.placeholder}
-                                    onChange={(value: string) =>
-                                        handleFieldChange(field.key, value)
-                                    }
+                                    onChange={(value: string) => handleFieldChange(key, value)}
                                     disabled={field.readOnly}
                                     label={field.label}
                                     tooltip={field.guide?.tooltip}
@@ -107,8 +105,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                             )}
                             {field.type === 'select' && (
                                 <Dropdown
-                                    key={field.key}
-                                    defaultValue={formData[field.key] || ''}
+                                    defaultValue={formData[key] || ''}
                                     disabled={field.readOnly}
                                     items={
                                         field.options?.map((option) => ({
@@ -116,10 +113,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                             label: option.label,
                                         })) ?? []
                                     }
-                                    onItemSelected={(value) =>
-                                        handleFieldChange(field.key, value ?? '')
-                                    }
-                                    name={field.key}
+                                    onItemSelected={(value) => handleFieldChange(key, value ?? '')}
+                                    name={key}
                                     label={field.label}
                                     tooltip={field.guide?.tooltip}
                                     description={field.guide?.description}
