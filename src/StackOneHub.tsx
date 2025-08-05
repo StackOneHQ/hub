@@ -23,6 +23,7 @@ interface StackOneHubProps {
     mode?: HubModes;
     token?: string;
     baseUrl?: string;
+    appUrl?: string;
     height?: string;
     theme?: 'light' | 'dark' | PartialMalachiteTheme;
     accountId?: string;
@@ -35,6 +36,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     mode,
     token,
     baseUrl,
+    appUrl,
     height = '500px',
     theme = 'light',
     accountId,
@@ -44,6 +46,8 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
 }) => {
     const defaultBaseUrl = 'https://api.stackone.com';
     const apiUrl = baseUrl ?? defaultBaseUrl;
+    const defaultDashboardUrl = 'https://app.stackone.com';
+    const dashboardUrl = appUrl ?? defaultDashboardUrl;
     useEffect(() => {
         if (theme === 'dark') {
             applyDarkTheme();
@@ -119,6 +123,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                         <IntegrationPicker
                             token={token}
                             baseUrl={apiUrl}
+                            dashboardUrl={dashboardUrl}
                             height={height}
                             onSuccess={onSuccess}
                             onClose={onClose}

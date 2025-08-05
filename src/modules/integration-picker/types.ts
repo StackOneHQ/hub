@@ -49,6 +49,7 @@ export interface ConnectorConfig {
                     supportLink?: string;
                     description: string;
                 };
+                type: 'oauth2' | 'oidc' | 'custom';
             };
         };
     };

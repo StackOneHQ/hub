@@ -7,7 +7,7 @@ interface ImportMetaEnv {
     readonly VITE_ORIGIN_OWNER_NAME: string;
     readonly VITE_ORIGIN_USERNAME: string;
     readonly VITE_API_URL: string;
-    readonly VITE_DASHBOARD_URL: string;
+    readonly VITE_APP_URL: string;
 }
 
 export interface ImportMeta {

@@ -9,6 +9,7 @@ interface IntegrationPickerProps {
     baseUrl: string;
     height: string;
     accountId?: string;
+    dashboardUrl?: string;
     onSuccess?: () => void;
     onClose?: () => void;
     onCancel?: () => void;
@@ -20,6 +21,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     height,
     accountId,
     onSuccess,
+    dashboardUrl,
 }) => {
     const {
         // Data
@@ -48,6 +50,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         baseUrl,
         accountId,
         onSuccess,
+        dashboardUrl,
     });
 
     return (
@@ -75,7 +78,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 hasError={hasError}
                 connectionState={connectionState}
                 selectedIntegration={selectedIntegration}
-                connectorData={connectorData ?? null}
+                connectorData={connectorData?.config ?? null}
                 hubData={hubData ?? null}
                 fields={fields}
                 guide={guide}

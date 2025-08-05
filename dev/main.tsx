@@ -11,6 +11,7 @@ const HubWrapper: React.FC = () => {
     const [error, setError] = useState<string>();
     const [token, setToken] = useState<string>();
     const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
+    const appUrl = import.meta.env.VITE_APP_URL ?? 'https://app.stackone.com';
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const [accountId, setAccountId] = useState<string>();
 
@@ -81,6 +82,7 @@ const HubWrapper: React.FC = () => {
                     setMode(undefined);
                 }}
                 accountId={accountId}
+                appUrl={appUrl}
             />
         </div>
     );
