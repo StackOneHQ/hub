@@ -48,44 +48,37 @@ export const useIntegrationPicker = ({
         success: false,
     });
 
-    const processMessageCallback = (event: MessageEvent) => {
-        console.log('processMessageCallback', event);
-        // if (event.origin !== location.origin) {
-        //     console.log('origin does not match', event.origin, location.origin);
-        //     return;
-        // }
-
+    const processMessageCallback = useCallback((event: MessageEvent) => {
         if (event.data.type === EventType.AccountConnected) {
-            console.log('account connected');
             setConnectionState({ loading: false, success: true });
             parent.postMessage(event.data, '*');
-            connectWindow.current && connectWindow.current.close();
-            connectWindow.current = null;
+            if (connectWindow.current) {
+                connectWindow.current.close();
+                connectWindow.current = null;
+            }
             window.removeEventListener('message', processMessageCallback, false);
         } else if (event.data.type === EventType.CloseOAuth2) {
-            console.log('close oauth2');
             if (event.data.error) {
                 setConnectionState({
                     loading: false,
                     success: false,
                     error: {
                         message: event.data.error,
-                        provider_response: event.data.errorDescription,
+                        provider_response: event.data.errorDescription || 'No description',
                     },
                 });
-                connectWindow.current && connectWindow.current.close();
-                connectWindow.current = null;
-                window.removeEventListener('message', processMessageCallback, false);
             } else {
                 setConnectionState({ loading: false, success: false, error: undefined });
-                connectWindow.current && connectWindow.current.close();
-                connectWindow.current = null;
-                window.removeEventListener('message', processMessageCallback, false);
             }
-        }
-    };
 
-    // Fetch account data for editing scenario
+            if (connectWindow.current) {
+                connectWindow.current.close();
+                connectWindow.current = null;
+            }
+            window.removeEventListener('message', processMessageCallback, false);
+        }
+    }, []);
+
     const {
         data: accountData,
         isLoading: isLoadingAccountData,
@@ -99,7 +92,6 @@ export const useIntegrationPicker = ({
         enabled: !!accountId,
     });
 
-    // Fetch hub data (list of integrations)
     const {
         data: hubData,
         isLoading: isLoadingHubData,
@@ -107,17 +99,14 @@ export const useIntegrationPicker = ({
     } = useQuery({
         queryKey: ['hubData', accountData?.provider],
         queryFn: () => {
-            // For account editing: fetch hub data with specific provider
             if (accountData?.provider) {
                 return getHubData(token, baseUrl, accountData.provider);
             }
-            // For new setup: fetch all integrations
             return getHubData(token, baseUrl);
         },
-        enabled: !accountId || !!accountData, // Enable when no accountId OR when we have account data
+        enabled: !accountId || !!accountData,
     });
 
-    // Auto-select integration when editing an account
     useEffect(() => {
         if (accountData && hubData) {
             const matchingIntegration = hubData.integrations.find(
@@ -127,7 +116,6 @@ export const useIntegrationPicker = ({
         }
     }, [accountData, hubData]);
 
-    // Fetch connector configuration
     const {
         data: connectorData,
         isLoading: isLoadingConnectorData,
@@ -146,7 +134,6 @@ export const useIntegrationPicker = ({
         enabled: Boolean(selectedIntegration) || Boolean(accountData),
     });
 
-    // Extract fields and guide from connector config
     const { fields, guide } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
             const fields: ConnectorConfigField[] = [];
@@ -241,7 +228,6 @@ export const useIntegrationPicker = ({
         setConnectionState({ loading: true, success: false });
 
         try {
-            // Clean up dummy values for secret fields before submission
             const cleanedFormData = { ...formData };
             if (accountData) {
                 fields.forEach((field) => {
@@ -255,7 +241,6 @@ export const useIntegrationPicker = ({
             }
 
             if (authConfig?.type === 'oauth2') {
-                console.log('oauth2');
                 window.addEventListener('message', processMessageCallback, false);
                 const callbackEmbeddedAccountsUrl = encodeURIComponent(
                     `${dashboardUrl}/embedded/accounts/callback`,
@@ -289,9 +274,18 @@ export const useIntegrationPicker = ({
 
                 if (connectWindow.current) {
                     connectWindow.current.focus();
+                    const checkWindowState = () => {
+                        if (connectWindow.current?.closed) {
+                            setConnectionState({ loading: false, success: false });
+                            window.removeEventListener('message', processMessageCallback, false);
+                            connectWindow.current = null;
+                        } else if (connectWindow.current) {
+                            setTimeout(checkWindowState, 1000);
+                        }
+                    };
+                    setTimeout(checkWindowState, 1000);
                 }
 
-                console.log(windowUrl);
                 return;
             }
 
@@ -342,6 +336,7 @@ export const useIntegrationPicker = ({
         fields,
         accountId,
         authConfig,
+        processMessageCallback,
     ]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
