@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/StackOneHQ/hub/compare/hub-v0.1.0...hub-v0.2.0) (2025-08-08)
+
+
+### Features
+
+* add external trigger token rendering ([f1c0ea2](https://github.com/StackOneHQ/hub/commit/f1c0ea22496b4b0bd92a33d69e4af5492b96089c))
+* expression and conditional rendering ([1762d3a](https://github.com/StackOneHQ/hub/commit/1762d3aad03fccc55a606bb5e154b85e8289f000))
+* feature flag context and hook ([a9d00a9](https://github.com/StackOneHQ/hub/commit/a9d00a9e81f3276c82f5e98c26e0b5648a4ad0cd))
+* render dropdowns and textareas with malachite ([9e59a0d](https://github.com/StackOneHQ/hub/commit/9e59a0d864af6c06cc7b653ff393291877895812))
+
+
+### Bug Fixes
+
+* add border to dropdown ([2fb57e1](https://github.com/StackOneHQ/hub/commit/2fb57e139be16e646d3404bd5e13fd010cae8e67))
+* add theme support again ([76a092b](https://github.com/StackOneHQ/hub/commit/76a092b3625ac850af9b3256569337cacd92da52))
+* build ([1eb7894](https://github.com/StackOneHQ/hub/commit/1eb78945d7274349cb4572bac79ecd3e0929a57a))
+* handle window close event ([617d999](https://github.com/StackOneHQ/hub/commit/617d9992c03496dab0b5e7bdba149b0f78314aee))
+* input loop and card style ([a91e72a](https://github.com/StackOneHQ/hub/commit/a91e72a253a0da529712867e27192a397ed89ddf))
+* key uniqueness ([c3d01c5](https://github.com/StackOneHQ/hub/commit/c3d01c513fd6d4b0e8526c6741b2ae2272ef2f0a))
+
 ## [0.1.0](https://github.com/StackOneHQ/hub/compare/hub-v0.0.1...hub-v0.1.0) (2025-07-11)
 
 
