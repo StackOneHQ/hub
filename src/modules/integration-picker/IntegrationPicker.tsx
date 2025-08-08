@@ -1,6 +1,4 @@
 import { Card } from '@stackone/malachite';
-import { useContext } from 'react';
-import { FeatureFlagContext, FeatureFlagProvider } from '../../shared/contexts/featureFlagContext';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import CardFooter from './components/cardFooter';

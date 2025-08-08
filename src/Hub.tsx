@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
-import { FeatureFlagContext, FeatureFlagProvider } from './shared/contexts/featureFlagContext';
+import { FeatureFlagProvider } from './shared/contexts/featureFlagContext';
 import { getSettings } from './shared/queries';
 import { HubModes } from './types/types';
 
