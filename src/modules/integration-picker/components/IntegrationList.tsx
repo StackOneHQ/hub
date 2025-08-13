@@ -1,5 +1,4 @@
 import {
-    Button,
     ButtonList,
     Divider,
     Flex,
@@ -62,6 +61,17 @@ export const IntegrationList: React.FC<{
 
     const [search, setSearch] = useState<string>('');
 
+    const handleCategoryClick = useCallback(
+        (category: string) => {
+            if (selectedCategory === category) {
+                setSelectedCategory(null);
+            } else {
+                setSelectedCategory(category);
+            }
+        },
+        [selectedCategory],
+    );
+
     const availableIntegrations = useMemo(() => {
         return integrations.filter(
             (integration) =>
@@ -97,13 +107,7 @@ export const IntegrationList: React.FC<{
                                         ?.label || category
                                 }
                                 selected={selectedCategory === category}
-                                onClick={() => {
-                                    if (selectedCategory === category) {
-                                        setSelectedCategory(null);
-                                    } else {
-                                        setSelectedCategory(category);
-                                    }
-                                }}
+                                onClick={() => handleCategoryClick(category)}
                             />
                         ))}
                 </Spacer>
