@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/StackOneHQ/hub/compare/hub-v0.2.0...hub-v0.2.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* oauth flow button state ([91b21e0](https://github.com/StackOneHQ/hub/commit/91b21e0f791339fe5285313e50324d61f2fbccc5))
+
 ## [0.2.0](https://github.com/StackOneHQ/hub/compare/hub-v0.1.0...hub-v0.2.0) (2025-08-08)
 
 
