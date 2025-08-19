@@ -1,19 +1,9 @@
-import {
-    Alert,
-    Dropdown,
-    Form,
-    Input,
-    Padded,
-    Spacer,
-    TextArea,
-    Typography,
-} from '@stackone/malachite';
+import { Alert, CodeBlock, Dropdown, Input, Padded, Spacer, TextArea } from '@stackone/malachite';
 import { useEffect, useState } from 'react';
 import { ConnectorConfigField } from '../types';
 
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
-    guide?: { supportLink?: string; description: string };
     error?: {
         message: string;
         provider_response: string;
@@ -21,12 +11,7 @@ interface IntegrationFieldsProps {
     onChange: (data: Record<string, string>) => void;
 }
 
-export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
-    fields,
-    guide,
-    onChange,
-    error,
-}) => {
+export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({ fields, onChange, error }) => {
     // Initialize formData with default values from fields
     const [formData, setFormData] = useState<Record<string, string>>(() => {
         const initialData: Record<string, string> = {};
@@ -73,9 +58,11 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     return (
         <Padded vertical="large" horizontal="medium">
             <Spacer direction="vertical" size={8} fullWidth>
-                {guide && <Alert type="info" message={guide?.description} hasMargin={false} />}
-                {error && <Alert type="error" message={error.message} hasMargin={false} />}
-                {error && <Typography.CodeText>{error.provider_response}</Typography.CodeText>}
+                {error && (
+                    <Alert type="error" message={error.message} hasMargin={false}>
+                        <CodeBlock json={JSON.parse(error.provider_response)} />
+                    </Alert>
+                )}
                 <Spacer direction="vertical" size={20} fullWidth>
                     {fields.map((field) => {
                         const key =

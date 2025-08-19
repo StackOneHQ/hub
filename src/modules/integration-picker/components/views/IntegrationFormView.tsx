@@ -8,15 +8,13 @@ interface IntegrationFormViewProps {
         message: string;
         provider_response: string;
     };
-    guide?: { supportLink?: string; description: string };
     onChange: (data: Record<string, string>) => void;
 }
 
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     fields,
     error,
-    guide,
     onChange,
 }) => {
-    return <IntegrationForm fields={fields} error={error} onChange={onChange} guide={guide} />;
+    return <IntegrationForm fields={fields} error={error} onChange={onChange} />;
 };

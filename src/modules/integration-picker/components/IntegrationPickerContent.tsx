@@ -24,7 +24,6 @@ interface IntegrationPickerContentProps {
     connectorData: ConnectorConfig | null;
     hubData: HubData | null;
     fields: ConnectorConfigField[];
-    guide?: { supportLink?: string; description: string };
 
     // Errors
     errorHubData: Error | null;
@@ -43,7 +42,6 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     connectorData,
     hubData,
     fields,
-    guide,
     errorHubData,
     errorConnectorData,
     onSelect,
@@ -97,7 +95,6 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 fields={fields}
                 error={connectionState.error}
                 onChange={onChange}
-                guide={guide}
             />
         );
     }

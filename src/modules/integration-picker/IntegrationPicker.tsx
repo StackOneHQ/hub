@@ -93,7 +93,6 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     connectorData={connectorData?.config ?? null}
                     hubData={hubData ?? null}
                     fields={fields}
-                    guide={guide}
                     errorHubData={errorHubData}
                     errorConnectorData={errorConnectorData}
                     onSelect={setSelectedIntegration}
