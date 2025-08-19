@@ -57,20 +57,18 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         dashboardUrl,
     });
 
+    const onBack = () => {
+        setSelectedIntegration(null);
+        resetConnectionState();
+    };
+
     return (
         <Card
             footer={
                 <CardFooter
                     selectedIntegration={selectedIntegration}
                     showActions={!connectionState.loading && !connectionState.success}
-                    onBack={
-                        accountData
-                            ? undefined
-                            : () => {
-                                  setSelectedIntegration(null);
-                                  resetConnectionState();
-                              }
-                    }
+                    onBack={accountData ? undefined : onBack}
                     onNext={handleConnect}
                 />
             }
@@ -78,14 +76,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 selectedIntegration && (
                     <CardTitle
                         selectedIntegration={selectedIntegration}
-                        onBack={
-                            accountData
-                                ? undefined
-                                : () => {
-                                      setSelectedIntegration(null);
-                                      resetConnectionState();
-                                  }
-                        }
+                        onBack={accountData ? undefined : onBack}
                         guide={guide}
                     />
                 )
