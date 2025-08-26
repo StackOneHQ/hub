@@ -14,6 +14,7 @@ import {
 } from '@stackone/malachite';
 import { useCallback, useMemo, useState } from 'react';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
+import { isFalconVersion } from '../../../shared/utils/utils';
 import { Integration } from '../types';
 
 interface IntegrationRowProps {
@@ -43,6 +44,9 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                 />
                 <Typography.Text>{integration.name ?? 'N/A'}</Typography.Text>
             </Flex>
+            {isFalconVersion(integration.version) && (
+                <Typography.SecondaryText>{integration.version}</Typography.SecondaryText>
+            )}
             <Typography.SecondaryText>
                 {
                     CATEGORIES_WITH_LABELS.find((category) => category.value === integration.type)
@@ -123,7 +127,7 @@ export const IntegrationList: React.FC<{
                         </Padded>
                         <ButtonList
                             buttons={availableIntegrations.map((integration) => ({
-                                key: integration.provider,
+                                key: `${integration.provider}@${integration.version}`,
                                 children: <IntegrationRow integration={integration} />,
                                 onClick: () => onSelect(integration),
                             }))}

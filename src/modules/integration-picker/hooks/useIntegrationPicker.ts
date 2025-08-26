@@ -1,11 +1,13 @@
 import { evaluate } from '@stackone/expressions';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { isFalconVersion } from '../../../shared/utils/utils';
 import {
     connectAccount,
     getAccountData,
-    getConnectorConfig,
+    getFalconConnectorConfig,
     getHubData,
+    getLegacyConnectorConfig,
     updateAccount,
 } from '../queries';
 import { ConnectorConfigField, Integration } from '../types';
@@ -137,10 +139,26 @@ export const useIntegrationPicker = ({
         queryKey: ['connectorData', selectedIntegration?.provider, accountData?.provider],
         queryFn: async () => {
             if (selectedIntegration) {
-                return getConnectorConfig(baseUrl, token, selectedIntegration.provider);
+                if (isFalconVersion(selectedIntegration.version)) {
+                    return getFalconConnectorConfig(
+                        baseUrl,
+                        token,
+                        `${selectedIntegration.provider}@${selectedIntegration.version}`,
+                    );
+                } else {
+                    return getLegacyConnectorConfig(baseUrl, token, selectedIntegration.provider);
+                }
             }
             if (accountData) {
-                return getConnectorConfig(baseUrl, token, accountData.provider);
+                if (isFalconVersion(accountData.version)) {
+                    return getFalconConnectorConfig(
+                        baseUrl,
+                        token,
+                        `${accountData.provider}@${accountData.version}`,
+                    );
+                } else {
+                    return getLegacyConnectorConfig(baseUrl, token, accountData.provider);
+                }
             }
             return null;
         },
@@ -151,6 +169,79 @@ export const useIntegrationPicker = ({
         if (!connectorData || !selectedIntegration) {
             const fields: ConnectorConfigField[] = [];
             return { fields };
+        }
+
+        if ('configFields' in connectorData.config) {
+            const fieldsWithPrefilledValues: ConnectorConfigField[] =
+                connectorData.config.configFields
+                    .map((field) => {
+                        const setupValue = accountData?.setupInformation?.[field.key];
+
+                        if (accountData && (field.secret || field.type === 'password')) {
+                            return {
+                                ...field,
+                                key: field.key,
+                                value: DUMMY_VALUE,
+                            };
+                        }
+
+                        if (field.key === 'external-trigger-token') {
+                            return {
+                                ...field,
+                                key: field.key,
+                                value: hubData?.external_trigger_token,
+                            };
+                        }
+
+                        const evaluationContext = {
+                            ...formData,
+                            ...accountData?.setupInformation,
+                            external_trigger_token: hubData?.external_trigger_token,
+                            hub_settings: connectorData.hub_settings,
+                        };
+
+                        if (field.condition) {
+                            const evaluated = evaluate(field.condition, evaluationContext);
+
+                            const shouldShow = evaluated != null && evaluated !== 'false';
+
+                            if (!shouldShow) {
+                                return;
+                            }
+                        }
+
+                        if (!field.value) {
+                            return {
+                                ...field,
+                                key: field.key,
+                            };
+                        }
+
+                        const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
+                        let evaluatedValue = evaluate(
+                            valueToEvaluate?.toString(),
+                            evaluationContext,
+                        );
+
+                        if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
+                            evaluatedValue = JSON.stringify(evaluatedValue);
+                        }
+
+                        return {
+                            ...field,
+                            key: field.key,
+                            value: evaluatedValue as string | number | undefined,
+                        };
+                    })
+                    .filter((value) => value != null);
+
+            return {
+                fields: fieldsWithPrefilledValues,
+                guide: {
+                    supportLink: connectorData.config.support.link,
+                    description: connectorData.config.support.description,
+                },
+            };
         }
 
         const authConfig =
@@ -228,9 +319,12 @@ export const useIntegrationPicker = ({
         if (!connectorData || !selectedIntegration) {
             return null;
         }
-        return connectorData.config.authentication?.[
-            selectedIntegration.authentication_config_key
-        ]?.[selectedIntegration.environment];
+        if ('authentication' in connectorData.config) {
+            return connectorData.config.authentication?.[
+                selectedIntegration.authentication_config_key
+            ]?.[selectedIntegration.environment];
+        }
+        return connectorData.config;
     }, [connectorData, selectedIntegration]);
 
     const handleConnect = useCallback(async () => {
@@ -318,7 +412,13 @@ export const useIntegrationPicker = ({
                     cleanedFormData,
                 );
             } else {
-                await connectAccount(baseUrl, token, selectedIntegration.provider, cleanedFormData);
+                await connectAccount(
+                    baseUrl,
+                    token,
+                    selectedIntegration.provider,
+                    selectedIntegration.version,
+                    cleanedFormData,
+                );
             }
 
             setConnectionState({ loading: false, success: true });

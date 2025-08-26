@@ -55,8 +55,19 @@ export interface ConnectorConfig {
     };
 }
 
+export interface FalconConnectorConfig {
+    key: string;
+    name: string;
+    type: 'oauth2' | 'custom';
+    configFields: Array<ConnectorConfigField>;
+    support: {
+        link: string;
+        description: string;
+    };
+}
+
 export interface HubConnectorConfig {
-    config: ConnectorConfig;
+    config: ConnectorConfig | FalconConnectorConfig;
     hub_settings: {
         configured_webhook_events: Record<string, Set<string>>;
         project_settings: Record<string, string | object>;
@@ -67,4 +78,5 @@ export interface AccountData {
     account_id: string;
     provider: string;
     setupInformation: Record<string, string>;
+    version: string;
 }

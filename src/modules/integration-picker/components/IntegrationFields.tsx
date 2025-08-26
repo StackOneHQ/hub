@@ -55,12 +55,25 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({ fields, onCh
         }));
     };
 
+    const errorJson = () => {
+        if (!error) {
+            return null;
+        }
+        try {
+            return <CodeBlock json={JSON.parse(error.provider_response)} />;
+        } catch (_e) {
+            if (error?.provider_response && error?.provider_response.length > 0) {
+                return <CodeBlock code={error?.provider_response} />;
+            }
+            return null;
+        }
+    };
     return (
         <Padded vertical="large" horizontal="medium">
             <Spacer direction="vertical" size={8} fullWidth>
                 {error && (
                     <Alert type="error" message={error.message} hasMargin={false}>
-                        <CodeBlock json={JSON.parse(error.provider_response)} />
+                        {errorJson()}
                     </Alert>
                 )}
                 <Spacer direction="vertical" size={20} fullWidth>

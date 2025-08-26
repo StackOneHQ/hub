@@ -18,9 +18,27 @@ export const getHubData = async (token: string, baseUrl: string, provider?: stri
     });
 };
 
-export const getConnectorConfig = async (baseUrl: string, token: string, connectorKey: string) => {
+export const getLegacyConnectorConfig = async (
+    baseUrl: string,
+    token: string,
+    connectorKey: string,
+) => {
     return await getRequest<HubConnectorConfig>({
-        url: `${baseUrl}/hub/connectors/${connectorKey}`,
+        url: `${baseUrl}/hub/connectors/legacy/${connectorKey}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
+    });
+};
+
+export const getFalconConnectorConfig = async (
+    baseUrl: string,
+    token: string,
+    connectorKey: string,
+) => {
+    return await getRequest<HubConnectorConfig>({
+        url: `${baseUrl}/hub/connectors/falcon/${encodeURIComponent(connectorKey)}`,
         headers: {
             'Content-Type': 'application/json',
             'x-hub-session-token': token,
@@ -32,6 +50,7 @@ export const connectAccount = async (
     baseUrl: string,
     token: string,
     provider: string,
+    version: string,
     credentials: Record<string, unknown>,
 ) => {
     return await postRequest<ConnectorConfig>({
@@ -41,7 +60,7 @@ export const connectAccount = async (
             'x-hub-session-token': token,
         },
         body: {
-            provider,
+            provider: `${provider}@${version}`,
             credentials,
         },
     });
