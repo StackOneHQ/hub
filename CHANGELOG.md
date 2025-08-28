@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/StackOneHQ/hub/compare/hub-v0.3.0...hub-v0.4.0) (2025-08-28)
+
+
+### Features
+
+* add falcon connector support ([0060543](https://github.com/StackOneHQ/hub/commit/0060543a9cd32477c4281d8420b811bd484f9b93))
+* **ENG-10766:** add falcon connector support ([3ed2a7d](https://github.com/StackOneHQ/hub/commit/3ed2a7d9787f5f625fdfc6f83a3988fb5b197e87))
+
+
+### Bug Fixes
+
+* **ENG-10904:** export proper component ([5b2803c](https://github.com/StackOneHQ/hub/commit/5b2803ca9f1e7f261bafa748ba10aba12065045c))
+* export proper component ([33d8288](https://github.com/StackOneHQ/hub/commit/33d82887d3b8201df7b1ff3a8f8123abd248d4a1))
+
 ## [0.3.0](https://github.com/StackOneHQ/hub/compare/hub-v0.2.1...hub-v0.3.0) (2025-08-19)
 
 
