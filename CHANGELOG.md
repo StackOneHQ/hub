@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1](https://github.com/StackOneHQ/hub/compare/hub-v0.4.0...hub-v0.4.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* linting ([c2e8983](https://github.com/StackOneHQ/hub/commit/c2e8983cee6663c31a3225ec32b5da8d025695b6))
+* wrap fields in form ([c3114a8](https://github.com/StackOneHQ/hub/commit/c3114a8661c9d43a71b3705e11dc60bd21b35217))
+* wrap fields in form ([ff5f8a9](https://github.com/StackOneHQ/hub/commit/ff5f8a92bbffb6c99f8c3f9b267099364caf961f))
+
 ## [0.4.0](https://github.com/StackOneHQ/hub/compare/hub-v0.3.0...hub-v0.4.0) (2025-08-28)
 
 
