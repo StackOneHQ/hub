@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/StackOneHQ/hub/compare/hub-v0.4.1...hub-v0.4.2) (2025-09-02)
+
+
+### Bug Fixes
+
+* add mouse pointer to buttons ([#16](https://github.com/StackOneHQ/hub/issues/16)) ([e0f16c5](https://github.com/StackOneHQ/hub/commit/e0f16c58034bfcb523f6425148321666d074123d))
+
 ## [0.4.1](https://github.com/StackOneHQ/hub/compare/hub-v0.4.0...hub-v0.4.1) (2025-09-01)
 
 
