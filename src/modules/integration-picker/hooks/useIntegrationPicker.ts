@@ -18,6 +18,8 @@ import {
 } from '../types';
 
 const DUMMY_VALUE = 'totally-fake-value';
+const OAUTH_STORAGE_KEY = 'oauth_result';
+const OAUTH_CHANNEL_NAME = 'oauth_channel';
 
 interface UseIntegrationPickerProps {
     token: string;
@@ -45,6 +47,8 @@ export const useIntegrationPicker = ({
     const connectWindow = useRef<Window | null>(null);
     const checkStateTimeoutRef = useRef<number | null>(null);
     const successTimeoutRef = useRef<number | null>(null);
+    const oauthChannelRef = useRef<BroadcastChannel | null>(null);
+    const storageListenerRef = useRef<((event: StorageEvent) => void) | null>(null);
     const [connectionState, setConnectionState] = useState<{
         loading: boolean;
         success: boolean;
@@ -57,26 +61,17 @@ export const useIntegrationPicker = ({
         success: false,
     });
 
-    useEffect(() => {
-        return () => {
-            if (checkStateTimeoutRef.current !== null) {
-                clearTimeout(checkStateTimeoutRef.current);
-            }
-            if (successTimeoutRef.current !== null) {
-                clearTimeout(successTimeoutRef.current);
-            }
-        };
-    }, []);
-
     const processMessageCallback = useCallback((event: MessageEvent) => {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
+        if (!event.data?.type) {
+            return;
+        }
         if (event.data.type === EventType.AccountConnected) {
             setConnectionState({ loading: false, success: true });
             parent.postMessage(event.data, '*');
-            if (connectWindow.current) {
-                connectWindow.current.close();
-                connectWindow.current = null;
-            }
-            window.removeEventListener('message', processMessageCallback, false);
         } else if (event.data.type === EventType.CloseOAuth2) {
             if (event.data.error) {
                 setConnectionState({
@@ -90,14 +85,87 @@ export const useIntegrationPicker = ({
             } else {
                 setConnectionState({ loading: false, success: false, error: undefined });
             }
+        }
+
+        if (connectWindow.current) {
+            connectWindow.current.close();
+            connectWindow.current = null;
+        }
+
+        window.removeEventListener('message', processMessageCallback, false);
+    }, []);
+
+    const handleOAuthResultFromAnyChannel = useCallback(
+        (data: { type: string; error?: string; errorDescription?: string; account?: unknown }) => {
+            if (data.type === EventType.AccountConnected) {
+                setConnectionState({ loading: false, success: true });
+                parent.postMessage(data, '*');
+            } else if (data.type === EventType.CloseOAuth2) {
+                if (data.error) {
+                    setConnectionState({
+                        loading: false,
+                        success: false,
+                        error: {
+                            message: data.error,
+                            provider_response: data.errorDescription || 'No description',
+                        },
+                    });
+                } else {
+                    setConnectionState({ loading: false, success: false, error: undefined });
+                }
+            }
 
             if (connectWindow.current) {
                 connectWindow.current.close();
                 connectWindow.current = null;
             }
-            window.removeEventListener('message', processMessageCallback, false);
+        },
+        [],
+    );
+
+    useEffect(() => {
+        if (typeof BroadcastChannel !== 'undefined') {
+            oauthChannelRef.current = new BroadcastChannel(OAUTH_CHANNEL_NAME);
+            oauthChannelRef.current.onmessage = (event) => {
+                if (event.data?.type) {
+                    handleOAuthResultFromAnyChannel(event.data);
+                }
+            };
         }
-    }, []);
+
+        const storageListener = (event: StorageEvent) => {
+            if (event.key !== OAUTH_STORAGE_KEY || !event.newValue) {
+                return;
+            }
+            try {
+                const data = JSON.parse(event.newValue);
+                handleOAuthResultFromAnyChannel(data);
+                localStorage.removeItem(OAUTH_STORAGE_KEY);
+            } catch (error) {
+                console.error('Failed to parse OAuth result from localStorage:', error);
+            }
+        };
+
+        storageListenerRef.current = storageListener;
+        window.addEventListener('storage', storageListener, false);
+
+        return () => {
+            if (checkStateTimeoutRef.current !== null) {
+                clearTimeout(checkStateTimeoutRef.current);
+            }
+            if (successTimeoutRef.current !== null) {
+                clearTimeout(successTimeoutRef.current);
+            }
+            if (oauthChannelRef.current) {
+                oauthChannelRef.current.close();
+                oauthChannelRef.current = null;
+            }
+            if (storageListenerRef.current) {
+                window.removeEventListener('storage', storageListenerRef.current, false);
+                storageListenerRef.current = null;
+            }
+        };
+    }, [handleOAuthResultFromAnyChannel]);
 
     const {
         data: accountData,
@@ -377,15 +445,17 @@ export const useIntegrationPicker = ({
                     typeof window.outerHeight != 'undefined'
                         ? window.outerHeight
                         : document.body.clientHeight - 22;
-                const left = screenX + (outerWidth - width) / 2;
-                const top = screenY + (outerHeight - height) / 2.5;
-                const features =
-                    'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
+                const left = parseInt((screenX + (outerWidth - width) / 2).toString(), 10);
+                const top = parseInt((screenY + (outerHeight - height) / 2.5).toString(), 10);
+                const features = `width=${width},height=${height},left=${left},top=${top},noopener=0`;
 
                 connectWindow.current = window.open(windowUrl, 'Connect Account', features);
 
                 if (connectWindow.current) {
-                    connectWindow.current.focus();
+                    if (typeof window.focus === 'function') {
+                        connectWindow.current.focus();
+                    }
+
                     const checkWindowState = () => {
                         if (connectWindow.current?.closed) {
                             setConnectionState({ loading: false, success: false });
