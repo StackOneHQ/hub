@@ -452,7 +452,7 @@ export const useIntegrationPicker = ({
                 connectWindow.current = window.open(windowUrl, 'Connect Account', features);
 
                 if (connectWindow.current) {
-                    if (typeof window.focus === 'function') {
+                    if (typeof connectWindow.current?.focus === 'function') {
                         connectWindow.current.focus();
                     }
 
