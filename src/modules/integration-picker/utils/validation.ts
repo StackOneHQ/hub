@@ -47,7 +47,7 @@ export function validateField(
     isValid: boolean;
     errorMessage?: string;
 } {
-    if (!validation || !value) {
+    if (!validation) {
         return { isValid: true };
     }
 

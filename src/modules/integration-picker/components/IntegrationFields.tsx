@@ -9,7 +9,7 @@ import {
     TextArea,
     Typography,
 } from '@stackone/malachite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConnectorConfigField } from '../types';
 import { validateField } from '../utils/validation';
 

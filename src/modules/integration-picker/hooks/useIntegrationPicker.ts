@@ -22,6 +22,25 @@ const DUMMY_VALUE = 'totally-fake-value';
 const OAUTH_STORAGE_KEY = 'oauth_result';
 const OAUTH_CHANNEL_NAME = 'oauth_channel';
 
+// Shared retry configuration for queries
+const RETRY_CONFIG = {
+    retry: (failureCount: number, error: unknown) => {
+        // Don't retry on authentication errors (401/403)
+        if (error && typeof error === 'object' && 'message' in error) {
+            try {
+                const parsedError = JSON.parse(error.message as string);
+                if (parsedError.status === 401 || parsedError.status === 403) {
+                    return false;
+                }
+            } catch {
+                // If parsing fails, allow retry
+            }
+        }
+        return failureCount < 2;
+    },
+    retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+};
+
 interface UseIntegrationPickerProps {
     token: string;
     baseUrl: string;
@@ -179,21 +198,7 @@ export const useIntegrationPicker = ({
             return getAccountData(baseUrl, token, accountId);
         },
         enabled: !!accountId,
-        retry: (failureCount, error) => {
-            // Don't retry on authentication errors (401/403)
-            if (error && typeof error === 'object' && 'message' in error) {
-                try {
-                    const parsedError = JSON.parse(error.message as string);
-                    if (parsedError.status === 401 || parsedError.status === 403) {
-                        return false;
-                    }
-                } catch {
-                    // If parsing fails, allow retry
-                }
-            }
-            return failureCount < 2;
-        },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        ...RETRY_CONFIG,
     });
 
     const {
@@ -209,21 +214,7 @@ export const useIntegrationPicker = ({
             return getHubData(token, baseUrl);
         },
         enabled: !accountId || !!accountData,
-        retry: (failureCount, error) => {
-            // Don't retry on authentication errors (401/403)
-            if (error && typeof error === 'object' && 'message' in error) {
-                try {
-                    const parsedError = JSON.parse(error.message as string);
-                    if (parsedError.status === 401 || parsedError.status === 403) {
-                        return false;
-                    }
-                } catch {
-                    // If parsing fails, allow retry
-                }
-            }
-            return failureCount < 2;
-        },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        ...RETRY_CONFIG,
     });
 
     useEffect(() => {
@@ -267,21 +258,7 @@ export const useIntegrationPicker = ({
             return null;
         },
         enabled: Boolean(selectedIntegration) || Boolean(accountData),
-        retry: (failureCount, error) => {
-            // Don't retry on authentication errors (401/403)
-            if (error && typeof error === 'object' && 'message' in error) {
-                try {
-                    const parsedError = JSON.parse(error.message as string);
-                    if (parsedError.status === 401 || parsedError.status === 403) {
-                        return false;
-                    }
-                } catch {
-                    // If parsing fails, allow retry
-                }
-            }
-            return failureCount < 2;
-        },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        ...RETRY_CONFIG,
     });
 
     const { fields, guide } = useMemo(() => {
@@ -451,18 +428,20 @@ export const useIntegrationPicker = ({
         const validationErrors: Record<string, string> = {};
 
         fields.forEach((field) => {
-            if (field.validation) {
-                const value = formData[field.key] || '';
+            const value = formData[field.key] || '';
+            const isEmpty = !value || value.trim() === '';
+
+            if (field.required && isEmpty) {
+                validationErrors[field.key] = `${field.label} is required`;
+                return;
+            }
+
+            if (field.validation && !isEmpty) {
                 const validationResult = validateField(value, field.validation);
 
                 if (!validationResult.isValid && validationResult.errorMessage) {
                     validationErrors[field.key] = validationResult.errorMessage;
                 }
-            }
-
-            // Check required fields
-            if (field.required && (!formData[field.key] || formData[field.key].trim() === '')) {
-                validationErrors[field.key] = `${field.label} is required`;
             }
         });
 
