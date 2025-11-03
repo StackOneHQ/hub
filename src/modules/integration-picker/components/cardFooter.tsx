@@ -16,6 +16,7 @@ interface CardFooterProps {
     showActions?: boolean;
     onBack?: () => void;
     onNext: () => void;
+    isFormValid?: boolean;
 }
 
 const CardFooter: React.FC<CardFooterProps> = ({
@@ -24,6 +25,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
     showActions,
     onBack,
     onNext,
+    isFormValid = true,
 }) => {
     const buttons = useMemo(() => {
         if (!selectedIntegration || !showActions) {
@@ -52,12 +54,12 @@ const CardFooter: React.FC<CardFooterProps> = ({
             label: 'Confirm',
             type: 'filled' as const,
             onClick: onNext,
-            disabled: false,
+            disabled: !isFormValid,
             loading: false,
         });
 
         return buttons;
-    }, [selectedIntegration, onBack, onNext, showActions]);
+    }, [selectedIntegration, onBack, onNext, showActions, isFormValid]);
 
     if (buttons.length === 0) {
         return <FooterLinks fullWidth={fullWidth} />;

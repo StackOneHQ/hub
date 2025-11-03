@@ -39,6 +39,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         connectionState,
         isLoading,
         hasError,
+        isFormValid,
 
         // Errors
         errorHubData,
@@ -70,6 +71,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     showActions={!connectionState.loading && !connectionState.success}
                     onBack={accountData ? undefined : onBack}
                     onNext={handleConnect}
+                    isFormValid={isFormValid}
                 />
             }
             title={

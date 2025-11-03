@@ -16,6 +16,7 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
+import { validateField } from '../utils/validation';
 
 const DUMMY_VALUE = 'totally-fake-value';
 const OAUTH_STORAGE_KEY = 'oauth_result';
@@ -178,6 +179,21 @@ export const useIntegrationPicker = ({
             return getAccountData(baseUrl, token, accountId);
         },
         enabled: !!accountId,
+        retry: (failureCount, error) => {
+            // Don't retry on authentication errors (401/403)
+            if (error && typeof error === 'object' && 'message' in error) {
+                try {
+                    const parsedError = JSON.parse(error.message as string);
+                    if (parsedError.status === 401 || parsedError.status === 403) {
+                        return false;
+                    }
+                } catch {
+                    // If parsing fails, allow retry
+                }
+            }
+            return failureCount < 2;
+        },
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
     const {
@@ -193,6 +209,21 @@ export const useIntegrationPicker = ({
             return getHubData(token, baseUrl);
         },
         enabled: !accountId || !!accountData,
+        retry: (failureCount, error) => {
+            // Don't retry on authentication errors (401/403)
+            if (error && typeof error === 'object' && 'message' in error) {
+                try {
+                    const parsedError = JSON.parse(error.message as string);
+                    if (parsedError.status === 401 || parsedError.status === 403) {
+                        return false;
+                    }
+                } catch {
+                    // If parsing fails, allow retry
+                }
+            }
+            return failureCount < 2;
+        },
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
     useEffect(() => {
@@ -236,6 +267,21 @@ export const useIntegrationPicker = ({
             return null;
         },
         enabled: Boolean(selectedIntegration) || Boolean(accountData),
+        retry: (failureCount, error) => {
+            // Don't retry on authentication errors (401/403)
+            if (error && typeof error === 'object' && 'message' in error) {
+                try {
+                    const parsedError = JSON.parse(error.message as string);
+                    if (parsedError.status === 401 || parsedError.status === 403) {
+                        return false;
+                    }
+                } catch {
+                    // If parsing fails, allow retry
+                }
+            }
+            return failureCount < 2;
+        },
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
     const { fields, guide } = useMemo(() => {
@@ -400,8 +446,53 @@ export const useIntegrationPicker = ({
         return connectorData.config;
     }, [connectorData, selectedIntegration]);
 
+    // Validate all form fields
+    const validateForm = useCallback(() => {
+        const validationErrors: Record<string, string> = {};
+
+        fields.forEach((field) => {
+            if (field.validation) {
+                const value = formData[field.key] || '';
+                const validationResult = validateField(value, field.validation);
+
+                if (!validationResult.isValid && validationResult.errorMessage) {
+                    validationErrors[field.key] = validationResult.errorMessage;
+                }
+            }
+
+            // Check required fields
+            if (field.required && (!formData[field.key] || formData[field.key].trim() === '')) {
+                validationErrors[field.key] = `${field.label} is required`;
+            }
+        });
+
+        return validationErrors;
+    }, [fields, formData]);
+
+    // Check if form is valid
+    const isFormValid = useMemo(() => {
+        const errors = validateForm();
+        return Object.keys(errors).length === 0;
+    }, [validateForm]);
+
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) {
+            return;
+        }
+
+        // Validate form before proceeding
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            // Set connection state to show validation errors
+            const firstError = Object.values(validationErrors)[0];
+            setConnectionState({
+                loading: false,
+                success: false,
+                error: {
+                    message: 'Please fix the validation errors before continuing',
+                    provider_response: firstError,
+                },
+            });
             return;
         }
 
@@ -419,6 +510,13 @@ export const useIntegrationPicker = ({
                     }
                 });
             }
+
+            // Remove fields with empty string values
+            Object.keys(cleanedFormData).forEach((key) => {
+                if (cleanedFormData[key] === '') {
+                    delete cleanedFormData[key];
+                }
+            });
 
             if (authConfig?.type === 'oauth2') {
                 window.addEventListener('message', processMessageCallback, false);
@@ -505,22 +603,39 @@ export const useIntegrationPicker = ({
                 successTimeoutRef.current = null;
             }, 2000);
         } catch (error) {
-            const parsedError = JSON.parse((error as Error).message) as {
-                status: number;
-                message: string;
-            };
+            let errorMessage = 'An unexpected error occurred';
+            let providerResponse = 'Please try again later';
 
-            const doubleParsedError = JSON.parse(parsedError.message) as {
-                message: string;
-                provider_response: string;
-            };
+            try {
+                // Try to parse the error message
+                const parsedError = JSON.parse((error as Error).message) as {
+                    status: number;
+                    message: string;
+                };
+
+                // Try to parse the nested message
+                try {
+                    const doubleParsedError = JSON.parse(parsedError.message) as {
+                        message: string;
+                        provider_response: string;
+                    };
+                    errorMessage = doubleParsedError.message || errorMessage;
+                    providerResponse = doubleParsedError.provider_response || providerResponse;
+                } catch {
+                    // If double parsing fails, use the first level message
+                    errorMessage = parsedError.message || errorMessage;
+                }
+            } catch {
+                // If all parsing fails, use the original error message
+                errorMessage = (error as Error).message || errorMessage;
+            }
 
             setConnectionState({
                 loading: false,
                 success: false,
                 error: {
-                    message: doubleParsedError.message,
-                    provider_response: doubleParsedError.provider_response,
+                    message: errorMessage,
+                    provider_response: providerResponse,
                 },
             });
         }
@@ -536,13 +651,29 @@ export const useIntegrationPicker = ({
         accountId,
         authConfig,
         processMessageCallback,
+        validateForm,
     ]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
 
+    // Reset connection state when there are query errors to prevent stuck loading states
+    useEffect(() => {
+        if (hasError && connectionState.loading) {
+            setConnectionState((prev) => ({
+                ...prev,
+                loading: false,
+            }));
+        }
+    }, [hasError, connectionState.loading]);
+
     const resetConnectionState = useCallback(() => {
         setConnectionState({ loading: false, success: false });
+    }, []);
+
+    const resetAllErrors = useCallback(() => {
+        setConnectionState({ loading: false, success: false });
+        // Note: React Query errors will be reset automatically when queries are refetched
     }, []);
 
     return {
@@ -559,6 +690,7 @@ export const useIntegrationPicker = ({
         connectionState,
         isLoading,
         hasError,
+        isFormValid,
 
         // Errors
         errorHubData,
@@ -570,5 +702,7 @@ export const useIntegrationPicker = ({
         setFormData,
         handleConnect,
         resetConnectionState,
+        resetAllErrors,
+        validateForm,
     };
 };
