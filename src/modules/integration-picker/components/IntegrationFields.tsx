@@ -56,6 +56,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
     useDeepCompareEffect(() => {
         reset(defaultValues);
+        onChange(defaultValues);
     }, [defaultValues]);
 
     const formData = watch();
@@ -116,6 +117,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                                     setValue(key, value, { shouldValidate: true })
                                                 }
                                                 defaultValue={field.value?.toString()}
+                                                showPasswordToggle={false}
                                             />
                                             {errors[key] && (
                                                 <Typography.Text

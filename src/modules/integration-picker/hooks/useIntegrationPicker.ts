@@ -309,14 +309,14 @@ export const useIntegrationPicker = ({
                             }
                         }
 
-                        if (!field.value) {
+                        const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
+
+                        if (!valueToEvaluate) {
                             return {
                                 ...field,
                                 key: field.key,
                             };
                         }
-
-                        const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
                         let evaluatedValue = evaluate(
                             valueToEvaluate?.toString(),
                             evaluationContext,
@@ -386,14 +386,14 @@ export const useIntegrationPicker = ({
                     }
                 }
 
-                if (!field.value) {
+                const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
+
+                if (!valueToEvaluate) {
                     return {
                         ...field,
                         key: field.key,
                     };
                 }
-
-                const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
                 let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
 
                 if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
