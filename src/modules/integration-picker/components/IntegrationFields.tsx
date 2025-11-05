@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Alert,
     CodeBlock,
@@ -7,9 +8,13 @@ import {
     Padded,
     Spacer,
     TextArea,
+    Typography,
 } from '@stackone/malachite';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 import { ConnectorConfigField } from '../types';
+import { createFormSchema } from '../utils/zodSchema';
 
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
@@ -18,51 +23,50 @@ interface IntegrationFieldsProps {
         provider_response: string;
     };
     onChange: (data: Record<string, string>) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
-export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({ fields, onChange, error }) => {
-    // Initialize formData with default values from fields
-    const [formData, setFormData] = useState<Record<string, string>>(() => {
+export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
+    fields,
+    onChange,
+    error,
+    onValidationChange,
+}) => {
+    const schema = useMemo(() => createFormSchema(fields), [fields]);
+
+    const defaultValues = useMemo(() => {
         const initialData: Record<string, string> = {};
         fields.forEach((field) => {
             if (field.value !== undefined) {
                 initialData[field.key] = field.value.toString();
+            } else {
+                initialData[field.key] = '';
             }
         });
         return initialData;
+    }, [fields]);
+
+    const { formState, watch, reset, setValue } = useForm({
+        resolver: zodResolver(schema),
+        mode: 'onTouched',
+        defaultValues,
     });
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-        const updatedData: Record<string, string> = {};
-        fields.forEach((field) => {
-            if (field.value !== undefined) {
-                updatedData[field.key] = field.value.toString();
-            }
-        });
+    const { errors, isValid } = formState;
 
-        setFormData((prev) => {
-            const hasChanges =
-                Object.keys(updatedData).some((key) => updatedData[key] !== prev[key]) ||
-                Object.keys(prev).some((key) => !updatedData.hasOwnProperty(key));
+    useDeepCompareEffect(() => {
+        reset(defaultValues);
+    }, [defaultValues]);
 
-            if (hasChanges) {
-                return { ...prev, ...updatedData };
-            }
-            return prev;
-        });
-    }, [fields.length]);
+    const formData = watch();
+
+    useDeepCompareEffect(() => {
+        onChange(formData as Record<string, string>);
+    }, [formData]);
 
     useEffect(() => {
-        onChange(formData);
-    }, [formData, onChange]);
-
-    const handleFieldChange = (key: string, value: string) => {
-        setFormData((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
+        onValidationChange?.(isValid);
+    }, [isValid, onValidationChange]);
 
     const errorJson = () => {
         if (!error) {
@@ -97,39 +101,61 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({ fields, onCh
                                     {(field.type === 'text' ||
                                         field.type === 'number' ||
                                         field.type === 'password') && (
-                                        <Input
-                                            name={key}
-                                            required={field.required}
-                                            placeholder={field.placeholder}
-                                            defaultValue={field.value?.toString()}
-                                            onChange={(value: string) =>
-                                                handleFieldChange(key, value)
-                                            }
-                                            disabled={field.readOnly}
-                                            label={field.label}
-                                            tooltip={field.guide?.tooltip}
-                                            description={field.guide?.description}
-                                            type={field.type}
-                                        />
+                                        <>
+                                            <Input
+                                                name={key}
+                                                required={field.required}
+                                                placeholder={field.placeholder}
+                                                disabled={field.readOnly}
+                                                label={field.label}
+                                                tooltip={field.guide?.tooltip}
+                                                description={field.guide?.description}
+                                                type={field.type}
+                                                error={!!errors[key]}
+                                                onChange={(value: string) =>
+                                                    setValue(key, value, { shouldValidate: true })
+                                                }
+                                                defaultValue={field.value?.toString()}
+                                            />
+                                            {errors[key] && (
+                                                <Typography.Text
+                                                    color="error"
+                                                    style={{ marginTop: '4px', fontSize: '12px' }}
+                                                >
+                                                    {errors[key]?.message as string}
+                                                </Typography.Text>
+                                            )}
+                                        </>
                                     )}
 
                                     {field.type === 'text_area' && (
-                                        <TextArea
-                                            name={key}
-                                            required={field.required}
-                                            defaultValue={formData[key] || ''}
-                                            placeholder={field.placeholder}
-                                            onChange={(value: string) =>
-                                                handleFieldChange(key, value)
-                                            }
-                                            disabled={field.readOnly}
-                                            label={field.label}
-                                            tooltip={field.guide?.tooltip}
-                                        />
+                                        <>
+                                            <TextArea
+                                                name={key}
+                                                required={field.required}
+                                                placeholder={field.placeholder}
+                                                disabled={field.readOnly}
+                                                label={field.label}
+                                                tooltip={field.guide?.tooltip}
+                                                error={!!errors[key]}
+                                                onChange={(value: string) =>
+                                                    setValue(key, value, { shouldValidate: true })
+                                                }
+                                                defaultValue={field.value?.toString() || ''}
+                                            />
+                                            {errors[key] && (
+                                                <Typography.Text
+                                                    color="error"
+                                                    style={{ marginTop: '4px', fontSize: '12px' }}
+                                                >
+                                                    {errors[key]?.message as string}
+                                                </Typography.Text>
+                                            )}
+                                        </>
                                     )}
                                     {field.type === 'select' && (
                                         <Dropdown
-                                            defaultValue={formData[key] || ''}
+                                            defaultValue={field.value?.toString() || ''}
                                             disabled={field.readOnly}
                                             items={
                                                 field.options?.map((option) => ({
@@ -138,7 +164,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({ fields, onCh
                                                 })) ?? []
                                             }
                                             onItemSelected={(value) =>
-                                                handleFieldChange(key, value ?? '')
+                                                setValue(key, value ?? '', { shouldValidate: true })
                                             }
                                             name={key}
                                             label={field.label}
