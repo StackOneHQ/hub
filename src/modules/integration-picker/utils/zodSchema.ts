@@ -12,10 +12,9 @@ function createFieldSchema(field: ConnectorConfigField): z.ZodTypeAny {
         if (field.required) {
             schema = schema.regex(/^\d+$/, 'Must be a valid number');
         } else {
-            return z.string().refine(
-                (val) => val === '' || /^\d+$/.test(val),
-                'Must be a valid number'
-            );
+            return z
+                .string()
+                .refine((val) => val === '' || /^\d+$/.test(val), 'Must be a valid number');
         }
     }
 
@@ -29,10 +28,7 @@ function createFieldSchema(field: ConnectorConfigField): z.ZodTypeAny {
             if (field.required) {
                 schema = schema.regex(pattern, errorMessage);
             } else {
-                return z.string().refine(
-                    (val) => val === '' || pattern.test(val),
-                    errorMessage
-                );
+                return z.string().refine((val) => val === '' || pattern.test(val), errorMessage);
             }
         } else if (field.validation.type === 'domain') {
             const pattern = new RegExp(`.*${field.validation.pattern}\\.com.*`);
@@ -43,10 +39,7 @@ function createFieldSchema(field: ConnectorConfigField): z.ZodTypeAny {
             if (field.required) {
                 schema = schema.regex(pattern, errorMessage);
             } else {
-                return z.string().refine(
-                    (val) => val === '' || pattern.test(val),
-                    errorMessage
-                );
+                return z.string().refine((val) => val === '' || pattern.test(val), errorMessage);
             }
         }
     }
