@@ -16,7 +16,6 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
-import { validateField } from '../utils/validation';
 
 const DUMMY_VALUE = 'totally-fake-value';
 const OAUTH_STORAGE_KEY = 'oauth_result';
@@ -64,6 +63,10 @@ export const useIntegrationPicker = ({
 }: UseIntegrationPickerProps) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
+
+    const setFormDataCallback = useCallback((data: Record<string, string>) => {
+        setFormData(data);
+    }, []);
     const connectWindow = useRef<Window | null>(null);
     const checkStateTimeoutRef = useRef<number | null>(null);
     const successTimeoutRef = useRef<number | null>(null);
@@ -423,53 +426,20 @@ export const useIntegrationPicker = ({
         return connectorData.config;
     }, [connectorData, selectedIntegration]);
 
-    // Validate all form fields
-    const validateForm = useCallback(() => {
-        const validationErrors: Record<string, string> = {};
-
-        fields.forEach((field) => {
-            const value = formData[field.key] || '';
-            const isEmpty = !value || value.trim() === '';
-
-            if (field.required && isEmpty) {
-                validationErrors[field.key] = `${field.label} is required`;
-                return;
-            }
-
-            if (field.validation && !isEmpty) {
-                const validationResult = validateField(value, field.validation);
-
-                if (!validationResult.isValid && validationResult.errorMessage) {
-                    validationErrors[field.key] = validationResult.errorMessage;
-                }
-            }
-        });
-
-        return validationErrors;
-    }, [fields, formData]);
-
-    // Check if form is valid
-    const isFormValid = useMemo(() => {
-        const errors = validateForm();
-        return Object.keys(errors).length === 0;
-    }, [validateForm]);
+    const [isFormValid, setIsFormValid] = useState(true);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) {
             return;
         }
 
-        // Validate form before proceeding
-        const validationErrors = validateForm();
-        if (Object.keys(validationErrors).length > 0) {
-            // Set connection state to show validation errors
-            const firstError = Object.values(validationErrors)[0];
+        if (!isFormValid) {
             setConnectionState({
                 loading: false,
                 success: false,
                 error: {
                     message: 'Please fix the validation errors before continuing',
-                    provider_response: firstError,
+                    provider_response: 'Form validation failed',
                 },
             });
             return;
@@ -630,7 +600,7 @@ export const useIntegrationPicker = ({
         accountId,
         authConfig,
         processMessageCallback,
-        validateForm,
+        isFormValid,
     ]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
@@ -678,10 +648,10 @@ export const useIntegrationPicker = ({
 
         // Actions
         setSelectedIntegration,
-        setFormData,
+        setFormData: setFormDataCallback,
+        setIsFormValid,
         handleConnect,
         resetConnectionState,
         resetAllErrors,
-        validateForm,
     };
 };

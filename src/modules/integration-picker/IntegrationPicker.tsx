@@ -1,4 +1,5 @@
 import { Card } from '@stackone/malachite';
+import { useCallback } from 'react';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import CardFooter from './components/cardFooter';
@@ -48,6 +49,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         // Actions
         setSelectedIntegration,
         setFormData,
+        setIsFormValid,
         handleConnect,
         resetConnectionState,
     } = useIntegrationPicker({
@@ -57,6 +59,13 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         onSuccess,
         dashboardUrl,
     });
+
+    const handleValidationChange = useCallback(
+        (isValid: boolean) => {
+            setIsFormValid(isValid);
+        },
+        [setIsFormValid],
+    );
 
     const onBack = () => {
         setSelectedIntegration(null);
@@ -95,10 +104,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     connectorData={connectorData?.config ?? null}
                     hubData={hubData ?? null}
                     fields={fields}
-                    errorHubData={errorHubData}
-                    errorConnectorData={errorConnectorData}
+                    errorHubData={(errorHubData as Error) ?? null}
+                    errorConnectorData={(errorConnectorData as Error) ?? null}
                     onSelect={setSelectedIntegration}
                     onChange={setFormData}
+                    onValidationChange={handleValidationChange}
                 />
             )}
         </Card>

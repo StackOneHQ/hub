@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Alert,
     CodeBlock,
@@ -9,9 +10,11 @@ import {
     TextArea,
     Typography,
 } from '@stackone/malachite';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 import { ConnectorConfigField } from '../types';
-import { validateField } from '../utils/validation';
+import { createFormSchema } from '../utils/zodSchema';
 
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
@@ -20,7 +23,7 @@ interface IntegrationFieldsProps {
         provider_response: string;
     };
     onChange: (data: Record<string, string>) => void;
-    onValidationChange?: (errors: Record<string, string>) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
@@ -29,71 +32,41 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     error,
     onValidationChange,
 }) => {
-    // Initialize formData with default values from fields
-    const [formData, setFormData] = useState<Record<string, string>>(() => {
+    const schema = useMemo(() => createFormSchema(fields), [fields]);
+
+    const defaultValues = useMemo(() => {
         const initialData: Record<string, string> = {};
         fields.forEach((field) => {
             if (field.value !== undefined) {
                 initialData[field.key] = field.value.toString();
+            } else {
+                initialData[field.key] = '';
             }
         });
         return initialData;
+    }, [fields]);
+
+    const { formState, watch, reset, setValue } = useForm({
+        resolver: zodResolver(schema),
+        mode: 'onTouched',
+        defaultValues,
     });
 
-    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+    const { errors, isValid } = formState;
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-        const updatedData: Record<string, string> = {};
-        fields.forEach((field) => {
-            if (field.value !== undefined) {
-                updatedData[field.key] = field.value.toString();
-            }
-        });
+    useDeepCompareEffect(() => {
+        reset(defaultValues);
+    }, [defaultValues]);
 
-        setFormData((prev) => {
-            const hasChanges =
-                Object.keys(updatedData).some((key) => updatedData[key] !== prev[key]) ||
-                Object.keys(prev).some((key) => !updatedData.hasOwnProperty(key));
+    const formData = watch();
 
-            if (hasChanges) {
-                return { ...prev, ...updatedData };
-            }
-            return prev;
-        });
-    }, [fields.length]);
+    useDeepCompareEffect(() => {
+        onChange(formData as Record<string, string>);
+    }, [formData]);
 
     useEffect(() => {
-        onChange(formData);
-    }, [formData, onChange]);
-
-    const handleFieldChange = (key: string, value: string, field?: ConnectorConfigField) => {
-        setFormData((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-
-        if (field?.validation) {
-            const validationResult = validateField(value, field.validation);
-            setValidationErrors((prev) => {
-                const newErrors = { ...prev };
-                if (!validationResult.isValid && validationResult.errorMessage) {
-                    newErrors[key] = validationResult.errorMessage;
-                } else {
-                    delete newErrors[key];
-                }
-                onValidationChange?.(newErrors);
-                return newErrors;
-            });
-        } else {
-            setValidationErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[key];
-                onValidationChange?.(newErrors);
-                return newErrors;
-            });
-        }
-    };
+        onValidationChange?.(isValid);
+    }, [isValid, onValidationChange]);
 
     const errorJson = () => {
         if (!error) {
@@ -133,23 +106,23 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                                 name={key}
                                                 required={field.required}
                                                 placeholder={field.placeholder}
-                                                defaultValue={field.value?.toString()}
-                                                onChange={(value: string) =>
-                                                    handleFieldChange(key, value, field)
-                                                }
                                                 disabled={field.readOnly}
                                                 label={field.label}
                                                 tooltip={field.guide?.tooltip}
                                                 description={field.guide?.description}
                                                 type={field.type}
-                                                error={!!validationErrors[key]}
+                                                error={!!errors[key]}
+                                                onChange={(value: string) =>
+                                                    setValue(key, value, { shouldValidate: true })
+                                                }
+                                                defaultValue={field.value?.toString()}
                                             />
-                                            {validationErrors[key] && (
+                                            {errors[key] && (
                                                 <Typography.Text
                                                     color="error"
                                                     style={{ marginTop: '4px', fontSize: '12px' }}
                                                 >
-                                                    {validationErrors[key]}
+                                                    {errors[key]?.message as string}
                                                 </Typography.Text>
                                             )}
                                         </>
@@ -160,29 +133,29 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                             <TextArea
                                                 name={key}
                                                 required={field.required}
-                                                defaultValue={formData[key] || ''}
                                                 placeholder={field.placeholder}
-                                                onChange={(value: string) =>
-                                                    handleFieldChange(key, value, field)
-                                                }
                                                 disabled={field.readOnly}
                                                 label={field.label}
                                                 tooltip={field.guide?.tooltip}
-                                                error={!!validationErrors[key]}
+                                                error={!!errors[key]}
+                                                onChange={(value: string) =>
+                                                    setValue(key, value, { shouldValidate: true })
+                                                }
+                                                defaultValue={field.value?.toString() || ''}
                                             />
-                                            {validationErrors[key] && (
+                                            {errors[key] && (
                                                 <Typography.Text
                                                     color="error"
                                                     style={{ marginTop: '4px', fontSize: '12px' }}
                                                 >
-                                                    {validationErrors[key]}
+                                                    {errors[key]?.message as string}
                                                 </Typography.Text>
                                             )}
                                         </>
                                     )}
                                     {field.type === 'select' && (
                                         <Dropdown
-                                            defaultValue={formData[key] || ''}
+                                            defaultValue={field.value?.toString() || ''}
                                             disabled={field.readOnly}
                                             items={
                                                 field.options?.map((option) => ({
@@ -191,7 +164,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                                 })) ?? []
                                             }
                                             onItemSelected={(value) =>
-                                                handleFieldChange(key, value ?? '')
+                                                setValue(key, value ?? '', { shouldValidate: true })
                                             }
                                             name={key}
                                             label={field.label}

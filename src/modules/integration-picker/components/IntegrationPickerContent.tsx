@@ -32,6 +32,7 @@ interface IntegrationPickerContentProps {
     // Actions
     onSelect: (integration: Integration) => void;
     onChange: (data: Record<string, string>) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
 export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> = ({
@@ -46,6 +47,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     errorConnectorData,
     onSelect,
     onChange,
+    onValidationChange,
 }) => {
     // Loading states
     if (isLoading) {
@@ -95,6 +97,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 fields={fields}
                 error={connectionState.error}
                 onChange={onChange}
+                onValidationChange={onValidationChange}
             />
         );
     }
