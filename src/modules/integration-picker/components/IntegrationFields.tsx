@@ -56,7 +56,6 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
     useDeepCompareEffect(() => {
         reset(defaultValues);
-        onChange(defaultValues);
     }, [defaultValues]);
 
     const formData = watch();
