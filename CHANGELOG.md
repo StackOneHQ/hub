@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/StackOneHQ/hub/compare/hub-v0.5.0...hub-v0.5.1) (2025-11-05)
+
+
+### Bug Fixes
+
+* **ENG-10975:** pre-fill existing values ([#23](https://github.com/StackOneHQ/hub/issues/23)) ([95d6233](https://github.com/StackOneHQ/hub/commit/95d62333fb6d9bfc729cc1aa99f28a173f487b33))
+
 ## [0.5.0](https://github.com/StackOneHQ/hub/compare/hub-v0.4.2...hub-v0.5.0) (2025-11-05)
 
 
