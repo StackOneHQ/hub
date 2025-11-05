@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/StackOneHQ/hub/compare/hub-v0.4.2...hub-v0.5.0) (2025-11-05)
+
+
+### Features
+
+* **ENG-10896:** implement oauth improvements ([#18](https://github.com/StackOneHQ/hub/issues/18)) ([3349af2](https://github.com/StackOneHQ/hub/commit/3349af2c48ec4fd6bc558bd90520dcfe0c04583f))
+
+
+### Bug Fixes
+
+* **ENG-10925:** field validation and empty field omission ([#22](https://github.com/StackOneHQ/hub/issues/22)) ([25224b2](https://github.com/StackOneHQ/hub/commit/25224b24618f72f3cba1a173d4a56bd42a4202e4))
+
 ## [0.4.2](https://github.com/StackOneHQ/hub/compare/hub-v0.4.1...hub-v0.4.2) (2025-09-02)
 
 
