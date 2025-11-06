@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/StackOneHQ/hub/compare/hub-v0.5.1...hub-v0.5.2) (2025-11-06)
+
+
+### Bug Fixes
+
+* **ENG-10961:** fix styling issues ([#25](https://github.com/StackOneHQ/hub/issues/25)) ([938eafe](https://github.com/StackOneHQ/hub/commit/938eafefc819b5da02c17de56e29883fe36c4f39))
+
 ## [0.5.1](https://github.com/StackOneHQ/hub/compare/hub-v0.5.0...hub-v0.5.1) (2025-11-05)
 
 
