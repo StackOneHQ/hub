@@ -17,6 +17,7 @@ interface CardFooterProps {
     onBack?: () => void;
     onNext: () => void;
     isFormValid?: boolean;
+    showFooterLinks?: boolean;
 }
 
 const CardFooter: React.FC<CardFooterProps> = ({
@@ -26,6 +27,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
     onBack,
     onNext,
     isFormValid = true,
+    showFooterLinks = true,
 }) => {
     const buttons = useMemo(() => {
         if (!selectedIntegration || !showActions) {
@@ -62,12 +64,15 @@ const CardFooter: React.FC<CardFooterProps> = ({
     }, [selectedIntegration, onBack, onNext, showActions, isFormValid]);
 
     if (buttons.length === 0) {
+        if (!showFooterLinks) {
+            return null;
+        }
         return <FooterLinks fullWidth={fullWidth} />;
     }
 
     return (
         <Spacer direction="horizontal" size={0} justifyContent="space-between">
-            <FooterLinks fullWidth={fullWidth} />
+            {showFooterLinks && <FooterLinks fullWidth={fullWidth} />}
             <Padded vertical="none" horizontal="small" fullHeight={false}>
                 <Flex direction={FlexDirection.Horizontal} justify={FlexJustify.Right}>
                     <Spacer direction="horizontal" size={10}>

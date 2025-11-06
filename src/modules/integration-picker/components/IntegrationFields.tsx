@@ -82,102 +82,111 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         }
     };
     return (
-        <Padded vertical="large" horizontal="medium">
+        <Padded vertical="large" horizontal="medium" overflow="auto">
             <Spacer direction="vertical" size={8} fullWidth>
                 {error && (
                     <Alert type="error" message={error.message} hasMargin={false}>
                         {errorJson()}
                     </Alert>
                 )}
-                <Spacer direction="vertical" size={20} fullWidth>
-                    <Form>
-                        {fields.map((field) => {
-                            const key =
-                                typeof field.key === 'object'
-                                    ? JSON.stringify(field.key)
-                                    : String(field.key);
-                            return (
-                                <div key={key} style={{ width: '100%' }}>
-                                    {(field.type === 'text' ||
-                                        field.type === 'number' ||
-                                        field.type === 'password') && (
-                                        <>
-                                            <Input
-                                                name={key}
-                                                required={field.required}
-                                                placeholder={field.placeholder}
-                                                disabled={field.readOnly}
-                                                label={field.label}
-                                                tooltip={field.guide?.tooltip}
-                                                description={field.guide?.description}
-                                                type={field.type}
-                                                error={!!errors[key]}
-                                                onChange={(value: string) =>
-                                                    setValue(key, value, { shouldValidate: true })
-                                                }
-                                                defaultValue={field.value?.toString()}
-                                                showPasswordToggle={false}
-                                            />
-                                            {errors[key] && (
-                                                <Typography.Text
-                                                    color="error"
-                                                    style={{ marginTop: '4px', fontSize: '12px' }}
-                                                >
-                                                    {errors[key]?.message as string}
-                                                </Typography.Text>
-                                            )}
-                                        </>
-                                    )}
-
-                                    {field.type === 'text_area' && (
-                                        <>
-                                            <TextArea
-                                                name={key}
-                                                required={field.required}
-                                                placeholder={field.placeholder}
-                                                disabled={field.readOnly}
-                                                label={field.label}
-                                                tooltip={field.guide?.tooltip}
-                                                error={!!errors[key]}
-                                                onChange={(value: string) =>
-                                                    setValue(key, value, { shouldValidate: true })
-                                                }
-                                                defaultValue={field.value?.toString() || ''}
-                                            />
-                                            {errors[key] && (
-                                                <Typography.Text
-                                                    color="error"
-                                                    style={{ marginTop: '4px', fontSize: '12px' }}
-                                                >
-                                                    {errors[key]?.message as string}
-                                                </Typography.Text>
-                                            )}
-                                        </>
-                                    )}
-                                    {field.type === 'select' && (
-                                        <Dropdown
-                                            defaultValue={field.value?.toString() || ''}
-                                            disabled={field.readOnly}
-                                            items={
-                                                field.options?.map((option) => ({
-                                                    id: option.value,
-                                                    label: option.label,
-                                                })) ?? []
-                                            }
-                                            onItemSelected={(value) =>
-                                                setValue(key, value ?? '', { shouldValidate: true })
-                                            }
+                <Form>
+                    {fields.map((field) => {
+                        const key =
+                            typeof field.key === 'object'
+                                ? JSON.stringify(field.key)
+                                : String(field.key);
+                        return (
+                            <div key={key} style={{ width: '100%' }}>
+                                {(field.type === 'text' ||
+                                    field.type === 'number' ||
+                                    field.type === 'password') && (
+                                    <>
+                                        <Input
                                             name={key}
+                                            required={field.required}
+                                            placeholder={field.placeholder}
+                                            disabled={field.readOnly}
                                             label={field.label}
                                             tooltip={field.guide?.tooltip}
                                             description={field.guide?.description}
+                                            type={field.type}
+                                            error={!!errors[key]}
+                                            onChange={(value: string) =>
+                                                setValue(key, value, {
+                                                    shouldValidate: true,
+                                                })
+                                            }
+                                            defaultValue={field.value?.toString()}
                                         />
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </Form>
-                </Spacer>
+                                        {errors[key] && (
+                                            <Typography.Text
+                                                color="error"
+                                                style={{
+                                                    marginTop: '4px',
+                                                    fontSize: '12px',
+                                                }}
+                                            >
+                                                {errors[key]?.message as string}
+                                            </Typography.Text>
+                                        )}
+                                    </>
+                                )}
+
+                                {field.type === 'text_area' && (
+                                    <>
+                                        <TextArea
+                                            name={key}
+                                            required={field.required}
+                                            placeholder={field.placeholder}
+                                            disabled={field.readOnly}
+                                            label={field.label}
+                                            tooltip={field.guide?.tooltip}
+                                            error={!!errors[key]}
+                                            onChange={(value: string) =>
+                                                setValue(key, value, {
+                                                    shouldValidate: true,
+                                                })
+                                            }
+                                            defaultValue={field.value?.toString() || ''}
+                                        />
+                                        {errors[key] && (
+                                            <Typography.Text
+                                                color="error"
+                                                style={{
+                                                    marginTop: '4px',
+                                                    fontSize: '12px',
+                                                }}
+                                            >
+                                                {errors[key]?.message as string}
+                                            </Typography.Text>
+                                        )}
+                                    </>
+                                )}
+                                {field.type === 'select' && (
+                                    <Dropdown
+                                        defaultValue={field.value?.toString() || ''}
+                                        disabled={field.readOnly}
+                                        items={
+                                            field.options?.map((option) => ({
+                                                id: option.value,
+                                                label: option.label,
+                                            })) ?? []
+                                        }
+                                        onItemSelected={(value) =>
+                                            setValue(key, value ?? '', {
+                                                shouldValidate: true,
+                                            })
+                                        }
+                                        name={key}
+                                        label={field.label}
+                                        tooltip={field.guide?.tooltip}
+                                        description={field.guide?.description}
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
+                </Form>
             </Spacer>
         </Padded>
     );

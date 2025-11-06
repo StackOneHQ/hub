@@ -24,6 +24,8 @@ interface IntegrationPickerContentProps {
     connectorData: ConnectorConfig | null;
     hubData: HubData | null;
     fields: ConnectorConfigField[];
+    selectedCategory: string | null;
+    search: string;
 
     // Errors
     errorHubData: Error | null;
@@ -43,6 +45,8 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     connectorData,
     hubData,
     fields,
+    selectedCategory,
+    search,
     errorHubData,
     errorConnectorData,
     onSelect,
@@ -87,7 +91,14 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         if (!hubData?.integrations.length) {
             return <ErrorView message="No integrations found." />;
         }
-        return <IntegrationListView integrations={hubData.integrations} onSelect={onSelect} />;
+        return (
+            <IntegrationListView
+                integrations={hubData.integrations}
+                onSelect={onSelect}
+                selectedCategory={selectedCategory}
+                search={search}
+            />
+        );
     }
 
     // Form view (when integration is selected and connector data is available)

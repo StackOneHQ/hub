@@ -78,3 +78,7 @@ button:hover {
 body {
     background: goldenrod;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}

@@ -31,6 +31,7 @@ interface StackOneHubProps {
     onSuccess?: () => void;
     onClose?: () => void;
     onCancel?: () => void;
+    showFooterLinks?: boolean;
 }
 
 export const StackOneHub: React.FC<StackOneHubProps> = ({
@@ -44,6 +45,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     onSuccess,
     onClose,
     onCancel,
+    showFooterLinks,
 }) => {
     const defaultBaseUrl = 'https://api.stackone.com';
     const apiUrl = baseUrl ?? defaultBaseUrl;
@@ -130,6 +132,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                         accountId={accountId}
                         onClose={onClose}
                         onCancel={onCancel}
+                        showFooterLinks={showFooterLinks}
                     />
                 </QueryClientProvider>
             </ErrorBoundary>

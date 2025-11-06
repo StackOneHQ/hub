@@ -33,15 +33,15 @@ const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guid
                 <img
                     src={`https://app.stackone.com/assets/logos/${selectedIntegration.provider}.png`}
                     alt={selectedIntegration.provider}
-                    style={{ width: '24px', height: '24px' }}
+                    style={{ width: '16px', height: '16px' }}
                 />
-                <Typography.Text fontWeight="semi-bold" size="large">
+                <Typography.Text fontWeight="semi-bold" size="medium">
                     {selectedIntegration.name}
                 </Typography.Text>
             </Flex>
             {guide?.supportLink && (
                 <Typography.LinkText href={guide?.supportLink} target="_blank">
-                    <Button variant="outline" size="medium">
+                    <Button variant="outline" size="small">
                         Connection guide
                     </Button>
                 </Typography.LinkText>
