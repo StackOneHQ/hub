@@ -102,7 +102,12 @@ export const IntegrationListHeader: React.FC<{
                     <div style={{ display: 'flex', minWidth: 'max-content' }}>
                         {availableCategories.length > 1 &&
                             availableCategories.map((category) => (
-                                <Padded vertical="none" horizontal="small" fullHeight={false}>
+                                <Padded
+                                    key={category}
+                                    vertical="none"
+                                    horizontal="small"
+                                    fullHeight={false}
+                                >
                                     <PillButton
                                         key={category}
                                         label={

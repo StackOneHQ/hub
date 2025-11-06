@@ -2,9 +2,8 @@ import { Card } from '@stackone/malachite';
 import { useCallback, useState } from 'react';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
+import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
 import CardFooter from './components/cardFooter';
-import CardTitle from './components/cardTitle';
-import { IntegrationListHeader } from './components/views/IntegrationListView';
 import { useIntegrationPicker } from './hooks/useIntegrationPicker';
 
 interface IntegrationPickerProps {
@@ -79,25 +78,6 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         setSearch('');
     };
 
-    const cardTitle = selectedIntegration ? (
-        <CardTitle
-            selectedIntegration={selectedIntegration}
-            onBack={accountData ? undefined : onBack}
-            guide={guide}
-        />
-    ) : (
-        !isLoading &&
-        !hasError &&
-        hubData?.integrations && (
-            <IntegrationListHeader
-                integrations={hubData.integrations}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onSearchChange={setSearch}
-            />
-        )
-    );
-
     return (
         <Card
             glassFooter
@@ -111,7 +91,20 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     showFooterLinks={showFooterLinks}
                 />
             }
-            title={cardTitle}
+            title={
+                <IntegrationPickerTitle
+                    selectedIntegration={selectedIntegration}
+                    accountData={accountData}
+                    onBack={onBack}
+                    guide={guide}
+                    isLoading={isLoading}
+                    hasError={hasError}
+                    hubData={hubData}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    onSearchChange={setSearch}
+                />
+            }
             height={height}
             padding="0"
             headerConfig={

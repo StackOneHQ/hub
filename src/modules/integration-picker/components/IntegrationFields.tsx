@@ -11,10 +11,111 @@ import {
     Typography,
 } from '@stackone/malachite';
 import { useEffect, useMemo } from 'react';
+import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import { ConnectorConfigField } from '../types';
 import { createFormSchema } from '../utils/zodSchema';
+
+const isInputField = (type: string | undefined): type is 'text' | 'number' | 'password' => {
+    return type === 'text' || type === 'number' || type === 'password';
+};
+
+interface FieldRendererProps {
+    field: ConnectorConfigField;
+    errors: FieldErrors;
+    setValue: UseFormSetValue<Record<string, unknown>>;
+}
+
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }) => {
+    const key = typeof field.key === 'object' ? JSON.stringify(field.key) : String(field.key);
+
+    const errorMessage = errors[key] && (
+        <Typography.Text
+            color="error"
+            style={{
+                marginTop: '4px',
+                fontSize: '12px',
+            }}
+        >
+            {errors[key]?.message as string}
+        </Typography.Text>
+    );
+
+    if (isInputField(field.type)) {
+        return (
+            <>
+                <Input
+                    name={key}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    disabled={field.readOnly}
+                    label={field.label}
+                    tooltip={field.guide?.tooltip}
+                    description={field.guide?.description}
+                    type={field.type}
+                    error={!!errors[key]}
+                    onChange={(value: string) =>
+                        setValue(key, value, {
+                            shouldValidate: true,
+                        })
+                    }
+                    defaultValue={field.value?.toString()}
+                />
+                {errorMessage}
+            </>
+        );
+    }
+
+    if (field.type === 'text_area') {
+        return (
+            <>
+                <TextArea
+                    name={key}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    disabled={field.readOnly}
+                    label={field.label}
+                    tooltip={field.guide?.tooltip}
+                    error={!!errors[key]}
+                    onChange={(value: string) =>
+                        setValue(key, value, {
+                            shouldValidate: true,
+                        })
+                    }
+                    defaultValue={field.value?.toString() || ''}
+                />
+                {errorMessage}
+            </>
+        );
+    }
+
+    if (field.type === 'select') {
+        return (
+            <Dropdown
+                defaultValue={field.value?.toString() || ''}
+                disabled={field.readOnly}
+                items={
+                    field.options?.map((option) => ({
+                        id: option.value,
+                        label: option.label,
+                    })) ?? []
+                }
+                onItemSelected={(value) =>
+                    setValue(key, value ?? '', {
+                        shouldValidate: true,
+                    })
+                }
+                name={key}
+                label={field.label}
+                tooltip={field.guide?.tooltip}
+                description={field.guide?.description}
+            />
+        );
+    }
+
+    return null;
+};
 
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
@@ -97,92 +198,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                 : String(field.key);
                         return (
                             <div key={key} style={{ width: '100%' }}>
-                                {(field.type === 'text' ||
-                                    field.type === 'number' ||
-                                    field.type === 'password') && (
-                                    <>
-                                        <Input
-                                            name={key}
-                                            required={field.required}
-                                            placeholder={field.placeholder}
-                                            disabled={field.readOnly}
-                                            label={field.label}
-                                            tooltip={field.guide?.tooltip}
-                                            description={field.guide?.description}
-                                            type={field.type}
-                                            error={!!errors[key]}
-                                            onChange={(value: string) =>
-                                                setValue(key, value, {
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            defaultValue={field.value?.toString()}
-                                        />
-                                        {errors[key] && (
-                                            <Typography.Text
-                                                color="error"
-                                                style={{
-                                                    marginTop: '4px',
-                                                    fontSize: '12px',
-                                                }}
-                                            >
-                                                {errors[key]?.message as string}
-                                            </Typography.Text>
-                                        )}
-                                    </>
-                                )}
-
-                                {field.type === 'text_area' && (
-                                    <>
-                                        <TextArea
-                                            name={key}
-                                            required={field.required}
-                                            placeholder={field.placeholder}
-                                            disabled={field.readOnly}
-                                            label={field.label}
-                                            tooltip={field.guide?.tooltip}
-                                            error={!!errors[key]}
-                                            onChange={(value: string) =>
-                                                setValue(key, value, {
-                                                    shouldValidate: true,
-                                                })
-                                            }
-                                            defaultValue={field.value?.toString() || ''}
-                                        />
-                                        {errors[key] && (
-                                            <Typography.Text
-                                                color="error"
-                                                style={{
-                                                    marginTop: '4px',
-                                                    fontSize: '12px',
-                                                }}
-                                            >
-                                                {errors[key]?.message as string}
-                                            </Typography.Text>
-                                        )}
-                                    </>
-                                )}
-                                {field.type === 'select' && (
-                                    <Dropdown
-                                        defaultValue={field.value?.toString() || ''}
-                                        disabled={field.readOnly}
-                                        items={
-                                            field.options?.map((option) => ({
-                                                id: option.value,
-                                                label: option.label,
-                                            })) ?? []
-                                        }
-                                        onItemSelected={(value) =>
-                                            setValue(key, value ?? '', {
-                                                shouldValidate: true,
-                                            })
-                                        }
-                                        name={key}
-                                        label={field.label}
-                                        tooltip={field.guide?.tooltip}
-                                        description={field.guide?.description}
-                                    />
-                                )}
+                                <FieldRenderer field={field} errors={errors} setValue={setValue} />
                             </div>
                         );
                     })}
