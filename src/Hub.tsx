@@ -14,6 +14,7 @@ interface HubProps {
     onClose?: () => void;
     onCancel?: () => void;
     accountId?: string;
+    showFooterLinks?: boolean;
 }
 export const Hub = ({
     mode,
@@ -25,6 +26,7 @@ export const Hub = ({
     onClose,
     onCancel,
     accountId,
+    showFooterLinks,
 }: HubProps) => {
     const { data: settings } = useQuery({
         queryKey: ['settings'],
@@ -43,6 +45,7 @@ export const Hub = ({
                     onClose={onClose}
                     onCancel={onCancel}
                     accountId={accountId}
+                    showFooterLinks={showFooterLinks}
                 />
             )}
         </FeatureFlagProvider>

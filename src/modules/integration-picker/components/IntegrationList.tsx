@@ -12,7 +12,7 @@ import {
     Spacer,
     Typography,
 } from '@stackone/malachite';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
 import { isFalconVersion } from '../../../shared/utils/utils';
 import { Integration } from '../types';
@@ -57,34 +57,22 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
     );
 };
 
-export const IntegrationList: React.FC<{
+export const IntegrationListHeader: React.FC<{
     integrations: Integration[];
-    onSelect: (integration: Integration) => void;
-}> = ({ integrations, onSelect }) => {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-    const [search, setSearch] = useState<string>('');
-
+    selectedCategory: string | null;
+    onCategoryChange: (category: string | null) => void;
+    onSearchChange: (search: string) => void;
+}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange }) => {
     const handleCategoryClick = useCallback(
         (category: string) => {
             if (selectedCategory === category) {
-                setSelectedCategory(null);
+                onCategoryChange(null);
             } else {
-                setSelectedCategory(category);
+                onCategoryChange(category);
             }
         },
-        [selectedCategory],
+        [selectedCategory, onCategoryChange],
     );
-
-    const availableIntegrations = useMemo(() => {
-        return integrations.filter(
-            (integration) =>
-                integration.active &&
-                integration.name &&
-                (selectedCategory ? integration.type === selectedCategory : true) &&
-                (search ? integration.name.toLowerCase().includes(search.toLowerCase()) : true),
-        );
-    }, [integrations, selectedCategory, search]);
 
     const availableCategories = useMemo(() => {
         return Array.from(new Set(integrations.map((integration) => integration.type)));
@@ -97,34 +85,68 @@ export const IntegrationList: React.FC<{
                 placeholder="Search Integrations"
                 variant="ghost"
                 size="large"
-                onChange={setSearch}
+                onChange={onSearchChange}
             />
             <Divider />
-            <Padded vertical="small" horizontal="medium" fullHeight={false}>
-                <Spacer direction="horizontal" size={4} align="start">
-                    {availableCategories.length > 1 &&
-                        availableCategories.map((category) => (
-                            <PillButton
-                                key={category}
-                                label={
-                                    CATEGORIES_WITH_LABELS.find((c) => c.value === category)
-                                        ?.label || category
-                                }
-                                selected={selectedCategory === category}
-                                onClick={() => handleCategoryClick(category)}
-                            />
-                        ))}
-                </Spacer>
+            <Padded vertical="small" horizontal="none" fullHeight={false}>
+                <div
+                    style={{
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        backgroundColor: 'var(--malachite-card-background)',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                    }}
+                    className="hide-scrollbar"
+                >
+                    <div style={{ display: 'flex', minWidth: 'max-content' }}>
+                        {availableCategories.length > 1 &&
+                            availableCategories.map((category) => (
+                                <Padded
+                                    key={category}
+                                    vertical="none"
+                                    horizontal="small"
+                                    fullHeight={false}
+                                >
+                                    <PillButton
+                                        key={category}
+                                        label={
+                                            CATEGORIES_WITH_LABELS.find((c) => c.value === category)
+                                                ?.label || category
+                                        }
+                                        selected={selectedCategory === category}
+                                        onClick={() => handleCategoryClick(category)}
+                                    />
+                                </Padded>
+                            ))}
+                    </div>
+                </div>
             </Padded>
-            <Divider />
+        </>
+    );
+};
+
+export const IntegrationList: React.FC<{
+    integrations: Integration[];
+    onSelect: (integration: Integration) => void;
+    selectedCategory: string | null;
+    search: string;
+}> = ({ integrations, onSelect, selectedCategory, search }) => {
+    const availableIntegrations = useMemo(() => {
+        return integrations.filter(
+            (integration) =>
+                integration.active &&
+                integration.name &&
+                (selectedCategory ? integration.type === selectedCategory : true) &&
+                (search ? integration.name.toLowerCase().includes(search.toLowerCase()) : true),
+        );
+    }, [integrations, selectedCategory, search]);
+
+    return (
+        <>
             {availableIntegrations.length > 0 ? (
-                <Padded vertical="small" horizontal="small" fullHeight={true}>
+                <Padded vertical="small" horizontal="small" fullHeight={false}>
                     <Spacer direction="vertical" size={10} align="start">
-                        <Padded vertical="none" horizontal="small">
-                            <Typography.SecondaryText className="text-left">
-                                Add integration
-                            </Typography.SecondaryText>
-                        </Padded>
                         <ButtonList
                             buttons={availableIntegrations.map((integration) => ({
                                 key: `${integration.provider}@${integration.version}`,

@@ -1,9 +1,9 @@
 import { Card } from '@stackone/malachite';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
+import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
 import CardFooter from './components/cardFooter';
-import CardTitle from './components/cardTitle';
 import { useIntegrationPicker } from './hooks/useIntegrationPicker';
 
 interface IntegrationPickerProps {
@@ -15,6 +15,7 @@ interface IntegrationPickerProps {
     onSuccess?: () => void;
     onClose?: () => void;
     onCancel?: () => void;
+    showFooterLinks?: boolean;
 }
 
 export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
@@ -24,8 +25,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     accountId,
     onSuccess,
     dashboardUrl,
+    showFooterLinks = true,
 }) => {
     const isHubLinkAccountReleaseEnabled = useFeatureFlags('hub_link_account_release');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [search, setSearch] = useState<string>('');
 
     const {
         // Data
@@ -70,10 +74,13 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
+        setSelectedCategory(null);
+        setSearch('');
     };
 
     return (
         <Card
+            glassFooter
             footer={
                 <CardFooter
                     selectedIntegration={selectedIntegration}
@@ -81,19 +88,32 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     onBack={accountData ? undefined : onBack}
                     onNext={handleConnect}
                     isFormValid={isFormValid}
+                    showFooterLinks={showFooterLinks}
                 />
             }
             title={
-                selectedIntegration && (
-                    <CardTitle
-                        selectedIntegration={selectedIntegration}
-                        onBack={accountData ? undefined : onBack}
-                        guide={guide}
-                    />
-                )
+                <IntegrationPickerTitle
+                    selectedIntegration={selectedIntegration}
+                    accountData={accountData}
+                    onBack={onBack}
+                    guide={guide}
+                    isLoading={isLoading}
+                    hasError={hasError}
+                    hubData={hubData}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    onSearchChange={setSearch}
+                />
             }
             height={height}
             padding="0"
+            headerConfig={
+                selectedIntegration
+                    ? undefined
+                    : {
+                          padding: '0',
+                      }
+            }
         >
             {isHubLinkAccountReleaseEnabled && (
                 <IntegrationPickerContent
@@ -109,6 +129,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     onSelect={setSelectedIntegration}
                     onChange={setFormData}
                     onValidationChange={handleValidationChange}
+                    selectedCategory={selectedCategory}
+                    search={search}
                 />
             )}
         </Card>
