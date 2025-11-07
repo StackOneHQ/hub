@@ -53,7 +53,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
         }
 
         buttons.push({
-            label: 'Confirm',
+            label: 'Connect',
             type: 'filled' as const,
             onClick: onNext,
             disabled: !isFormValid,
