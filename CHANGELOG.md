@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/StackOneHQ/hub/compare/hub-v0.5.2...hub-v0.6.0) (2025-11-10)
+
+
+### Features
+
+* **ENG-10975:** add state for when no fields ([#28](https://github.com/StackOneHQ/hub/issues/28)) ([968384d](https://github.com/StackOneHQ/hub/commit/968384df13ae68b87bff603bd3f26c79c115b3a7))
+
 ## [0.5.2](https://github.com/StackOneHQ/hub/compare/hub-v0.5.1...hub-v0.5.2) (2025-11-06)
 
 
