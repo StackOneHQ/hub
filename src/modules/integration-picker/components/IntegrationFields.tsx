@@ -3,6 +3,11 @@ import {
     Alert,
     CodeBlock,
     Dropdown,
+    Flex,
+    FlexAlign,
+    FlexDirection,
+    FlexGapSize,
+    FlexJustify,
     Form,
     Input,
     Padded,
@@ -125,13 +130,40 @@ interface IntegrationFieldsProps {
     };
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
+    integrationName: string;
 }
+
+const NoFieldsView: React.FC<{ integrationName: string }> = ({ integrationName }) => {
+    return (
+        <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
+            <Flex
+                direction={FlexDirection.Vertical}
+                gapSize={FlexGapSize.Small}
+                fullHeight
+                justify={FlexJustify.Center}
+                align={FlexAlign.Center}
+            >
+                <Spacer direction="vertical" size={8} fullWidth>
+                    <Typography.Text size="small" fontWeight={'semi-bold'}>
+                        Press "Connect" below to authenticate
+                    </Typography.Text>
+                    <Typography.Text size="small" color="secondary">
+                        An authentication window for {integrationName} will display,
+                        <br />
+                        please complete the necessary steps.
+                    </Typography.Text>
+                </Spacer>
+            </Flex>
+        </Padded>
+    );
+};
 
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     fields,
     onChange,
     error,
     onValidationChange,
+    integrationName,
 }) => {
     const schema = useMemo(() => createFormSchema(fields), [fields]);
 
@@ -182,6 +214,11 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
             return null;
         }
     };
+
+    if (fields.length === 0) {
+        return <NoFieldsView integrationName={integrationName} />;
+    }
+
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto">
             <Spacer direction="vertical" size={8} fullWidth>

@@ -10,6 +10,7 @@ interface IntegrationFormViewProps {
     };
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
+    integrationName: string;
 }
 
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
@@ -17,6 +18,7 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     error,
     onChange,
     onValidationChange,
+    integrationName,
 }) => {
     return (
         <IntegrationForm
@@ -24,6 +26,7 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
             error={error}
             onChange={onChange}
             onValidationChange={onValidationChange}
+            integrationName={integrationName}
         />
     );
 };

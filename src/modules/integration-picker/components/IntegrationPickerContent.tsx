@@ -109,6 +109,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}
+                integrationName={selectedIntegration.name}
             />
         );
     }
