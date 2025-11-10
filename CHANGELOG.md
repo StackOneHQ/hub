@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/StackOneHQ/hub/compare/hub-v0.6.0...hub-v0.6.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* **ENG-10961:** tooltip and password field improvements ([#30](https://github.com/StackOneHQ/hub/issues/30)) ([93c5576](https://github.com/StackOneHQ/hub/commit/93c55767aa6c9496b39a2009686c0c8f894a6a48))
+
 ## [0.6.0](https://github.com/StackOneHQ/hub/compare/hub-v0.5.2...hub-v0.6.0) (2025-11-10)
 
 
