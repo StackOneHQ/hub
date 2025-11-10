@@ -71,7 +71,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
     }
 
     return (
-        <Spacer direction="horizontal" size={0} justifyContent="space-between">
+        <Spacer direction="horizontal" size={4} justifyContent="space-between">
             {showFooterLinks && <FooterLinks fullWidth={fullWidth} />}
             <Padded vertical="none" horizontal="small" fullHeight={false}>
                 <Flex direction={FlexDirection.Horizontal} justify={FlexJustify.Right}>

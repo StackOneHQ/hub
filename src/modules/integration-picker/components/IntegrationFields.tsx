@@ -66,6 +66,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
                         })
                     }
                     defaultValue={field.value?.toString()}
+                    showPasswordToggle={false}
                 />
                 {errorMessage}
             </>
