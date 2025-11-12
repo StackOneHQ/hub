@@ -7,13 +7,14 @@ export const getHubData = async (token: string, baseUrl: string, provider?: stri
         'x-hub-session-token': token,
     };
 
-    // Add provider header when filtering by specific provider
+    let url = `${baseUrl}/hub/connectors`;
+
     if (provider) {
-        headers['x-hub-provider'] = provider;
+        url += `?provider=${provider}`;
     }
 
     return await getRequest<HubData>({
-        url: `${baseUrl}/hub/connectors`,
+        url,
         headers,
     });
 };
