@@ -560,6 +560,7 @@ export const useIntegrationPicker = ({
                 const parsedError = JSON.parse((error as Error).message) as {
                     status: number;
                     message: string;
+                    provider_response?: string;
                 };
 
                 // Try to parse the nested message
@@ -573,6 +574,7 @@ export const useIntegrationPicker = ({
                 } catch {
                     // If double parsing fails, use the first level message
                     errorMessage = parsedError.message || errorMessage;
+                    providerResponse = parsedError.provider_response || providerResponse;
                 }
             } catch {
                 // If all parsing fails, use the original error message
