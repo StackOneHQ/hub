@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/StackOneHQ/hub/compare/hub-v0.6.1...hub-v0.6.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* **ENG-10975:** send provider as parameter ([#32](https://github.com/StackOneHQ/hub/issues/32)) ([fbbdecb](https://github.com/StackOneHQ/hub/commit/fbbdecb63a5ba69711b9312ecbf74895ee96a173))
+
 ## [0.6.1](https://github.com/StackOneHQ/hub/compare/hub-v0.6.0...hub-v0.6.1) (2025-11-10)
 
 
