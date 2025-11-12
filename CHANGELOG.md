@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/StackOneHQ/hub/compare/hub-v0.6.2...hub-v0.6.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* **ENG-11302:** Fix provider response in hub ([#34](https://github.com/StackOneHQ/hub/issues/34)) ([e3e6813](https://github.com/StackOneHQ/hub/commit/e3e68135ab1942bc8e831e34d77f736624db4cfa))
+
 ## [0.6.2](https://github.com/StackOneHQ/hub/compare/hub-v0.6.1...hub-v0.6.2) (2025-11-12)
 
 
