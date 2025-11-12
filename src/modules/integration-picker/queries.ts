@@ -10,7 +10,7 @@ export const getHubData = async (token: string, baseUrl: string, provider?: stri
     let url = `${baseUrl}/hub/connectors`;
 
     if (provider) {
-        url += `?provider=${provider}`;
+        url += `?provider=${encodeURIComponent(provider)}`;
     }
 
     return await getRequest<HubData>({
