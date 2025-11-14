@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/StackOneHQ/hub/compare/hub-v0.6.3...hub-v0.6.4) (2025-11-14)
+
+
+### Bug Fixes
+
+* load correct auth config ([#36](https://github.com/StackOneHQ/hub/issues/36)) ([9ac96b9](https://github.com/StackOneHQ/hub/commit/9ac96b9823756723e24cbc496c922dee17b88ba6))
+
 ## [0.6.3](https://github.com/StackOneHQ/hub/compare/hub-v0.6.2...hub-v0.6.3) (2025-11-12)
 
 
