@@ -234,19 +234,14 @@ export const useIntegrationPicker = ({
         isLoading: isLoadingConnectorData,
         error: errorConnectorData,
     } = useQuery({
-        queryKey: ['connectorData', selectedIntegration?.provider, accountData?.provider],
+        queryKey: [
+            'connectorData',
+            accountData?.provider,
+            accountData?.version,
+            selectedIntegration?.provider,
+            selectedIntegration?.version,
+        ],
         queryFn: async () => {
-            if (selectedIntegration) {
-                if (isFalconVersion(selectedIntegration.version)) {
-                    return getFalconConnectorConfig(
-                        baseUrl,
-                        token,
-                        `${selectedIntegration.provider}@${selectedIntegration.version}`,
-                    );
-                } else {
-                    return getLegacyConnectorConfig(baseUrl, token, selectedIntegration.provider);
-                }
-            }
             if (accountData) {
                 if (isFalconVersion(accountData.version)) {
                     return getFalconConnectorConfig(
@@ -256,6 +251,17 @@ export const useIntegrationPicker = ({
                     );
                 } else {
                     return getLegacyConnectorConfig(baseUrl, token, accountData.provider);
+                }
+            }
+            if (selectedIntegration) {
+                if (isFalconVersion(selectedIntegration.version)) {
+                    return getFalconConnectorConfig(
+                        baseUrl,
+                        token,
+                        `${selectedIntegration.provider}@${selectedIntegration.version}`,
+                    );
+                } else {
+                    return getLegacyConnectorConfig(baseUrl, token, selectedIntegration.provider);
                 }
             }
             return null;
@@ -343,9 +349,19 @@ export const useIntegrationPicker = ({
             };
         }
 
-        const authConfig =
-            connectorData.config.authentication?.[selectedIntegration.authentication_config_key];
-        const authConfigForEnvironment = authConfig?.[selectedIntegration.environment];
+        let authenticationConfigKey = selectedIntegration.authentication_config_key;
+        let environment = selectedIntegration.environment;
+
+        // TODO: https://stackonehq.atlassian.net/browse/ENG-11396 load this from the account's linked integration config
+        if (accountData && accountData.authConfigKey) {
+            if (connectorData.config.authentication?.[accountData.authConfigKey]) {
+                authenticationConfigKey = accountData.authConfigKey;
+                environment = accountData.environment ?? selectedIntegration.environment;
+            }
+        }
+
+        const authConfig = connectorData.config.authentication?.[authenticationConfigKey];
+        const authConfigForEnvironment = authConfig?.[environment];
 
         const baseFields = authConfigForEnvironment?.fields || [];
 
@@ -419,12 +435,21 @@ export const useIntegrationPicker = ({
             return null;
         }
         if (isLegacyConnectorConfig(connectorData.config)) {
-            return connectorData.config.authentication?.[
-                selectedIntegration.authentication_config_key
-            ]?.[selectedIntegration.environment];
+            let authenticationConfigKey = selectedIntegration.authentication_config_key;
+            let environment = selectedIntegration.environment;
+
+            // TODO: https://stackonehq.atlassian.net/browse/ENG-11396 load this from the account's linked integration config
+            if (accountData && accountData.authConfigKey) {
+                if (connectorData.config.authentication?.[accountData.authConfigKey]) {
+                    authenticationConfigKey = accountData.authConfigKey;
+                    environment = accountData.environment ?? selectedIntegration.environment;
+                }
+            }
+
+            return connectorData.config.authentication?.[authenticationConfigKey]?.[environment];
         }
         return connectorData.config;
-    }, [connectorData, selectedIntegration]);
+    }, [connectorData, selectedIntegration, accountData]);
 
     const [isFormValid, setIsFormValid] = useState(true);
 
