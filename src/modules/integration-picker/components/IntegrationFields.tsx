@@ -15,7 +15,7 @@ import {
     TextArea,
     Typography,
 } from '@stackone/malachite';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
@@ -30,9 +30,10 @@ interface FieldRendererProps {
     field: ConnectorConfigField;
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
+    onCopyClick?: (fieldLabel: string) => void;
 }
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue, onCopyClick }) => {
     const key = typeof field.key === 'object' ? JSON.stringify(field.key) : String(field.key);
 
     const errorMessage = errors[key] && (
@@ -48,13 +49,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
     );
 
     if (isInputField(field.type)) {
+        const isReadOnly = field.readOnly;
+        const fieldValue = field.value?.toString();
+        const showCopyButton = isReadOnly && fieldValue;
+
         return (
             <>
                 <Input
                     name={key}
-                    required={field.required}
+                    required={isReadOnly ? true : field.required}
                     placeholder={field.placeholder}
                     disabled={field.readOnly}
+                    readOnly={field.readOnly}
                     label={field.label}
                     tooltip={field.guide?.tooltip}
                     description={field.guide?.description}
@@ -65,8 +71,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
                             shouldValidate: true,
                         })
                     }
-                    defaultValue={field.value?.toString()}
+                    defaultValue={fieldValue}
                     showPasswordToggle={false}
+                    onCopyClick={
+                        showCopyButton && onCopyClick ? () => onCopyClick(field.label) : undefined
+                    }
                 />
                 {errorMessage}
             </>
@@ -166,6 +175,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     onValidationChange,
     integrationName,
 }) => {
+    const [copySuccess, setCopySuccess] = useState<string | null>(null);
+    const copySuccessTimeoutRef = useRef<number | null>(null);
     const schema = useMemo(() => createFormSchema(fields), [fields]);
 
     const defaultValues = useMemo(() => {
@@ -202,6 +213,19 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
+    const handleCopyClick = (fieldLabel: string) => {
+        if (copySuccessTimeoutRef.current !== null) {
+            clearTimeout(copySuccessTimeoutRef.current);
+        }
+
+        setCopySuccess(`${fieldLabel} copied to clipboard`);
+
+        copySuccessTimeoutRef.current = window.setTimeout(() => {
+            setCopySuccess(null);
+            copySuccessTimeoutRef.current = null;
+        }, 3000);
+    };
+
     const errorJson = () => {
         if (!error) {
             return null;
@@ -228,6 +252,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                         {errorJson()}
                     </Alert>
                 )}
+                {copySuccess && <Alert type="success" message={copySuccess} hasMargin={false} />}
                 <Form>
                     {fields.map((field) => {
                         const key =
@@ -236,7 +261,12 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                 : String(field.key);
                         return (
                             <div key={key} style={{ width: '100%' }}>
-                                <FieldRenderer field={field} errors={errors} setValue={setValue} />
+                                <FieldRenderer
+                                    field={field}
+                                    errors={errors}
+                                    setValue={setValue}
+                                    onCopyClick={handleCopyClick}
+                                />
                             </div>
                         );
                     })}
