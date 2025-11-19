@@ -48,13 +48,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
     );
 
     if (isInputField(field.type)) {
+        const isReadOnly = field.readOnly;
+        const fieldValue = field.value?.toString();
+        const showCopyButton = isReadOnly && fieldValue;
+
         return (
             <>
                 <Input
                     name={key}
-                    required={field.required}
+                    required={isReadOnly ? true : field.required}
                     placeholder={field.placeholder}
                     disabled={field.readOnly}
+                    readOnly={field.readOnly}
                     label={field.label}
                     tooltip={field.guide?.tooltip}
                     description={field.guide?.description}
@@ -65,8 +70,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
                             shouldValidate: true,
                         })
                     }
-                    defaultValue={field.value?.toString()}
+                    defaultValue={fieldValue}
                     showPasswordToggle={false}
+                    onCopyClick={
+                        showCopyButton
+                            ? () => {
+                                  //TODO: Replace with a boolean flag as copy is handled in the Input component
+                              }
+                            : undefined
+                    }
                 />
                 {errorMessage}
             </>
