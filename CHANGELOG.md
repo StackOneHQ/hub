@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.6](https://github.com/StackOneHQ/hub/compare/hub-v0.6.5...hub-v0.6.6) (2025-11-19)
+
+
+### Bug Fixes
+
+* **ENG-11444:** Replaced copy action to use the one from Input ([#40](https://github.com/StackOneHQ/hub/issues/40)) ([3bf2281](https://github.com/StackOneHQ/hub/commit/3bf2281832b9f6e83c5bbe7b966af2850c665e4d))
+
 ## [0.6.5](https://github.com/StackOneHQ/hub/compare/hub-v0.6.4...hub-v0.6.5) (2025-11-18)
 
 
