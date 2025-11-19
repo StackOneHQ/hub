@@ -30,10 +30,9 @@ interface FieldRendererProps {
     field: ConnectorConfigField;
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
-    onCopyClick?: (fieldLabel: string) => void;
 }
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue, onCopyClick }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }) => {
     const key = typeof field.key === 'object' ? JSON.stringify(field.key) : String(field.key);
 
     const errorMessage = errors[key] && (
@@ -179,8 +178,6 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     onValidationChange,
     integrationName,
 }) => {
-    const [copySuccess, setCopySuccess] = useState<string | null>(null);
-    const copySuccessTimeoutRef = useRef<number | null>(null);
     const schema = useMemo(() => createFormSchema(fields), [fields]);
 
     const defaultValues = useMemo(() => {
@@ -217,19 +214,6 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
-    const handleCopyClick = (fieldLabel: string) => {
-        if (copySuccessTimeoutRef.current !== null) {
-            clearTimeout(copySuccessTimeoutRef.current);
-        }
-
-        setCopySuccess(`${fieldLabel} copied to clipboard`);
-
-        copySuccessTimeoutRef.current = window.setTimeout(() => {
-            setCopySuccess(null);
-            copySuccessTimeoutRef.current = null;
-        }, 3000);
-    };
-
     const errorJson = () => {
         if (!error) {
             return null;
@@ -256,7 +240,6 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                         {errorJson()}
                     </Alert>
                 )}
-                {copySuccess && <Alert type="success" message={copySuccess} hasMargin={false} />}
                 <Form>
                     {fields.map((field) => {
                         const key =
@@ -265,12 +248,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                 : String(field.key);
                         return (
                             <div key={key} style={{ width: '100%' }}>
-                                <FieldRenderer
-                                    field={field}
-                                    errors={errors}
-                                    setValue={setValue}
-                                    onCopyClick={handleCopyClick}
-                                />
+                                <FieldRenderer field={field} errors={errors} setValue={setValue} />
                             </div>
                         );
                     })}
