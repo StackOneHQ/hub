@@ -86,8 +86,10 @@ export function isFalconConnectorConfig(config: ConnectorConfig): config is Falc
 }
 
 export interface AccountData {
-    account_id: string;
+    secureId: string;
     provider: string;
     setupInformation: Record<string, string>;
     version: string;
+    authConfigKey?: string;
+    environment?: string;
 }

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.5](https://github.com/StackOneHQ/hub/compare/hub-v0.6.4...hub-v0.6.5) (2025-11-18)
+
+
+### Bug Fixes
+
+* **ENG-11444:** Add copy button and success alert for external trigger token ([#38](https://github.com/StackOneHQ/hub/issues/38)) ([accf6e5](https://github.com/StackOneHQ/hub/commit/accf6e53724ef388717e00c206a359dc0697c583))
+
+## [0.6.4](https://github.com/StackOneHQ/hub/compare/hub-v0.6.3...hub-v0.6.4) (2025-11-14)
+
+
+### Bug Fixes
+
+* load correct auth config ([#36](https://github.com/StackOneHQ/hub/issues/36)) ([9ac96b9](https://github.com/StackOneHQ/hub/commit/9ac96b9823756723e24cbc496c922dee17b88ba6))
+
+## [0.6.3](https://github.com/StackOneHQ/hub/compare/hub-v0.6.2...hub-v0.6.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* **ENG-11302:** Fix provider response in hub ([#34](https://github.com/StackOneHQ/hub/issues/34)) ([e3e6813](https://github.com/StackOneHQ/hub/commit/e3e68135ab1942bc8e831e34d77f736624db4cfa))
+
 ## [0.6.2](https://github.com/StackOneHQ/hub/compare/hub-v0.6.1...hub-v0.6.2) (2025-11-12)
 
 

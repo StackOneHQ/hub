@@ -44,10 +44,11 @@ export async function request<T>({
             if (!response.ok) {
                 const errorResponse = (await response.json()) as ErrorDetails;
                 if (errorResponse && isErrorsDetails(errorResponse)) {
+                    const { statusCode, ...rest } = errorResponse;
                     throw new Error(
                         JSON.stringify({
-                            status: errorResponse.statusCode,
-                            message: errorResponse.message,
+                            status: statusCode,
+                            ...rest,
                         }),
                     );
                 }
