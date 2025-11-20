@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/StackOneHQ/hub/compare/hub-v0.6.6...hub-v0.7.0) (2025-11-20)
+
+
+### Features
+
+* **ENG-1364:** Missing Provider Version ([#43](https://github.com/StackOneHQ/hub/issues/43)) ([d890cce](https://github.com/StackOneHQ/hub/commit/d890cce164e4440458a8e1feb3f278a18593dfe4))
+
+
+### Bug Fixes
+
+* **ENG-11479:** Missing Provider Version ([#44](https://github.com/StackOneHQ/hub/issues/44)) ([2d4b66d](https://github.com/StackOneHQ/hub/commit/2d4b66deaebe9f835906a7a38b56ea84b5f5496d))
+* **ENG-1364:** Missing Provider Version ([#42](https://github.com/StackOneHQ/hub/issues/42)) ([501c65d](https://github.com/StackOneHQ/hub/commit/501c65d598b0fff5360f8b3d59ba3b94ade70e78))
+
 ## [0.6.6](https://github.com/StackOneHQ/hub/compare/hub-v0.6.5...hub-v0.6.6) (2025-11-19)
 
 
