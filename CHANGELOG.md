@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/StackOneHQ/hub/compare/hub-v0.7.0...hub-v0.7.1) (2025-11-20)
+
+
+### Bug Fixes
+
+* **ENG-11479:** Missing Provider Version Revert ([#47](https://github.com/StackOneHQ/hub/issues/47)) ([5a7ad68](https://github.com/StackOneHQ/hub/commit/5a7ad68d8b57716cffbb66f7e37387bfb5fd5ea1))
+
 ## [0.7.0](https://github.com/StackOneHQ/hub/compare/hub-v0.6.6...hub-v0.7.0) (2025-11-20)
 
 
