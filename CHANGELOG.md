@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/StackOneHQ/hub/compare/hub-v0.7.1...hub-v0.7.2) (2025-11-21)
+
+
+### Bug Fixes
+
+* **ENG-11488:** handle grantType for falcon connectors ([#49](https://github.com/StackOneHQ/hub/issues/49)) ([61c0297](https://github.com/StackOneHQ/hub/commit/61c02979d6df23b3f94db85325537ac5ff25e6f6))
+
 ## [0.7.1](https://github.com/StackOneHQ/hub/compare/hub-v0.7.0...hub-v0.7.1) (2025-11-20)
 
 
