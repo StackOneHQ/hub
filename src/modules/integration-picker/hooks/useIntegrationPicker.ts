@@ -492,7 +492,16 @@ export const useIntegrationPicker = ({
                 }
             });
 
-            if (authConfig?.type === 'oauth2') {
+            // Check if OAuth2 redirect is needed
+            // For Falcon connectors, only redirect if grantType is authorization_code
+            // For Legacy connectors, redirect for all oauth2 types
+            const shouldRedirectForOAuth =
+                authConfig?.type === 'oauth2' &&
+                ('grantType' in authConfig && authConfig.grantType !== 'authorization_code'
+                    ? false
+                    : true);
+
+            if (shouldRedirectForOAuth) {
                 window.addEventListener('message', processMessageCallback, false);
                 const callbackEmbeddedAccountsUrl = encodeURIComponent(
                     `${dashboardUrl}/embedded/accounts/callback`,
