@@ -59,6 +59,7 @@ export interface FalconConnectorConfig {
     key: string;
     name: string;
     type: 'oauth2' | 'custom';
+    grantType?: 'authorization_code' | 'client_credentials';
     configFields: Array<ConnectorConfigField>;
     support: {
         link: string;
