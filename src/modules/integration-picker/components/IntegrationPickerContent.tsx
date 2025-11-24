@@ -35,6 +35,8 @@ interface IntegrationPickerContentProps {
     onSelect: (integration: Integration) => void;
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
+    editingSecrets?: Set<string>;
+    setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
 export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> = ({
@@ -52,6 +54,8 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     onSelect,
     onChange,
     onValidationChange,
+    editingSecrets,
+    setEditingSecrets,
 }) => {
     // Loading states
     if (isLoading) {
@@ -110,6 +114,8 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 onChange={onChange}
                 onValidationChange={onValidationChange}
                 integrationName={selectedIntegration.name}
+                editingSecrets={editingSecrets}
+                setEditingSecrets={setEditingSecrets}
             />
         );
     }

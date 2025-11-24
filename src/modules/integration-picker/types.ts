@@ -90,6 +90,7 @@ export interface AccountData {
     secureId: string;
     provider: string;
     setupInformation: Record<string, string>;
+    secrets?: Record<string, string>;
     version: string;
     authConfigKey?: string;
     environment?: string;

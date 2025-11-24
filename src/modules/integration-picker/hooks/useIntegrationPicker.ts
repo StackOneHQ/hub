@@ -16,8 +16,8 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
+import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
-const DUMMY_VALUE = 'totally-fake-value';
 const OAUTH_STORAGE_KEY = 'oauth_result';
 const OAUTH_CHANNEL_NAME = 'oauth_channel';
 
@@ -63,6 +63,7 @@ export const useIntegrationPicker = ({
 }: UseIntegrationPickerProps) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
+    const [editingSecrets, setEditingSecrets] = useState<Set<string>>(new Set());
 
     const setFormDataCallback = useCallback((data: Record<string, string>) => {
         setFormData(data);
@@ -282,19 +283,27 @@ export const useIntegrationPicker = ({
                     .map((field) => {
                         const setupValue = accountData?.setupInformation?.[field.key];
 
-                        if (accountData && (field.secret || field.type === 'password')) {
-                            return {
-                                ...field,
-                                key: field.key,
-                                value: DUMMY_VALUE,
-                            };
-                        }
-
                         if (field.key === 'external-trigger-token') {
                             return {
                                 ...field,
                                 key: field.key,
                                 value: hubData?.external_trigger_token,
+                            };
+                        }
+
+                        if (accountData && (field.secret !== false || field.type === 'password')) {
+                            const secretValue = accountData.secrets?.[field.key];
+                            if (secretValue) {
+                                return {
+                                    ...field,
+                                    key: field.key,
+                                    value: secretValue,
+                                };
+                            }
+                            return {
+                                ...field,
+                                key: field.key,
+                                value: '',
                             };
                         }
 
@@ -369,19 +378,27 @@ export const useIntegrationPicker = ({
             .map((field) => {
                 const setupValue = accountData?.setupInformation?.[field.key];
 
-                if (accountData && (field.secret || field.type === 'password')) {
-                    return {
-                        ...field,
-                        key: field.key,
-                        value: DUMMY_VALUE,
-                    };
-                }
-
                 if (field.key === 'external-trigger-token') {
                     return {
                         ...field,
                         key: field.key,
                         value: hubData?.external_trigger_token,
+                    };
+                }
+
+                if (accountData && (field.secret !== false || field.type === 'password')) {
+                    const secretValue = accountData.secrets?.[field.key];
+                    if (secretValue) {
+                        return {
+                            ...field,
+                            key: field.key,
+                            value: secretValue,
+                        };
+                    }
+                    return {
+                        ...field,
+                        key: field.key,
+                        value: '',
                     };
                 }
 
@@ -476,11 +493,12 @@ export const useIntegrationPicker = ({
             const cleanedFormData = { ...formData };
             if (accountData) {
                 fields.forEach((field) => {
-                    if (
-                        (field.secret || field.type === 'password') &&
-                        cleanedFormData[field.key] === DUMMY_VALUE
-                    ) {
-                        delete cleanedFormData[field.key];
+                    if (field.secret !== false || field.type === 'password') {
+                        const fieldValue = cleanedFormData[field.key];
+                        // Remove field if it's a placeholder that wasn't edited
+                        if (isSecretPlaceholder(fieldValue) && !editingSecrets.has(field.key)) {
+                            delete cleanedFormData[field.key];
+                        }
                     }
                 });
             }
@@ -630,6 +648,7 @@ export const useIntegrationPicker = ({
         token,
         selectedIntegration,
         formData,
+        editingSecrets,
         onSuccess,
         accountData,
         fields,
@@ -641,6 +660,11 @@ export const useIntegrationPicker = ({
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: selectedIntegration is intentionally used to reset editing state when integration changes
+    useEffect(() => {
+        setEditingSecrets(new Set());
+    }, [selectedIntegration]);
 
     // Reset connection state when there are query errors to prevent stuck loading states
     useEffect(() => {
@@ -654,11 +678,12 @@ export const useIntegrationPicker = ({
 
     const resetConnectionState = useCallback(() => {
         setConnectionState({ loading: false, success: false });
+        setEditingSecrets(new Set());
     }, []);
 
     const resetAllErrors = useCallback(() => {
         setConnectionState({ loading: false, success: false });
-        // Note: React Query errors will be reset automatically when queries are refetched
+        setEditingSecrets(new Set());
     }, []);
 
     return {
@@ -689,5 +714,7 @@ export const useIntegrationPicker = ({
         handleConnect,
         resetConnectionState,
         resetAllErrors,
+        editingSecrets,
+        setEditingSecrets,
     };
 };

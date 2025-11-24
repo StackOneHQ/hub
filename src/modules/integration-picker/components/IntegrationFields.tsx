@@ -20,6 +20,7 @@ import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import { ConnectorConfigField } from '../types';
+import { formatSecretPlaceholder, isSecretPlaceholder } from '../utils/secretPlaceholder';
 import { createFormSchema } from '../utils/zodSchema';
 
 const isInputField = (type: string | undefined): type is 'text' | 'number' | 'password' => {
@@ -30,9 +31,17 @@ interface FieldRendererProps {
     field: ConnectorConfigField;
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
+    editingSecrets?: Set<string>;
+    setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({
+    field,
+    errors,
+    setValue,
+    editingSecrets,
+    setEditingSecrets,
+}) => {
     const key = typeof field.key === 'object' ? JSON.stringify(field.key) : String(field.key);
 
     const errorMessage = errors[key] && (
@@ -50,15 +59,71 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
     if (isInputField(field.type)) {
         const isReadOnly = field.readOnly;
         const fieldValue = field.value?.toString();
-        const showCopyButton = isReadOnly && fieldValue;
+
+        const isSecret =
+            field.key !== 'external-trigger-token' &&
+            (field.secret !== false || field.type === 'password');
+
+        const showCopyButton = isReadOnly && fieldValue && !isSecret;
+        const isBeingEdited = editingSecrets?.has(key) ?? false;
+        const isPlaceholder = isSecret && isSecretPlaceholder(fieldValue) && !isBeingEdited;
+
+        if (isPlaceholder) {
+            return (
+                <>
+                    <Input
+                        name={`${key}-display`}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        type="text"
+                        required={field.required}
+                        disabled={true}
+                        readOnly={true}
+                        defaultValue={fieldValue ? formatSecretPlaceholder(fieldValue) : ''}
+                        description={field.guide?.description}
+                        tooltip={field.guide?.tooltip}
+                        showCopyButton={false}
+                        buttons={
+                            setEditingSecrets
+                                ? [
+                                      {
+                                          label: 'Edit',
+                                          variant: 'filled',
+                                          size: 'xsmall',
+                                          onClick: () => {
+                                              setEditingSecrets((prev) => new Set(prev).add(key));
+                                              setValue(key, '', {
+                                                  shouldValidate: true,
+                                                  shouldDirty: true,
+                                              });
+                                          },
+                                      },
+                                  ]
+                                : undefined
+                        }
+                    />
+                    {errorMessage}
+                </>
+            );
+        }
+
+        const inputDisabled = isSecret ? false : field.readOnly || false;
+        const inputOnCopyClick = isSecret
+            ? undefined
+            : showCopyButton
+              ? () => {
+                    // Copy functionality is handled in the Input component
+                }
+              : undefined;
 
         return (
             <>
                 <Input
+                    key={`${key}-${isBeingEdited ? 'editing' : 'view'}`}
                     name={key}
                     required={isReadOnly ? true : field.required}
                     placeholder={field.placeholder}
-                    disabled={field.readOnly}
+                    disabled={inputDisabled}
                     readOnly={field.readOnly}
                     label={field.label}
                     tooltip={field.guide?.tooltip}
@@ -70,15 +135,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, errors, setValue }
                             shouldValidate: true,
                         })
                     }
-                    defaultValue={fieldValue}
+                    defaultValue={isSecret && isBeingEdited ? '' : fieldValue}
                     showPasswordToggle={false}
-                    onCopyClick={
-                        showCopyButton
-                            ? () => {
-                                  //TODO: Replace with a boolean flag as copy is handled in the Input component
-                              }
-                            : undefined
-                    }
+                    onCopyClick={inputOnCopyClick}
                 />
                 {errorMessage}
             </>
@@ -144,6 +203,8 @@ interface IntegrationFieldsProps {
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
     integrationName: string;
+    editingSecrets?: Set<string>;
+    setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
 const NoFieldsView: React.FC<{ integrationName: string }> = ({ integrationName }) => {
@@ -177,6 +238,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     error,
     onValidationChange,
     integrationName,
+    editingSecrets,
+    setEditingSecrets,
 }) => {
     const schema = useMemo(() => createFormSchema(fields), [fields]);
 
@@ -248,7 +311,13 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                 : String(field.key);
                         return (
                             <div key={key} style={{ width: '100%' }}>
-                                <FieldRenderer field={field} errors={errors} setValue={setValue} />
+                                <FieldRenderer
+                                    field={field}
+                                    errors={errors}
+                                    setValue={setValue}
+                                    editingSecrets={editingSecrets}
+                                    setEditingSecrets={setEditingSecrets}
+                                />
                             </div>
                         );
                     })}
