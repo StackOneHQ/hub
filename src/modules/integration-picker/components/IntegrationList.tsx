@@ -43,10 +43,10 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                     style={{ width: '24px', height: '24px' }}
                 />
                 <Typography.Text>{integration.name ?? 'N/A'}</Typography.Text>
+                {isFalconVersion(integration.version) && (
+                    <Typography.SecondaryText>{integration.version}</Typography.SecondaryText>
+                )}
             </Flex>
-            {isFalconVersion(integration.version) && (
-                <Typography.SecondaryText>{integration.version}</Typography.SecondaryText>
-            )}
             <Typography.SecondaryText>
                 {
                     CATEGORIES_WITH_LABELS.find((category) => category.value === integration.type)
