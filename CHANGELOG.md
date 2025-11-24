@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/StackOneHQ/hub/compare/hub-v0.7.2...hub-v0.7.3) (2025-11-24)
+
+
+### Bug Fixes
+
+* **ENG-11467:** Add secret field editing with placeholder view ([#51](https://github.com/StackOneHQ/hub/issues/51)) ([935bce0](https://github.com/StackOneHQ/hub/commit/935bce06f9c05e5978b375942723489fc3ad4313))
+
 ## [0.7.2](https://github.com/StackOneHQ/hub/compare/hub-v0.7.1...hub-v0.7.2) (2025-11-21)
 
 
