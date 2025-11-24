@@ -11,6 +11,8 @@ interface IntegrationFormViewProps {
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
     integrationName: string;
+    editingSecrets?: Set<string>;
+    setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
@@ -19,6 +21,8 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     onChange,
     onValidationChange,
     integrationName,
+    editingSecrets,
+    setEditingSecrets,
 }) => {
     return (
         <IntegrationForm
@@ -27,6 +31,8 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
             onChange={onChange}
             onValidationChange={onValidationChange}
             integrationName={integrationName}
+            editingSecrets={editingSecrets}
+            setEditingSecrets={setEditingSecrets}
         />
     );
 };

@@ -56,6 +56,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         setIsFormValid,
         handleConnect,
         resetConnectionState,
+        editingSecrets,
+        setEditingSecrets,
     } = useIntegrationPicker({
         token,
         baseUrl,
@@ -131,6 +133,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     onValidationChange={handleValidationChange}
                     selectedCategory={selectedCategory}
                     search={search}
+                    editingSecrets={editingSecrets}
+                    setEditingSecrets={setEditingSecrets}
                 />
             )}
         </Card>
