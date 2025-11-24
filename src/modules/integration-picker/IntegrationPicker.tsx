@@ -105,6 +105,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
                     onSearchChange={setSearch}
+                    hideBackButton={connectionState.loading || connectionState.success}
                 />
             }
             height={height}

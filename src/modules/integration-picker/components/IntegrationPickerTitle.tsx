@@ -13,6 +13,7 @@ interface IntegrationPickerTitleProps {
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
+    hideBackButton?: boolean;
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -26,12 +27,13 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     selectedCategory,
     onCategoryChange,
     onSearchChange,
+    hideBackButton,
 }) => {
     if (selectedIntegration) {
         return (
             <CardTitle
                 selectedIntegration={selectedIntegration}
-                onBack={accountData ? undefined : onBack}
+                onBack={accountData || hideBackButton ? undefined : onBack}
                 guide={guide}
             />
         );
