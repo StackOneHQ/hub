@@ -661,6 +661,11 @@ export const useIntegrationPicker = ({
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: selectedIntegration is intentionally used to reset editing state when integration changes
+    useEffect(() => {
+        setEditingSecrets(new Set());
+    }, [selectedIntegration]);
+
     // Reset connection state when there are query errors to prevent stuck loading states
     useEffect(() => {
         if (hasError && connectionState.loading) {
@@ -673,11 +678,12 @@ export const useIntegrationPicker = ({
 
     const resetConnectionState = useCallback(() => {
         setConnectionState({ loading: false, success: false });
+        setEditingSecrets(new Set());
     }, []);
 
     const resetAllErrors = useCallback(() => {
         setConnectionState({ loading: false, success: false });
-        // Note: React Query errors will be reset automatically when queries are refetched
+        setEditingSecrets(new Set());
     }, []);
 
     return {
