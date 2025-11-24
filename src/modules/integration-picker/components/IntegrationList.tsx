@@ -110,7 +110,6 @@ export const IntegrationListHeader: React.FC<{
                                         fullHeight={false}
                                     >
                                         <PillButton
-                                            key={category}
                                             label={
                                                 CATEGORIES_WITH_LABELS.find(
                                                     (c) => c.value === category,
