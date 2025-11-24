@@ -87,41 +87,45 @@ export const IntegrationListHeader: React.FC<{
                 size="large"
                 onChange={onSearchChange}
             />
-            <Divider />
-            <Padded vertical="small" horizontal="none" fullHeight={false}>
-                <div
-                    style={{
-                        overflowX: 'auto',
-                        overflowY: 'hidden',
-                        backgroundColor: 'var(--malachite-card-background)',
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                    }}
-                    className="hide-scrollbar"
-                >
-                    <div style={{ display: 'flex', minWidth: 'max-content' }}>
-                        {availableCategories.length > 1 &&
-                            availableCategories.map((category) => (
-                                <Padded
-                                    key={category}
-                                    vertical="none"
-                                    horizontal="small"
-                                    fullHeight={false}
-                                >
-                                    <PillButton
+            {availableCategories.length > 1 && (
+                <>
+                    <Divider />
+                    <Padded vertical="small" horizontal="none" fullHeight={false}>
+                        <div
+                            style={{
+                                overflowX: 'auto',
+                                overflowY: 'hidden',
+                                backgroundColor: 'var(--malachite-card-background)',
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                            className="hide-scrollbar"
+                        >
+                            <div style={{ display: 'flex', minWidth: 'max-content' }}>
+                                {availableCategories.map((category) => (
+                                    <Padded
                                         key={category}
-                                        label={
-                                            CATEGORIES_WITH_LABELS.find((c) => c.value === category)
-                                                ?.label || category
-                                        }
-                                        selected={selectedCategory === category}
-                                        onClick={() => handleCategoryClick(category)}
-                                    />
-                                </Padded>
-                            ))}
-                    </div>
-                </div>
-            </Padded>
+                                        vertical="none"
+                                        horizontal="small"
+                                        fullHeight={false}
+                                    >
+                                        <PillButton
+                                            key={category}
+                                            label={
+                                                CATEGORIES_WITH_LABELS.find(
+                                                    (c) => c.value === category,
+                                                )?.label || category
+                                            }
+                                            selected={selectedCategory === category}
+                                            onClick={() => handleCategoryClick(category)}
+                                        />
+                                    </Padded>
+                                ))}
+                            </div>
+                        </div>
+                    </Padded>
+                </>
+            )}
         </>
     );
 };
