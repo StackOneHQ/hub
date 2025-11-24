@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.4](https://github.com/StackOneHQ/hub/compare/hub-v0.7.3...hub-v0.7.4) (2025-11-24)
+
+
+### Bug Fixes
+
+* **ENG-11463:** remove back button on loading or connected ([#55](https://github.com/StackOneHQ/hub/issues/55)) ([75e7961](https://github.com/StackOneHQ/hub/commit/75e7961bbf5ddefab54b7dde81403d2ecbd76d6e))
+* **ENG-11471:** remove divider for single category ([#53](https://github.com/StackOneHQ/hub/issues/53)) ([b3e1186](https://github.com/StackOneHQ/hub/commit/b3e11861d0fdc6564037d49cbfc029994c51b0ad))
+
 ## [0.7.3](https://github.com/StackOneHQ/hub/compare/hub-v0.7.2...hub-v0.7.3) (2025-11-24)
 
 
