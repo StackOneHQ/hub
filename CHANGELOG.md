@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/StackOneHQ/hub/compare/hub-v0.7.4...hub-v0.8.0) (2025-11-25)
+
+
+### Features
+
+* **ENG-11390:** update styles ([#58](https://github.com/StackOneHQ/hub/issues/58)) ([e8bed7b](https://github.com/StackOneHQ/hub/commit/e8bed7bdce9d01ce4109ad6b4550b13184622d9f))
+
 ## [0.7.4](https://github.com/StackOneHQ/hub/compare/hub-v0.7.3...hub-v0.7.4) (2025-11-24)
 
 
