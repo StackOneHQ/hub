@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/StackOneHQ/hub/compare/hub-v0.9.0...hub-v0.9.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* **ENG-11479:** missing provider version on account edit ([#62](https://github.com/StackOneHQ/hub/issues/62)) ([3b489eb](https://github.com/StackOneHQ/hub/commit/3b489eb56cd568a65b8a8b1a6942162c0343c2a4))
+
 ## [0.9.0](https://github.com/StackOneHQ/hub/compare/hub-v0.8.0...hub-v0.9.0) (2025-11-25)
 
 
