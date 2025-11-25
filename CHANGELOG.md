@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/StackOneHQ/hub/compare/hub-v0.8.0...hub-v0.9.0) (2025-11-25)
+
+
+### Features
+
+* **ENG-11506:** send integration id on save ([#60](https://github.com/StackOneHQ/hub/issues/60)) ([e0a5398](https://github.com/StackOneHQ/hub/commit/e0a5398dfd29b25feaaa5281e597a25eb508050b))
+
 ## [0.8.0](https://github.com/StackOneHQ/hub/compare/hub-v0.7.4...hub-v0.8.0) (2025-11-25)
 
 
