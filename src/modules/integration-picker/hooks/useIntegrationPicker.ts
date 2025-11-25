@@ -1,13 +1,11 @@
 import { evaluate } from '@stackone/expressions';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { isFalconVersion } from '../../../shared/utils/utils';
 import {
     connectAccount,
     getAccountData,
-    getFalconConnectorConfig,
+    getConnectorConfig,
     getHubData,
-    getLegacyConnectorConfig,
     updateAccount,
 } from '../queries';
 import {
@@ -237,33 +235,15 @@ export const useIntegrationPicker = ({
     } = useQuery({
         queryKey: [
             'connectorData',
-            accountData?.provider,
-            accountData?.version,
-            selectedIntegration?.provider,
-            selectedIntegration?.version,
+            accountData?.integrationId,
+            selectedIntegration?.integration_id,
         ],
         queryFn: async () => {
             if (accountData) {
-                if (isFalconVersion(accountData.version)) {
-                    return getFalconConnectorConfig(
-                        baseUrl,
-                        token,
-                        `${accountData.provider}@${accountData.version}`,
-                    );
-                } else {
-                    return getLegacyConnectorConfig(baseUrl, token, accountData.provider);
-                }
+                return getConnectorConfig(baseUrl, token, accountData.integrationId);
             }
             if (selectedIntegration) {
-                if (isFalconVersion(selectedIntegration.version)) {
-                    return getFalconConnectorConfig(
-                        baseUrl,
-                        token,
-                        `${selectedIntegration.provider}@${selectedIntegration.version}`,
-                    );
-                } else {
-                    return getLegacyConnectorConfig(baseUrl, token, selectedIntegration.provider);
-                }
+                return getConnectorConfig(baseUrl, token, selectedIntegration.integration_id);
             }
             return null;
         },
@@ -578,21 +558,20 @@ export const useIntegrationPicker = ({
             }
 
             if (accountId) {
-                await updateAccount(
+                await updateAccount({
                     baseUrl,
                     accountId,
                     token,
-                    selectedIntegration.provider,
-                    cleanedFormData,
-                );
+                    integrationId: selectedIntegration.integration_id,
+                    credentials: cleanedFormData,
+                });
             } else {
-                await connectAccount(
+                await connectAccount({
                     baseUrl,
                     token,
-                    selectedIntegration.provider,
-                    selectedIntegration.version,
-                    cleanedFormData,
-                );
+                    credentials: cleanedFormData,
+                    integrationId: selectedIntegration.integration_id,
+                });
             }
 
             setConnectionState({ loading: false, success: true });

@@ -6,6 +6,7 @@ export interface Integration {
     version: string;
     authentication_config_key: string;
     environment: string;
+    integration_id: string;
 }
 
 export interface HubData {
@@ -94,4 +95,5 @@ export interface AccountData {
     version: string;
     authConfigKey?: string;
     environment?: string;
+    integrationId: string;
 }

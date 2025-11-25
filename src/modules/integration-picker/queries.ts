@@ -19,13 +19,9 @@ export const getHubData = async (token: string, baseUrl: string, provider?: stri
     });
 };
 
-export const getLegacyConnectorConfig = async (
-    baseUrl: string,
-    token: string,
-    connectorKey: string,
-) => {
+export const getConnectorConfig = async (baseUrl: string, token: string, integrationId: string) => {
     return await getRequest<HubConnectorConfig>({
-        url: `${baseUrl}/hub/connectors/legacy/${connectorKey}`,
+        url: `${baseUrl}/hub/connectors/${integrationId}`,
         headers: {
             'Content-Type': 'application/json',
             'x-hub-session-token': token,
@@ -33,27 +29,17 @@ export const getLegacyConnectorConfig = async (
     });
 };
 
-export const getFalconConnectorConfig = async (
-    baseUrl: string,
-    token: string,
-    connectorKey: string,
-) => {
-    return await getRequest<HubConnectorConfig>({
-        url: `${baseUrl}/hub/connectors/falcon/${encodeURIComponent(connectorKey)}`,
-        headers: {
-            'Content-Type': 'application/json',
-            'x-hub-session-token': token,
-        },
-    });
-};
-
-export const connectAccount = async (
-    baseUrl: string,
-    token: string,
-    provider: string,
-    version: string,
-    credentials: Record<string, unknown>,
-) => {
+export const connectAccount = async ({
+    baseUrl,
+    token,
+    credentials,
+    integrationId,
+}: {
+    baseUrl: string;
+    token: string;
+    credentials: Record<string, unknown>;
+    integrationId: string;
+}) => {
     return await postRequest<ConnectorConfig>({
         url: `${baseUrl}/hub/accounts`,
         headers: {
@@ -61,19 +47,25 @@ export const connectAccount = async (
             'x-hub-session-token': token,
         },
         body: {
-            provider: `${provider}@${version}`,
+            integration_id: integrationId,
             credentials,
         },
     });
 };
 
-export const updateAccount = async (
-    baseUrl: string,
-    accountId: string,
-    token: string,
-    provider: string,
-    credentials: Record<string, unknown>,
-) => {
+export const updateAccount = async ({
+    baseUrl,
+    accountId,
+    token,
+    credentials,
+    integrationId,
+}: {
+    baseUrl: string;
+    token: string;
+    accountId: string;
+    credentials: Record<string, unknown>;
+    integrationId: string;
+}) => {
     return await patchRequest<ConnectorConfig>({
         url: `${baseUrl}/hub/accounts/${accountId}`,
         headers: {
@@ -81,7 +73,7 @@ export const updateAccount = async (
             'x-hub-session-token': token,
         },
         body: {
-            provider,
+            integration_id: integrationId,
             credentials,
         },
     });
