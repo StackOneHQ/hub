@@ -505,7 +505,7 @@ export const useIntegrationPicker = ({
                     `${dashboardUrl}/embedded/accounts/callback`,
                 );
 
-                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.provider}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}&provider_version=${accountData?.version ?? selectedIntegration.version}`;
+                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}`;
 
                 Object.keys(cleanedFormData).forEach((key) => {
                     windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
