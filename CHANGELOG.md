@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/StackOneHQ/hub/compare/hub-v0.9.1...hub-v0.10.0) (2025-11-27)
+
+
+### Features
+
+* **ENG-11506:** initiate OAuth flow with integration id ([#64](https://github.com/StackOneHQ/hub/issues/64)) ([2a817ff](https://github.com/StackOneHQ/hub/commit/2a817ff164f680aa61d449bc0bdb9de529394779))
+
 ## [0.9.1](https://github.com/StackOneHQ/hub/compare/hub-v0.9.0...hub-v0.9.1) (2025-11-25)
 
 
