@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/StackOneHQ/hub/compare/hub-v0.10.0...hub-v0.10.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* **ENG-11565:** Add New category to Hub ([#66](https://github.com/StackOneHQ/hub/issues/66)) ([0ad437a](https://github.com/StackOneHQ/hub/commit/0ad437aac479f00773f8910f7761029a5f2ef786))
+
 ## [0.10.0](https://github.com/StackOneHQ/hub/compare/hub-v0.9.1...hub-v0.10.0) (2025-11-27)
 
 
