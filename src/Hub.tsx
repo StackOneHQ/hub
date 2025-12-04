@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { memo } from 'react';
 import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import { FeatureFlagProvider } from './shared/contexts/featureFlagContext';
 import { getSettings } from './shared/queries';
@@ -16,38 +17,40 @@ interface HubProps {
     accountId?: string;
     showFooterLinks?: boolean;
 }
-export const Hub = ({
-    mode,
-    token,
-    apiUrl,
-    dashboardUrl,
-    height,
-    onSuccess,
-    onClose,
-    onCancel,
-    accountId,
-    showFooterLinks,
-}: HubProps) => {
-    const { data: settings } = useQuery({
-        queryKey: ['settings'],
-        queryFn: () => getSettings(apiUrl, token),
-    });
+export const Hub = memo(
+    ({
+        mode,
+        token,
+        apiUrl,
+        dashboardUrl,
+        height,
+        onSuccess,
+        onClose,
+        onCancel,
+        accountId,
+        showFooterLinks,
+    }: HubProps) => {
+        const { data: settings } = useQuery({
+            queryKey: ['settings'],
+            queryFn: () => getSettings(apiUrl, token),
+        });
 
-    return (
-        <FeatureFlagProvider featureFlags={settings?.enabled_features ?? []}>
-            {mode === 'integration-picker' && (
-                <IntegrationPicker
-                    token={token}
-                    baseUrl={apiUrl}
-                    dashboardUrl={dashboardUrl}
-                    height={height}
-                    onSuccess={onSuccess}
-                    onClose={onClose}
-                    onCancel={onCancel}
-                    accountId={accountId}
-                    showFooterLinks={showFooterLinks}
-                />
-            )}
-        </FeatureFlagProvider>
-    );
-};
+        return (
+            <FeatureFlagProvider featureFlags={settings?.enabled_features ?? []}>
+                {mode === 'integration-picker' && (
+                    <IntegrationPicker
+                        token={token}
+                        baseUrl={apiUrl}
+                        dashboardUrl={dashboardUrl}
+                        height={height}
+                        onSuccess={onSuccess}
+                        onClose={onClose}
+                        onCancel={onCancel}
+                        accountId={accountId}
+                        showFooterLinks={showFooterLinks}
+                    />
+                )}
+            </FeatureFlagProvider>
+        );
+    },
+);

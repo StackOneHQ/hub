@@ -14,8 +14,6 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Hub } from './Hub';
-import { CsvImporter } from './modules/csv-importer.tsx/CsvImporter';
-import { IntegrationPicker } from './modules/integration-picker/IntegrationPicker';
 import ErrorContainer from './shared/components/error';
 import ErrorBoundary from './shared/components/errorBoundary';
 import { HubModes } from './types/types';
