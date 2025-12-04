@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/StackOneHQ/hub/compare/hub-v0.10.1...hub-v0.10.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* **ENG-11592:** show errors even when no form fields present ([#69](https://github.com/StackOneHQ/hub/issues/69)) ([76cee1c](https://github.com/StackOneHQ/hub/commit/76cee1cc37500c52343d219444fea259e1cdc8ff))
+
 ## [0.10.1](https://github.com/StackOneHQ/hub/compare/hub-v0.10.0...hub-v0.10.1) (2025-12-02)
 
 
