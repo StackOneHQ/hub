@@ -194,6 +194,19 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     return null;
 };
 
+const ErrorBlock = ({ error }: { error?: { message: string; provider_response: string } }) => {
+    if (!error) {
+        return null;
+    }
+    try {
+        return <CodeBlock json={JSON.parse(error.provider_response)} />;
+    } catch (_e) {
+        if (error?.provider_response && error?.provider_response.length > 0) {
+            return <CodeBlock code={error?.provider_response} />;
+        }
+        return null;
+    }
+};
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
     error?: {
@@ -207,9 +220,17 @@ interface IntegrationFieldsProps {
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
-const NoFieldsView: React.FC<{ integrationName: string }> = ({ integrationName }) => {
+const NoFieldsView: React.FC<{
+    integrationName: string;
+    error?: { message: string; provider_response: string };
+}> = ({ integrationName, error }) => {
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
+            {error && (
+                <Alert type="error" message={error.message} hasMargin={false}>
+                    <ErrorBlock error={error} />
+                </Alert>
+            )}
             <Flex
                 direction={FlexDirection.Vertical}
                 gapSize={FlexGapSize.Small}
@@ -277,22 +298,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
-    const errorJson = () => {
-        if (!error) {
-            return null;
-        }
-        try {
-            return <CodeBlock json={JSON.parse(error.provider_response)} />;
-        } catch (_e) {
-            if (error?.provider_response && error?.provider_response.length > 0) {
-                return <CodeBlock code={error?.provider_response} />;
-            }
-            return null;
-        }
-    };
-
     if (fields.length === 0) {
-        return <NoFieldsView integrationName={integrationName} />;
+        return <NoFieldsView integrationName={integrationName} error={error} />;
     }
 
     return (
@@ -300,7 +307,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
             <Spacer direction="vertical" size={8} fullWidth>
                 {error && (
                     <Alert type="error" message={error.message} hasMargin={false}>
-                        {errorJson()}
+                        <ErrorBlock error={error} />
                     </Alert>
                 )}
                 <Form>
