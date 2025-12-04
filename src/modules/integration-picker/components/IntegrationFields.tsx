@@ -311,23 +311,25 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                     </Alert>
                 )}
                 <Form>
-                    {fields.map((field) => {
-                        const key =
-                            typeof field.key === 'object'
-                                ? JSON.stringify(field.key)
-                                : String(field.key);
-                        return (
-                            <div key={key} style={{ width: '100%' }}>
-                                <FieldRenderer
-                                    field={field}
-                                    errors={errors}
-                                    setValue={setValue}
-                                    editingSecrets={editingSecrets}
-                                    setEditingSecrets={setEditingSecrets}
-                                />
-                            </div>
-                        );
-                    })}
+                    {fields
+                        .filter((field) => field.display)
+                        .map((field) => {
+                            const key =
+                                typeof field.key === 'object'
+                                    ? JSON.stringify(field.key)
+                                    : String(field.key);
+                            return (
+                                <div key={key} style={{ width: '100%' }}>
+                                    <FieldRenderer
+                                        field={field}
+                                        errors={errors}
+                                        setValue={setValue}
+                                        editingSecrets={editingSecrets}
+                                        setEditingSecrets={setEditingSecrets}
+                                    />
+                                </div>
+                            );
+                        })}
                 </Form>
             </Spacer>
         </Padded>

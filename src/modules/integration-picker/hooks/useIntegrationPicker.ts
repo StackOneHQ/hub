@@ -363,22 +363,7 @@ export const useIntegrationPicker = ({
                         ...field,
                         key: field.key,
                         value: hubData?.external_trigger_token,
-                    };
-                }
-
-                if (accountData && (field.secret !== false || field.type === 'password')) {
-                    const secretValue = accountData.secrets?.[field.key];
-                    if (secretValue) {
-                        return {
-                            ...field,
-                            key: field.key,
-                            value: secretValue,
-                        };
-                    }
-                    return {
-                        ...field,
-                        key: field.key,
-                        value: '',
+                        display: true,
                     };
                 }
 
@@ -394,9 +379,29 @@ export const useIntegrationPicker = ({
 
                     const shouldShow = evaluated != null && evaluated !== 'false';
 
-                    if (!shouldShow) {
-                        return;
+                    return {
+                        ...field,
+                        key: field.key,
+                        display: shouldShow,
+                    };
+                }
+
+                if (accountData && (field.secret !== false || field.type === 'password')) {
+                    const secretValue = accountData.secrets?.[field.key];
+                    if (secretValue) {
+                        return {
+                            ...field,
+                            key: field.key,
+                            value: secretValue,
+                            display: true,
+                        };
                     }
+                    return {
+                        ...field,
+                        key: field.key,
+                        value: '',
+                        display: true,
+                    };
                 }
 
                 const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
@@ -405,6 +410,7 @@ export const useIntegrationPicker = ({
                     return {
                         ...field,
                         key: field.key,
+                        display: true,
                     };
                 }
                 let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
@@ -417,6 +423,7 @@ export const useIntegrationPicker = ({
                     ...field,
                     key: field.key,
                     value: evaluatedValue as string | number | undefined,
+                    display: true,
                 };
             })
             .filter((value) => value != null);

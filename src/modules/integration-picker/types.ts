@@ -37,6 +37,7 @@ export interface ConnectorConfigField {
         pattern: string;
         error?: string;
     };
+    display?: boolean;
 }
 
 export interface LegacyConnectorConfig {
