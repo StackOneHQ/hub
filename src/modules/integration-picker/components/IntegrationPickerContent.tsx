@@ -87,7 +87,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
 
     // Success state
     if (connectionState.success && selectedIntegration) {
-        return <SuccessView integrationName={selectedIntegration.name} />;
+        return <SuccessView integrationName={connectorData?.name ?? selectedIntegration.name} />;
     }
 
     // Integration selection flow
@@ -113,7 +113,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}
-                integrationName={connectorData.name ?? selectedIntegration.name}
+                integrationName={connectorData.name}
                 editingSecrets={editingSecrets}
                 setEditingSecrets={setEditingSecrets}
             />

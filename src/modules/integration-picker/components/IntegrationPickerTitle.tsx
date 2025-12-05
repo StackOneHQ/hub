@@ -1,4 +1,4 @@
-import { ConnectorConfig, HubData, Integration } from '../types';
+import { ConnectorConfig, HubData } from '../types';
 import CardTitle from './cardTitle';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
