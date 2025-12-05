@@ -7,15 +7,15 @@ import {
     FlexJustify,
     Typography,
 } from '@stackone/malachite';
-import { Integration } from '../types';
+import { ConnectorConfig } from '../types';
 
 interface CardTitleProps {
-    selectedIntegration: Integration;
+    connectorData: ConnectorConfig;
     onBack?: () => void;
     guide?: { supportLink?: string; description: string };
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guide }) => {
+const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {
     return (
         <Flex
             direction={FlexDirection.Horizontal}
@@ -31,12 +31,12 @@ const CardTitle: React.FC<CardTitleProps> = ({ selectedIntegration, onBack, guid
             >
                 {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
                 <img
-                    src={`https://app.stackone.com/assets/logos/${selectedIntegration.provider}.png`}
-                    alt={selectedIntegration.provider}
+                    src={`https://app.stackone.com/assets/logos/${connectorData.key}.png`}
+                    alt={connectorData.key}
                     style={{ width: '16px', height: '16px' }}
                 />
                 <Typography.Text fontWeight="semi-bold" size="medium">
-                    {selectedIntegration.name}
+                    {connectorData.name}
                 </Typography.Text>
             </Flex>
             {guide?.supportLink && (

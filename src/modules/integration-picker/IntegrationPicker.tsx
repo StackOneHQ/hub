@@ -95,7 +95,6 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
             }
             title={
                 <IntegrationPickerTitle
-                    selectedIntegration={selectedIntegration}
                     accountData={accountData}
                     onBack={onBack}
                     guide={guide}
@@ -106,6 +105,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     onCategoryChange={setSelectedCategory}
                     onSearchChange={setSearch}
                     hideBackButton={connectionState.loading || connectionState.success}
+                    connectorData={connectorData?.config ?? null}
                 />
             }
             height={height}

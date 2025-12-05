@@ -70,7 +70,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     if (connectionState.loading && selectedIntegration) {
         return (
             <LoadingView
-                title={`Connecting to ${selectedIntegration.name}`}
+                title={`Connecting to ${connectorData?.name ?? selectedIntegration.name}`}
                 description="Please wait, this may take a moment."
             />
         );
@@ -113,7 +113,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}
-                integrationName={selectedIntegration.name}
+                integrationName={connectorData.name ?? selectedIntegration.name}
                 editingSecrets={editingSecrets}
                 setEditingSecrets={setEditingSecrets}
             />
