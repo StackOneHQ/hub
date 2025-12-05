@@ -363,7 +363,6 @@ export const useIntegrationPicker = ({
                         ...field,
                         key: field.key,
                         value: hubData?.external_trigger_token,
-                        display: true,
                     };
                 }
 
@@ -393,14 +392,12 @@ export const useIntegrationPicker = ({
                             ...field,
                             key: field.key,
                             value: secretValue,
-                            display: true,
                         };
                     }
                     return {
                         ...field,
                         key: field.key,
                         value: '',
-                        display: true,
                     };
                 }
 
@@ -410,7 +407,6 @@ export const useIntegrationPicker = ({
                     return {
                         ...field,
                         key: field.key,
-                        display: true,
                     };
                 }
                 let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
@@ -423,7 +419,6 @@ export const useIntegrationPicker = ({
                     ...field,
                     key: field.key,
                     value: evaluatedValue as string | number | undefined,
-                    display: true,
                 };
             })
             .filter((value) => value != null);

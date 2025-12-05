@@ -312,7 +312,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                 )}
                 <Form>
                     {fields
-                        .filter((field) => field.display)
+                        .filter((field) => field.display !== false)
                         .map((field) => {
                             const key =
                                 typeof field.key === 'object'
