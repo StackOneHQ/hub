@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/StackOneHQ/hub/compare/hub-v0.11.0...hub-v0.11.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* use connector name instead of config name ([#73](https://github.com/StackOneHQ/hub/issues/73)) ([9791a9f](https://github.com/StackOneHQ/hub/commit/9791a9fb2337b5d385f2096a92d5794a2014bcae))
+
 ## [0.11.0](https://github.com/StackOneHQ/hub/compare/hub-v0.10.2...hub-v0.11.0) (2025-12-05)
 
 
