@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://github.com/StackOneHQ/hub/compare/hub-v0.10.2...hub-v0.11.0) (2025-12-05)
+
+
+### Features
+
+* **ENG-11298:** Pinning GitHub actions ([#68](https://github.com/StackOneHQ/hub/issues/68)) ([49ef741](https://github.com/StackOneHQ/hub/commit/49ef741e2380022c38eafad51dd20262a85f7626))
+
+
+### Bug Fixes
+
+* **ENG-11515:** hide hidden fields on edit ([#71](https://github.com/StackOneHQ/hub/issues/71)) ([41c4761](https://github.com/StackOneHQ/hub/commit/41c4761717e9a3238077a9426b004ef22ba6e41a))
+
 ## [0.10.2](https://github.com/StackOneHQ/hub/compare/hub-v0.10.1...hub-v0.10.2) (2025-12-04)
 
 
