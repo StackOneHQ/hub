@@ -1,5 +1,5 @@
 import { Card } from '@stackone/malachite';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
@@ -73,6 +73,12 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         [setIsFormValid],
     );
 
+    const hasOnlyOneIntegration = useMemo(() => {
+        if (!hubData) return false;
+        const activeIntegrations = hubData.integrations.filter((integration) => integration.active);
+        return activeIntegrations.length === 1;
+    }, [hubData]);
+
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
@@ -87,7 +93,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 <CardFooter
                     selectedIntegration={selectedIntegration}
                     showActions={!connectionState.loading && !connectionState.success}
-                    onBack={accountData ? undefined : onBack}
+                    onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
                     onNext={handleConnect}
                     isFormValid={isFormValid}
                     showFooterLinks={showFooterLinks}
@@ -104,7 +110,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
                     onSearchChange={setSearch}
-                    hideBackButton={connectionState.loading || connectionState.success}
+                    hideBackButton={
+                        connectionState.loading || connectionState.success || hasOnlyOneIntegration
+                    }
                     connectorData={connectorData?.config ?? null}
                 />
             }

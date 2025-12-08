@@ -228,6 +228,17 @@ export const useIntegrationPicker = ({
         }
     }, [accountData, hubData]);
 
+    useEffect(() => {
+        if (hubData && !selectedIntegration) {
+            const activeIntegrations = hubData.integrations.filter(
+                (integration) => integration.active,
+            );
+            if (activeIntegrations.length === 1) {
+                setSelectedIntegration(activeIntegrations[0]);
+            }
+        }
+    }, [hubData, selectedIntegration]);
+
     const {
         data: connectorData,
         isLoading: isLoadingConnectorData,
