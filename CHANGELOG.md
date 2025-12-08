@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/StackOneHQ/hub/compare/hub-v0.11.1...hub-v0.11.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* render form and prevent back if single integration config ([#75](https://github.com/StackOneHQ/hub/issues/75)) ([45cf100](https://github.com/StackOneHQ/hub/commit/45cf100138e0fbde307270a55276c1701c09684f))
+
 ## [0.11.1](https://github.com/StackOneHQ/hub/compare/hub-v0.11.0...hub-v0.11.1) (2025-12-05)
 
 
