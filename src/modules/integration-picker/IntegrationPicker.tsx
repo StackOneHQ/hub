@@ -100,21 +100,25 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 />
             }
             title={
-                <IntegrationPickerTitle
-                    accountData={accountData}
-                    onBack={onBack}
-                    guide={guide}
-                    isLoading={isLoading}
-                    hasError={hasError}
-                    hubData={hubData}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    onSearchChange={setSearch}
-                    hideBackButton={
-                        connectionState.loading || connectionState.success || hasOnlyOneIntegration
-                    }
-                    connectorData={connectorData?.config ?? null}
-                />
+                isLoading ? null : (
+                    <IntegrationPickerTitle
+                        accountData={accountData}
+                        onBack={onBack}
+                        guide={guide}
+                        isLoading={isLoading}
+                        hasError={hasError}
+                        hubData={hubData}
+                        selectedCategory={selectedCategory}
+                        onCategoryChange={setSelectedCategory}
+                        onSearchChange={setSearch}
+                        hideBackButton={
+                            connectionState.loading ||
+                            connectionState.success ||
+                            hasOnlyOneIntegration
+                        }
+                        connectorData={connectorData?.config ?? null}
+                    />
+                )
             }
             height={height}
             padding="0"

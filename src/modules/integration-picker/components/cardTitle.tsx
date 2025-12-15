@@ -7,6 +7,7 @@ import {
     FlexJustify,
     Typography,
 } from '@stackone/malachite';
+import { Logo } from '../../../shared/components/Logo';
 import { ConnectorConfig } from '../types';
 
 interface CardTitleProps {
@@ -16,6 +17,7 @@ interface CardTitleProps {
 }
 
 const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {
+    console.log(connectorData.assets?.icon);
     return (
         <Flex
             direction={FlexDirection.Horizontal}
@@ -30,8 +32,8 @@ const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) =
                 justify={FlexJustify.Left}
             >
                 {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
-                <img
-                    src={`https://app.stackone.com/assets/logos/${connectorData.key}.png`}
+                <Logo
+                    src={connectorData.assets?.icon}
                     alt={connectorData.key}
                     style={{ width: '16px', height: '16px' }}
                 />

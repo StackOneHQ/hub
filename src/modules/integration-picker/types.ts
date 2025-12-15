@@ -7,6 +7,7 @@ export interface Integration {
     authentication_config_key: string;
     environment: string;
     integration_id: string;
+    logo_url: string;
 }
 
 export interface HubData {
@@ -43,6 +44,9 @@ export interface ConnectorConfigField {
 export interface LegacyConnectorConfig {
     key: string;
     name: string;
+    assets?: {
+        icon: string;
+    };
     authentication: {
         [authKey: string]: {
             [environment: string]: {
@@ -63,6 +67,9 @@ export interface FalconConnectorConfig {
     type: 'oauth2' | 'custom';
     grantType?: 'authorization_code' | 'client_credentials';
     configFields: Array<ConnectorConfigField>;
+    assets?: {
+        icon: string;
+    };
     support: {
         link: string;
         description: string;
