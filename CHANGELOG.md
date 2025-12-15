@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/StackOneHQ/hub/compare/hub-v0.11.2...hub-v0.12.0) (2025-12-15)
+
+
+### Features
+
+* **ENG-11586:** use new logos and prevent error on image not found ([#78](https://github.com/StackOneHQ/hub/issues/78)) ([763c148](https://github.com/StackOneHQ/hub/commit/763c148b34b4c6be39419236fc3f03ef1b5acf56))
+
 ## [0.11.2](https://github.com/StackOneHQ/hub/compare/hub-v0.11.1...hub-v0.11.2) (2025-12-08)
 
 
