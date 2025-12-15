@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/StackOneHQ/hub/compare/hub-v0.12.0...hub-v0.12.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **ENG-11586:** build ([#80](https://github.com/StackOneHQ/hub/issues/80)) ([beace00](https://github.com/StackOneHQ/hub/commit/beace00dae1ed6e9bfd133a2e0a12c39381c5e98))
+
 ## [0.12.0](https://github.com/StackOneHQ/hub/compare/hub-v0.11.2...hub-v0.12.0) (2025-12-15)
 
 
