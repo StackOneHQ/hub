@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/StackOneHQ/hub/compare/hub-v0.12.1...hub-v0.12.2) (2025-12-16)
+
+
+### Bug Fixes
+
+* **ENG-11222:** last mile ([#82](https://github.com/StackOneHQ/hub/issues/82)) ([fed3e08](https://github.com/StackOneHQ/hub/commit/fed3e0879e08eb14f61e632a379038ff22442acd))
+
 ## [0.12.1](https://github.com/StackOneHQ/hub/compare/hub-v0.12.0...hub-v0.12.1) (2025-12-15)
 
 
