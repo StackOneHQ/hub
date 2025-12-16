@@ -1,5 +1,11 @@
 import { getRequest, patchRequest, postRequest } from '../../shared/httpClient';
-import { AccountCreationResponse, AccountData, ConnectorConfig, HubConnectorConfig, HubData } from './types';
+import {
+    AccountCreationResponse,
+    AccountData,
+    ConnectorConfig,
+    HubConnectorConfig,
+    HubData,
+} from './types';
 
 export const getHubData = async (token: string, baseUrl: string, provider?: string) => {
     const headers: Record<string, string> = {
