@@ -100,7 +100,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 />
             }
             title={
-                isLoading ? null : (
+                isLoading || connectionState.loading || connectionState.success ? null : (
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}
