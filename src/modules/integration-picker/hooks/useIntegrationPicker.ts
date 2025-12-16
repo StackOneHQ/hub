@@ -42,7 +42,7 @@ interface UseIntegrationPickerProps {
     token: string;
     baseUrl: string;
     accountId?: string;
-    onSuccess?: () => void;
+    onSuccess?: (account: { id: string; provider: string }) => void;
     dashboardUrl?: string;
 }
 
@@ -571,6 +571,8 @@ export const useIntegrationPicker = ({
                 return;
             }
 
+            let successData: { id: string; provider: string } | undefined;
+
             if (accountId) {
                 await updateAccount({
                     baseUrl,
@@ -579,13 +581,20 @@ export const useIntegrationPicker = ({
                     integrationId: selectedIntegration.integration_id,
                     credentials: cleanedFormData,
                 });
+
+                successData = { id: accountId, provider: selectedIntegration.provider };
             } else {
-                await connectAccount({
+                const response = await connectAccount({
                     baseUrl,
                     token,
                     credentials: cleanedFormData,
                     integrationId: selectedIntegration.integration_id,
                 });
+
+                if (!response) {
+                    throw new Error('Failed to create account');
+                }
+                successData = { id: response.id, provider: selectedIntegration.provider };
             }
 
             setConnectionState({ loading: false, success: true });
@@ -593,7 +602,7 @@ export const useIntegrationPicker = ({
                 clearTimeout(successTimeoutRef.current);
             }
             successTimeoutRef.current = window.setTimeout(() => {
-                onSuccess?.();
+                onSuccess?.(successData);
                 successTimeoutRef.current = null;
             }, 2000);
         } catch (error) {

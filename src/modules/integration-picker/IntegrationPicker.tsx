@@ -4,6 +4,7 @@ import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
 import CardFooter from './components/cardFooter';
+import SuccessCardFooter from './components/successCardFooter';
 import { useIntegrationPicker } from './hooks/useIntegrationPicker';
 
 interface IntegrationPickerProps {
@@ -12,7 +13,7 @@ interface IntegrationPickerProps {
     height: string;
     accountId?: string;
     dashboardUrl?: string;
-    onSuccess?: () => void;
+    onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCancel?: () => void;
     showFooterLinks?: boolean;
@@ -24,6 +25,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     height,
     accountId,
     onSuccess,
+    onClose,
     dashboardUrl,
     showFooterLinks = true,
 }) => {
@@ -90,17 +92,24 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         <Card
             glassFooter
             footer={
-                <CardFooter
-                    selectedIntegration={selectedIntegration}
-                    showActions={!connectionState.loading && !connectionState.success}
-                    onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
-                    onNext={handleConnect}
-                    isFormValid={isFormValid}
-                    showFooterLinks={showFooterLinks}
-                />
+                connectionState.success ? (
+                    <SuccessCardFooter
+                        onClose={() => onClose?.()}
+                        showFooterLinks={showFooterLinks}
+                    />
+                ) : (
+                    <CardFooter
+                        selectedIntegration={selectedIntegration}
+                        showActions={!connectionState.loading && !connectionState.success}
+                        onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
+                        onNext={handleConnect}
+                        isFormValid={isFormValid}
+                        showFooterLinks={showFooterLinks}
+                    />
+                )
             }
             title={
-                isLoading ? null : (
+                isLoading || connectionState.loading || connectionState.success ? null : (
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}

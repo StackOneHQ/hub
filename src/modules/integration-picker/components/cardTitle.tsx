@@ -17,7 +17,6 @@ interface CardTitleProps {
 }
 
 const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {
-    console.log(connectorData.assets?.icon);
     return (
         <Flex
             direction={FlexDirection.Horizontal}

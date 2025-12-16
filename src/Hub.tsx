@@ -11,7 +11,7 @@ interface HubProps {
     apiUrl: string;
     dashboardUrl: string;
     height: string;
-    onSuccess?: () => void;
+    onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCancel?: () => void;
     accountId?: string;
