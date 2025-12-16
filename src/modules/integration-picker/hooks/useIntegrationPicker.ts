@@ -571,6 +571,8 @@ export const useIntegrationPicker = ({
                 return;
             }
 
+            let successData: { id: string; provider: string } | undefined;
+
             if (accountId) {
                 await updateAccount({
                     baseUrl,
@@ -580,7 +582,7 @@ export const useIntegrationPicker = ({
                     credentials: cleanedFormData,
                 });
 
-                onSuccess?.({ id: accountId, provider: selectedIntegration.provider });
+                successData = { id: accountId, provider: selectedIntegration.provider };
             } else {
                 const response = await connectAccount({
                     baseUrl,
@@ -592,7 +594,7 @@ export const useIntegrationPicker = ({
                 if (!response) {
                     throw new Error('Failed to create account');
                 }
-                onSuccess?.({ id: response.id, provider: selectedIntegration.provider });
+                successData = { id: response.id, provider: selectedIntegration.provider };
             }
 
             setConnectionState({ loading: false, success: true });
@@ -600,6 +602,7 @@ export const useIntegrationPicker = ({
                 clearTimeout(successTimeoutRef.current);
             }
             successTimeoutRef.current = window.setTimeout(() => {
+                onSuccess?.(successData);
                 successTimeoutRef.current = null;
             }, 2000);
         } catch (error) {
