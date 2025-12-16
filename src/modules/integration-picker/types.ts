@@ -105,3 +105,8 @@ export interface AccountData {
     environment?: string;
     integrationId: string;
 }
+
+export interface AccountCreationResponse {
+    id: string;
+    provider: string;
+}

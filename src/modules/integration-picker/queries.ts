@@ -1,5 +1,5 @@
 import { getRequest, patchRequest, postRequest } from '../../shared/httpClient';
-import { AccountData, ConnectorConfig, HubConnectorConfig, HubData } from './types';
+import { AccountCreationResponse, AccountData, ConnectorConfig, HubConnectorConfig, HubData } from './types';
 
 export const getHubData = async (token: string, baseUrl: string, provider?: string) => {
     const headers: Record<string, string> = {
@@ -40,7 +40,7 @@ export const connectAccount = async ({
     credentials: Record<string, unknown>;
     integrationId: string;
 }) => {
-    return await postRequest<ConnectorConfig>({
+    return await postRequest<AccountCreationResponse>({
         url: `${baseUrl}/hub/accounts`,
         headers: {
             'Content-Type': 'application/json',

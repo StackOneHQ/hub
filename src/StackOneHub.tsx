@@ -26,7 +26,7 @@ interface StackOneHubProps {
     height?: string;
     theme?: 'light' | 'dark' | PartialMalachiteTheme;
     accountId?: string;
-    onSuccess?: () => void;
+    onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCancel?: () => void;
     showFooterLinks?: boolean;
