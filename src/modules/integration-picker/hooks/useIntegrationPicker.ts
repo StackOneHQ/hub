@@ -68,7 +68,6 @@ export const useIntegrationPicker = ({
     }, []);
     const connectWindow = useRef<Window | null>(null);
     const checkStateTimeoutRef = useRef<number | null>(null);
-    const successTimeoutRef = useRef<number | null>(null);
     const oauthChannelRef = useRef<BroadcastChannel | null>(null);
     const storageListenerRef = useRef<((event: StorageEvent) => void) | null>(null);
     const [connectionState, setConnectionState] = useState<{
@@ -187,9 +186,6 @@ export const useIntegrationPicker = ({
         return () => {
             if (checkStateTimeoutRef.current !== null) {
                 clearTimeout(checkStateTimeoutRef.current);
-            }
-            if (successTimeoutRef.current !== null) {
-                clearTimeout(successTimeoutRef.current);
             }
             if (oauthChannelRef.current) {
                 oauthChannelRef.current.close();
@@ -611,12 +607,6 @@ export const useIntegrationPicker = ({
             }
 
             handleSuccess(successData);
-            if (successTimeoutRef.current !== null) {
-                clearTimeout(successTimeoutRef.current);
-            }
-            successTimeoutRef.current = window.setTimeout(() => {
-                successTimeoutRef.current = null;
-            }, 2000);
         } catch (error) {
             let errorMessage = 'An unexpected error occurred';
             let providerResponse = 'Please try again later';

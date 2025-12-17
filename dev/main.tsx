@@ -77,8 +77,10 @@ const HubWrapper: React.FC = () => {
                 token={token}
                 baseUrl={apiUrl}
                 theme={theme}
-                onSuccess={() => {
-                    console.log('success');
+                onSuccess={(account: unknown) => {
+                    alert(`success: ${JSON.stringify(account)}`);
+                }}
+                onClose={() => {
                     setMode(undefined);
                 }}
                 accountId={accountId}
