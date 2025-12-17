@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.4](https://github.com/StackOneHQ/hub/compare/hub-v0.12.3...hub-v0.12.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* **ENG-11669:** emit on success for oauth flows ([#86](https://github.com/StackOneHQ/hub/issues/86)) ([b62990b](https://github.com/StackOneHQ/hub/commit/b62990b05dcab50abcb8b8a1fe5ab52cc81d20d6))
+
 ## [0.12.3](https://github.com/StackOneHQ/hub/compare/hub-v0.12.2...hub-v0.12.3) (2025-12-17)
 
 
