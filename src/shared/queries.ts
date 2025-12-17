@@ -2,7 +2,7 @@ import { getRequest } from './httpClient';
 import { FeatureFlag } from './types/featureFlags';
 
 export const getSettings = async (baseUrl: string, token: string) => {
-    return await getRequest<{ enabled_features: FeatureFlag[] }>({
+    return await getRequest<{ enabled_features: FeatureFlag[]; existing_account_id?: string }>({
         url: `${baseUrl}/hub/settings`,
         headers: {
             'Content-Type': 'application/json',
