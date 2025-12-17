@@ -82,45 +82,58 @@ export const useIntegrationPicker = ({
         loading: false,
         success: false,
     });
-
-    const processMessageCallback = useCallback((event: MessageEvent) => {
-        if (event.origin !== window.location.origin) {
-            return;
-        }
-
-        if (!event.data?.type) {
-            return;
-        }
-        if (event.data.type === EventType.AccountConnected) {
+    const handleSuccess = useCallback(
+        (account: { id: string; provider: string }) => {
             setConnectionState({ loading: false, success: true });
-            parent.postMessage(event.data, '*');
-        } else if (event.data.type === EventType.CloseOAuth2) {
-            if (event.data.error) {
-                setConnectionState({
-                    loading: false,
-                    success: false,
-                    error: {
-                        message: event.data.error,
-                        provider_response: event.data.errorDescription || 'No description',
-                    },
-                });
-            } else {
-                setConnectionState({ loading: false, success: false, error: undefined });
+            onSuccess?.(account);
+        },
+        [onSuccess],
+    );
+
+    const processMessageCallback = useCallback(
+        (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) {
+                return;
             }
-        }
 
-        if (connectWindow.current) {
-            connectWindow.current.close();
-            connectWindow.current = null;
-        }
+            if (!event.data?.type) {
+                return;
+            }
+            if (event.data.type === EventType.AccountConnected) {
+                handleSuccess({ id: event.data.account.id, provider: event.data.account.provider });
+                parent.postMessage(event.data, '*');
+            } else if (event.data.type === EventType.CloseOAuth2) {
+                if (event.data.error) {
+                    setConnectionState({
+                        loading: false,
+                        success: false,
+                        error: {
+                            message: event.data.error,
+                            provider_response: event.data.errorDescription || 'No description',
+                        },
+                    });
+                } else {
+                    setConnectionState({ loading: false, success: false, error: undefined });
+                }
+            }
 
-        window.removeEventListener('message', processMessageCallback, false);
-    }, []);
+            if (connectWindow.current) {
+                connectWindow.current.close();
+                connectWindow.current = null;
+            }
+
+            window.removeEventListener('message', processMessageCallback, false);
+        },
+        [handleSuccess],
+    );
 
     const handleOAuthResultFromAnyChannel = useCallback(
         (data: { type: string; error?: string; errorDescription?: string; account?: unknown }) => {
             if (data.type === EventType.AccountConnected) {
-                setConnectionState({ loading: false, success: true });
+                handleSuccess({
+                    id: (data.account as { id: string; provider: string }).id,
+                    provider: (data.account as { id: string; provider: string }).provider,
+                });
                 parent.postMessage(data, '*');
             } else if (data.type === EventType.CloseOAuth2) {
                 if (data.error) {
@@ -142,7 +155,7 @@ export const useIntegrationPicker = ({
                 connectWindow.current = null;
             }
         },
-        [],
+        [handleSuccess],
     );
 
     useEffect(() => {
@@ -597,12 +610,11 @@ export const useIntegrationPicker = ({
                 successData = { id: response.id, provider: selectedIntegration.provider };
             }
 
-            setConnectionState({ loading: false, success: true });
+            handleSuccess(successData);
             if (successTimeoutRef.current !== null) {
                 clearTimeout(successTimeoutRef.current);
             }
             successTimeoutRef.current = window.setTimeout(() => {
-                onSuccess?.(successData);
                 successTimeoutRef.current = null;
             }, 2000);
         } catch (error) {
@@ -651,7 +663,7 @@ export const useIntegrationPicker = ({
         selectedIntegration,
         formData,
         editingSecrets,
-        onSuccess,
+        handleSuccess,
         accountData,
         fields,
         accountId,
