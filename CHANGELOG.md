@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.3](https://github.com/StackOneHQ/hub/compare/hub-v0.12.2...hub-v0.12.3) (2025-12-17)
+
+
+### Bug Fixes
+
+* **ENG-11669:** load existing account from initial settings ([#84](https://github.com/StackOneHQ/hub/issues/84)) ([c223314](https://github.com/StackOneHQ/hub/commit/c223314557059127c7e3c9ca87715357585af44c))
+
 ## [0.12.2](https://github.com/StackOneHQ/hub/compare/hub-v0.12.1...hub-v0.12.2) (2025-12-16)
 
 
