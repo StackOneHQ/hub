@@ -93,7 +93,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     // Integration selection flow
     if (!selectedIntegration) {
         if (!hubData?.integrations.length) {
-            return <ErrorView message="No integrations found." />;
+            return <ErrorView message="No configured integrations available." />;
         }
         return (
             <IntegrationListView

@@ -14,6 +14,15 @@ const HubWrapper: React.FC = () => {
     const appUrl = import.meta.env.VITE_APP_URL ?? 'https://app.stackone.com';
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const [accountId, setAccountId] = useState<string>();
+    const [originOwnerId, setOriginOwnerId] = useState<string>(
+        import.meta.env.VITE_ORIGIN_OWNER_ID ?? 'dummy_customer_id',
+    );
+    const [originOwnerName, setOriginOwnerName] = useState<string>(
+        import.meta.env.VITE_ORIGIN_OWNER_NAME ?? 'dummy_customer_name',
+    );
+    const [originUsername, setOriginUsername] = useState<string>(
+        import.meta.env.VITE_ORIGIN_USERNAME ?? 'dummy_username',
+    );
 
     const fetchToken = useCallback(async () => {
         try {
@@ -30,10 +39,9 @@ const HubWrapper: React.FC = () => {
                 },
                 body: {
                     metadata: { source: 'hub' },
-                    origin_owner_id: import.meta.env.VITE_ORIGIN_OWNER_ID ?? 'dummy_customer_id',
-                    origin_owner_name:
-                        import.meta.env.VITE_ORIGIN_OWNER_NAME ?? 'dummy_customer_name',
-                    origin_username: import.meta.env.VITE_ORIGIN_USERNAME ?? 'dummy_username',
+                    origin_owner_id: originOwnerId,
+                    origin_owner_name: originOwnerName,
+                    origin_username: originUsername,
                     account_id: accountId !== '' && accountId != null ? accountId : undefined,
                 },
             });
@@ -48,7 +56,7 @@ const HubWrapper: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [accountId]);
+    }, [accountId, originOwnerId, originOwnerName, originUsername]);
 
     useEffect(() => {
         fetchToken();
@@ -70,9 +78,57 @@ const HubWrapper: React.FC = () => {
                     {theme === 'light' ? '🌞' : '🌚'}
                 </button>
             </div>
-            <input type="text" value={accountId} onChange={(e) => setAccountId(e.target.value)} />
+            <input
+                style={{
+                    marginBottom: '10px',
+                    width: '100%',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    padding: '5px',
+                }}
+                type="text"
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+            />
+            <input
+                style={{
+                    marginBottom: '10px',
+                    width: '100%',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    padding: '5px',
+                }}
+                type="text"
+                value={originOwnerId}
+                onChange={(e) => setOriginOwnerId(e.target.value)}
+            />
+            <input
+                style={{
+                    marginBottom: '10px',
+                    width: '100%',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    padding: '5px',
+                }}
+                type="text"
+                value={originOwnerName}
+                onChange={(e) => setOriginOwnerName(e.target.value)}
+            />
+            <input
+                style={{
+                    marginBottom: '10px',
+                    width: '100%',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    padding: '5px',
+                }}
+                type="text"
+                value={originUsername}
+                onChange={(e) => setOriginUsername(e.target.value)}
+            />
             <h1>StackOneHub Demo</h1>
             <StackOneHub
+                key={token}
                 mode={mode}
                 token={token}
                 baseUrl={apiUrl}

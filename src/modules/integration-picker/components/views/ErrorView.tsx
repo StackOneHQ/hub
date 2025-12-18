@@ -1,3 +1,4 @@
+import { Typography } from '@stackone/malachite';
 import React from 'react';
 
 interface ErrorViewProps {
@@ -5,5 +6,18 @@ interface ErrorViewProps {
 }
 
 export const ErrorView: React.FC<ErrorViewProps> = ({ message }) => {
-    return <div>Error: {message}</div>;
+    return (
+        <div
+            style={{
+                justifyContent: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                height: '100%',
+            }}
+        >
+            <Typography.Text size="medium" fontWeight="semi-bold">
+                {message}
+            </Typography.Text>
+        </div>
+    );
 };
