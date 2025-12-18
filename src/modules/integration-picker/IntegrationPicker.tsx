@@ -126,6 +126,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                             hasOnlyOneIntegration
                         }
                         connectorData={connectorData?.config ?? null}
+                        selectedIntegration={selectedIntegration}
                     />
                 )
             }

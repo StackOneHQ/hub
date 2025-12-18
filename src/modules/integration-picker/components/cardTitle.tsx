@@ -14,9 +14,10 @@ interface CardTitleProps {
     connectorData: ConnectorConfig;
     onBack?: () => void;
     guide?: { supportLink?: string; description: string };
+    logoUrl?: string;
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {
+const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide, logoUrl }) => {
     return (
         <Flex
             direction={FlexDirection.Horizontal}
@@ -32,7 +33,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) =
             >
                 {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
                 <Logo
-                    src={connectorData.assets?.icon}
+                    src={logoUrl ?? connectorData.assets?.icon}
                     alt={connectorData.key}
                     style={{ width: '16px', height: '16px' }}
                 />

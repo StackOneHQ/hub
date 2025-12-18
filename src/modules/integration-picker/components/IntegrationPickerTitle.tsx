@@ -1,4 +1,4 @@
-import { ConnectorConfig, HubData } from '../types';
+import { ConnectorConfig, HubData, Integration } from '../types';
 import CardTitle from './cardTitle';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
@@ -14,6 +14,7 @@ interface IntegrationPickerTitleProps {
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
     hideBackButton?: boolean;
+    selectedIntegration: Integration | null;
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -28,6 +29,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     onCategoryChange,
     onSearchChange,
     hideBackButton,
+    selectedIntegration,
 }) => {
     if (connectorData) {
         return (
@@ -35,6 +37,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 connectorData={connectorData}
                 onBack={accountData || hideBackButton ? undefined : onBack}
                 guide={guide}
+                logoUrl={selectedIntegration?.logo_url}
             />
         );
     }
