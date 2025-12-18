@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.5](https://github.com/StackOneHQ/hub/compare/hub-v0.12.4...hub-v0.12.5) (2025-12-18)
+
+
+### Bug Fixes
+
+* show more human friendly error message ([#88](https://github.com/StackOneHQ/hub/issues/88)) ([65f17ab](https://github.com/StackOneHQ/hub/commit/65f17abe973549c93dfcf796c2197e32ee253be8))
+
 ## [0.12.4](https://github.com/StackOneHQ/hub/compare/hub-v0.12.3...hub-v0.12.4) (2025-12-17)
 
 
