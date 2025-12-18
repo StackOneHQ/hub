@@ -1,4 +1,11 @@
-import { Typography } from '@stackone/malachite';
+import {
+    Flex,
+    FlexAlign,
+    FlexDirection,
+    FlexGapSize,
+    FlexJustify,
+    Typography,
+} from '@stackone/malachite';
 import React from 'react';
 
 interface ErrorViewProps {
@@ -7,17 +14,16 @@ interface ErrorViewProps {
 
 export const ErrorView: React.FC<ErrorViewProps> = ({ message }) => {
     return (
-        <div
-            style={{
-                justifyContent: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                height: '100%',
-            }}
+        <Flex
+            justify={FlexJustify.Center}
+            align={FlexAlign.Center}
+            direction={FlexDirection.Vertical}
+            gapSize={FlexGapSize.Small}
+            fullHeight
         >
             <Typography.Text size="medium" fontWeight="semi-bold">
                 {message}
             </Typography.Text>
-        </div>
+        </Flex>
     );
 };
