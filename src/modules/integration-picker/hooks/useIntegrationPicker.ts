@@ -688,7 +688,6 @@ export const useIntegrationPicker = ({
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
 
-    console.log('matchedAccountId', matchedAccountId);
     // biome-ignore lint/correctness/useExhaustiveDependencies: selectedIntegration is intentionally used to reset editing state when integration changes
     useEffect(() => {
         setEditingSecrets(new Set());
