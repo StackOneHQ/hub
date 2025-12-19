@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.6](https://github.com/StackOneHQ/hub/compare/hub-v0.12.5...hub-v0.12.6) (2025-12-19)
+
+
+### Bug Fixes
+
+* give priority to received account id ([#91](https://github.com/StackOneHQ/hub/issues/91)) ([f79cae7](https://github.com/StackOneHQ/hub/commit/f79cae7c5570603a3a7968abcf27699974ba30d6))
+
 ## [0.12.5](https://github.com/StackOneHQ/hub/compare/hub-v0.12.4...hub-v0.12.5) (2025-12-18)
 
 
