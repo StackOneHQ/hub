@@ -42,6 +42,10 @@ interface UseIntegrationPickerProps {
     token: string;
     baseUrl: string;
     accountId?: string;
+    existingAccounts?: Array<{
+        id: string;
+        integration_id: string;
+    }>;
     onSuccess?: (account: { id: string; provider: string }) => void;
     dashboardUrl?: string;
 }
@@ -56,6 +60,7 @@ export const useIntegrationPicker = ({
     token,
     baseUrl,
     accountId,
+    existingAccounts,
     onSuccess,
     dashboardUrl,
 }: UseIntegrationPickerProps) => {
@@ -198,17 +203,35 @@ export const useIntegrationPicker = ({
         };
     }, [handleOAuthResultFromAnyChannel]);
 
+    const matchedAccountId = useMemo(() => {
+        if (accountId) {
+            return accountId;
+        }
+
+        if (!selectedIntegration || !existingAccounts || existingAccounts.length === 0) {
+            return undefined;
+        }
+
+        const matchingAccount = existingAccounts.find(
+            (account) => account.integration_id === selectedIntegration.integration_id,
+        );
+
+        return matchingAccount?.id;
+    }, [accountId, selectedIntegration, existingAccounts]);
+
     const {
         data: accountData,
         isLoading: isLoadingAccountData,
         error: errorAccountData,
     } = useQuery({
-        queryKey: ['accountData', accountId],
+        queryKey: ['accountData', matchedAccountId ?? null],
         queryFn: async () => {
-            if (!accountId) return null;
-            return getAccountData(baseUrl, token, accountId);
+            if (!matchedAccountId) {
+                return null;
+            }
+            return getAccountData(baseUrl, token, matchedAccountId);
         },
-        enabled: !!accountId,
+        enabled: !!matchedAccountId,
         ...RETRY_CONFIG,
     });
 
@@ -224,7 +247,7 @@ export const useIntegrationPicker = ({
             }
             return getHubData(token, baseUrl);
         },
-        enabled: !accountId || !!accountData,
+        enabled: !matchedAccountId || !!accountData,
         ...RETRY_CONFIG,
     });
 
@@ -582,16 +605,16 @@ export const useIntegrationPicker = ({
 
             let successData: { id: string; provider: string } | undefined;
 
-            if (accountId) {
+            if (matchedAccountId) {
                 await updateAccount({
                     baseUrl,
-                    accountId,
+                    accountId: matchedAccountId,
                     token,
                     integrationId: selectedIntegration.integration_id,
                     credentials: cleanedFormData,
                 });
 
-                successData = { id: accountId, provider: selectedIntegration.provider };
+                successData = { id: matchedAccountId, provider: selectedIntegration.provider };
             } else {
                 const response = await connectAccount({
                     baseUrl,
@@ -656,7 +679,7 @@ export const useIntegrationPicker = ({
         handleSuccess,
         accountData,
         fields,
-        accountId,
+        matchedAccountId,
         authConfig,
         processMessageCallback,
         isFormValid,
@@ -665,6 +688,7 @@ export const useIntegrationPicker = ({
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
 
+    console.log('matchedAccountId', matchedAccountId);
     // biome-ignore lint/correctness/useExhaustiveDependencies: selectedIntegration is intentionally used to reset editing state when integration changes
     useEffect(() => {
         setEditingSecrets(new Set());

@@ -46,7 +46,8 @@ export const Hub = memo(
                         onSuccess={onSuccess}
                         onClose={onClose}
                         onCancel={onCancel}
-                        accountId={accountId ?? settings?.existing_account_id}
+                        accountId={accountId}
+                        existingAccounts={settings?.existing_accounts}
                         showFooterLinks={showFooterLinks}
                     />
                 )}

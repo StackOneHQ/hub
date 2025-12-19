@@ -12,6 +12,10 @@ interface IntegrationPickerProps {
     baseUrl: string;
     height: string;
     accountId?: string;
+    existingAccounts?: Array<{
+        id: string;
+        integration_id: string;
+    }>;
     dashboardUrl?: string;
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
@@ -24,6 +28,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     baseUrl,
     height,
     accountId,
+    existingAccounts,
     onSuccess,
     onClose,
     dashboardUrl,
@@ -64,6 +69,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         token,
         baseUrl,
         accountId,
+        existingAccounts,
         onSuccess,
         dashboardUrl,
     });
