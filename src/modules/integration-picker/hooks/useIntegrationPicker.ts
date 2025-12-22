@@ -349,12 +349,18 @@ export const useIntegrationPicker = ({
                     })
                     .filter((value) => value != null);
 
+            const support = connectorData.config.support;
+            const supportLink = support?.link ?? undefined;
+            const supportDescription = support?.description ?? undefined;
+
             return {
                 fields: fieldsWithPrefilledValues,
-                guide: {
-                    supportLink: connectorData.config.support.link,
-                    description: connectorData.config.support.description,
-                },
+                guide: supportLink
+                    ? {
+                          supportLink,
+                          description: supportDescription,
+                      }
+                    : undefined,
             };
         }
 

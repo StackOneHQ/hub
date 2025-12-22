@@ -13,7 +13,7 @@ import { ConnectorConfig } from '../types';
 interface CardTitleProps {
     connectorData: ConnectorConfig;
     onBack?: () => void;
-    guide?: { supportLink?: string; description: string };
+    guide?: { supportLink?: string | null; description?: string | null };
 }
 
 const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {

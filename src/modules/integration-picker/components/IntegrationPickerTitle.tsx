@@ -6,7 +6,7 @@ interface IntegrationPickerTitleProps {
     connectorData: ConnectorConfig | null;
     accountData: unknown;
     onBack: () => void;
-    guide?: { supportLink?: string; description: string };
+    guide?: { supportLink?: string | null; description?: string | null };
     isLoading: boolean;
     hasError: boolean;
     hubData: HubData | null | undefined;
