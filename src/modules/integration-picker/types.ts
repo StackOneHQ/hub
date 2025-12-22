@@ -74,12 +74,10 @@ export interface FalconConnectorConfig {
      * Optional "connection guide" support information.
      * Some existing/custom connectors may omit this entirely.
      */
-    support?:
-        | {
-              link?: string | null;
-              description?: string | null;
-          }
-        | null;
+    support?: {
+        link?: string | null;
+        description?: string | null;
+    } | null;
 }
 
 export type ConnectorConfig = LegacyConnectorConfig | FalconConnectorConfig;
