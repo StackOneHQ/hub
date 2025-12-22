@@ -40,13 +40,13 @@ const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) =
                     {connectorData.name}
                 </Typography.Text>
             </Flex>
-            {guide?.supportLink && (
-                <Typography.LinkText href={guide?.supportLink} target="_blank">
+            {guide?.supportLink ? (
+                <Typography.LinkText href={guide.supportLink} target="_blank">
                     <Button variant="outline" size="small">
                         Connection guide
                     </Button>
                 </Typography.LinkText>
-            )}
+            ) : null}
         </Flex>
     );
 };
