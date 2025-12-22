@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.7](https://github.com/StackOneHQ/hub/compare/hub-v0.12.6...hub-v0.12.7) (2025-12-22)
+
+
+### Bug Fixes
+
+* **ENG-1:** Hub support link handling ([#94](https://github.com/StackOneHQ/hub/issues/94)) ([509e760](https://github.com/StackOneHQ/hub/commit/509e76029cd7c233480310ce7b6376337acf5138))
+
 ## [0.12.6](https://github.com/StackOneHQ/hub/compare/hub-v0.12.5...hub-v0.12.6) (2025-12-19)
 
 
