@@ -12,7 +12,7 @@ import {
     Spacer,
     Typography,
 } from '@stackone/malachite';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
 import { Logo } from '../../../shared/components/Logo';
 import { isFalconVersion } from '../../../shared/utils/utils';
@@ -62,17 +62,6 @@ export const IntegrationListHeader: React.FC<{
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
 }> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange }) => {
-    const handleCategoryClick = useCallback(
-        (category: string) => {
-            if (selectedCategory === category) {
-                onCategoryChange(null);
-            } else {
-                onCategoryChange(category);
-            }
-        },
-        [selectedCategory, onCategoryChange],
-    );
-
     const visibleIntegrationsForFilters = useMemo(() => {
         return integrations.filter((integration) => integration.active && integration.name);
     }, [integrations]);
@@ -81,11 +70,22 @@ export const IntegrationListHeader: React.FC<{
         return Array.from(new Set(visibleIntegrationsForFilters.map((integration) => integration.type)));
     }, [visibleIntegrationsForFilters]);
 
-    useEffect(() => {
-        if (selectedCategory && !availableCategories.includes(selectedCategory)) {
-            onCategoryChange(null);
-        }
-    }, [selectedCategory, availableCategories, onCategoryChange]);
+    const effectiveSelectedCategory = useMemo(() => {
+        return selectedCategory && availableCategories.includes(selectedCategory)
+            ? selectedCategory
+            : null;
+    }, [selectedCategory, availableCategories]);
+
+    const handleCategoryClick = useCallback(
+        (category: string) => {
+            if (effectiveSelectedCategory === category) {
+                onCategoryChange(null);
+            } else {
+                onCategoryChange(category);
+            }
+        },
+        [effectiveSelectedCategory, onCategoryChange],
+    );
 
     return (
         <>
@@ -120,7 +120,7 @@ export const IntegrationListHeader: React.FC<{
                                     >
                                         <div
                                             style={
-                                                selectedCategory === category
+                                                effectiveSelectedCategory === category
                                                     ? {
                                                           borderRadius: 9999,
                                                           boxShadow:
@@ -137,7 +137,7 @@ export const IntegrationListHeader: React.FC<{
                                                         (c) => c.value === category,
                                                     )?.label || category
                                                 }
-                                                selected={selectedCategory === category}
+                                                selected={effectiveSelectedCategory === category}
                                                 onClick={() => handleCategoryClick(category)}
                                             />
                                         </div>
@@ -158,15 +158,25 @@ export const IntegrationList: React.FC<{
     selectedCategory: string | null;
     search: string;
 }> = ({ integrations, onSelect, selectedCategory, search }) => {
+    const effectiveSelectedCategory = useMemo(() => {
+        if (!selectedCategory) return null;
+        const availableCategories = new Set(
+            integrations
+                .filter((integration) => integration.active && integration.name)
+                .map((integration) => integration.type),
+        );
+        return availableCategories.has(selectedCategory) ? selectedCategory : null;
+    }, [integrations, selectedCategory]);
+
     const availableIntegrations = useMemo(() => {
         return integrations.filter(
             (integration) =>
                 integration.active &&
                 integration.name &&
-                (selectedCategory ? integration.type === selectedCategory : true) &&
+                (effectiveSelectedCategory ? integration.type === effectiveSelectedCategory : true) &&
                 (search ? integration.name.toLowerCase().includes(search.toLowerCase()) : true),
         );
-    }, [integrations, selectedCategory, search]);
+    }, [integrations, effectiveSelectedCategory, search]);
 
     return (
         <>
