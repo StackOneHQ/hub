@@ -11,6 +11,7 @@ export const CATEGORIES = [
     'messaging',
     'accounting',
     'scheduling',
+    'unknown',
 ];
 
 export const CATEGORIES_WITH_LABELS = [
@@ -61,5 +62,9 @@ export const CATEGORIES_WITH_LABELS = [
     {
         label: 'Scheduling',
         value: 'scheduling',
+    },
+    {
+        label: 'Other',
+        value: 'unknown',
     },
 ];

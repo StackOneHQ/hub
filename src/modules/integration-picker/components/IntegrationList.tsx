@@ -12,7 +12,7 @@ import {
     Spacer,
     Typography,
 } from '@stackone/malachite';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
 import { Logo } from '../../../shared/components/Logo';
 import { isFalconVersion } from '../../../shared/utils/utils';
@@ -73,9 +73,19 @@ export const IntegrationListHeader: React.FC<{
         [selectedCategory, onCategoryChange],
     );
 
-    const availableCategories = useMemo(() => {
-        return Array.from(new Set(integrations.map((integration) => integration.type)));
+    const visibleIntegrationsForFilters = useMemo(() => {
+        return integrations.filter((integration) => integration.active && integration.name);
     }, [integrations]);
+
+    const availableCategories = useMemo(() => {
+        return Array.from(new Set(visibleIntegrationsForFilters.map((integration) => integration.type)));
+    }, [visibleIntegrationsForFilters]);
+
+    useEffect(() => {
+        if (selectedCategory && !availableCategories.includes(selectedCategory)) {
+            onCategoryChange(null);
+        }
+    }, [selectedCategory, availableCategories, onCategoryChange]);
 
     return (
         <>
@@ -108,15 +118,29 @@ export const IntegrationListHeader: React.FC<{
                                         horizontal="small"
                                         fullHeight={false}
                                     >
-                                        <PillButton
-                                            label={
-                                                CATEGORIES_WITH_LABELS.find(
-                                                    (c) => c.value === category,
-                                                )?.label || category
+                                        <div
+                                            style={
+                                                selectedCategory === category
+                                                    ? {
+                                                          borderRadius: 9999,
+                                                          boxShadow:
+                                                              '0 0 0 2px var(--malachite-primary, #2d72d9)',
+                                                          background:
+                                                              'rgba(45, 114, 217, 0.10)',
+                                                      }
+                                                    : undefined
                                             }
-                                            selected={selectedCategory === category}
-                                            onClick={() => handleCategoryClick(category)}
-                                        />
+                                        >
+                                            <PillButton
+                                                label={
+                                                    CATEGORIES_WITH_LABELS.find(
+                                                        (c) => c.value === category,
+                                                    )?.label || category
+                                                }
+                                                selected={selectedCategory === category}
+                                                onClick={() => handleCategoryClick(category)}
+                                            />
+                                        </div>
                                     </Padded>
                                 ))}
                             </div>
