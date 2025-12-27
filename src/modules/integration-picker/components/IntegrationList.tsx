@@ -70,21 +70,18 @@ export const IntegrationListHeader: React.FC<{
         return Array.from(new Set(visibleIntegrationsForFilters.map((integration) => integration.type)));
     }, [visibleIntegrationsForFilters]);
 
-    const effectiveSelectedCategory = useMemo(() => {
-        return selectedCategory && availableCategories.includes(selectedCategory)
-            ? selectedCategory
-            : null;
-    }, [selectedCategory, availableCategories]);
+    const categoryFilter =
+        selectedCategory && availableCategories.includes(selectedCategory) ? selectedCategory : null;
 
     const handleCategoryClick = useCallback(
         (category: string) => {
-            if (effectiveSelectedCategory === category) {
+            if (categoryFilter === category) {
                 onCategoryChange(null);
             } else {
                 onCategoryChange(category);
             }
         },
-        [effectiveSelectedCategory, onCategoryChange],
+        [categoryFilter, onCategoryChange],
     );
 
     return (
@@ -120,7 +117,7 @@ export const IntegrationListHeader: React.FC<{
                                     >
                                         <div
                                             style={
-                                                effectiveSelectedCategory === category
+                                                categoryFilter === category
                                                     ? {
                                                           borderRadius: 9999,
                                                           boxShadow:
@@ -137,7 +134,7 @@ export const IntegrationListHeader: React.FC<{
                                                         (c) => c.value === category,
                                                     )?.label || category
                                                 }
-                                                selected={effectiveSelectedCategory === category}
+                                                selected={categoryFilter === category}
                                                 onClick={() => handleCategoryClick(category)}
                                             />
                                         </div>
@@ -158,25 +155,24 @@ export const IntegrationList: React.FC<{
     selectedCategory: string | null;
     search: string;
 }> = ({ integrations, onSelect, selectedCategory, search }) => {
-    const effectiveSelectedCategory = useMemo(() => {
-        if (!selectedCategory) return null;
-        const availableCategories = new Set(
-            integrations
-                .filter((integration) => integration.active && integration.name)
-                .map((integration) => integration.type),
-        );
-        return availableCategories.has(selectedCategory) ? selectedCategory : null;
-    }, [integrations, selectedCategory]);
+    const visibleIntegrations = useMemo(() => {
+        return integrations.filter((integration) => integration.active && integration.name);
+    }, [integrations]);
+
+    const availableCategorySet = useMemo(() => {
+        return new Set(visibleIntegrations.map((integration) => integration.type));
+    }, [visibleIntegrations]);
+
+    const categoryFilter =
+        selectedCategory && availableCategorySet.has(selectedCategory) ? selectedCategory : null;
 
     const availableIntegrations = useMemo(() => {
-        return integrations.filter(
+        return visibleIntegrations.filter(
             (integration) =>
-                integration.active &&
-                integration.name &&
-                (effectiveSelectedCategory ? integration.type === effectiveSelectedCategory : true) &&
+                (categoryFilter ? integration.type === categoryFilter : true) &&
                 (search ? integration.name.toLowerCase().includes(search.toLowerCase()) : true),
         );
-    }, [integrations, effectiveSelectedCategory, search]);
+    }, [visibleIntegrations, categoryFilter, search]);
 
     return (
         <>
