@@ -1,6 +1,7 @@
 import { Card } from '@stackone/malachite';
 import { useCallback, useMemo, useState } from 'react';
 import useFeatureFlags from '../../shared/hooks/useFeatureFlags';
+import { isEmbeddedInAuthLink } from '../../shared/utils/utils';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
 import CardFooter from './components/cardFooter';
@@ -81,6 +82,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         return activeIntegrations.length === 1;
     }, [hubData]);
 
+    // Hide close button when Hub is embedded in the auth link page
+    const hideCloseButton = useMemo(() => isEmbeddedInAuthLink(), []);
+
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
@@ -96,6 +100,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     <SuccessCardFooter
                         onClose={() => onClose?.()}
                         showFooterLinks={showFooterLinks}
+                        hideCloseButton={hideCloseButton}
                     />
                 ) : (
                     <CardFooter
