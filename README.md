@@ -1,6 +1,6 @@
 # StackOne HUB
 
-> 👉 **Beta SOFTWARE** 
+> 👉 **BETA SOFTWARE** 
 > This project is currently in **beta stage**. It is evolving quickly, and new versions may includ breaking changes.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
