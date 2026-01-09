@@ -1,10 +1,10 @@
 # StackOne HUB
 
-> ⚠️ **ALPHA SOFTWARE** ⚠️  
-> This project is currently in **alpha stage**. Features are incomplete, and may break without notice. Use in production environments is not recommended.
+> 👉 **Beta SOFTWARE** 
+> This project is currently in **beta stage**. It is evolving quickly, and new versions may includ breaking changes.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Status](https://img.shields.io/badge/status-alpha-orange.svg)
+![Status](https://img.shields.io/badge/status-beta-blue.svg)
 ![Node Version](https://img.shields.io/badge/node-%3E%3D22.14.0-brightgreen.svg)
 
 StackOne HUB is a React-based integration component library that provides a web component wrapper for seamless integration into any web application. It enables developers to easily embed StackOne's integrations hub.
@@ -13,7 +13,7 @@ StackOne HUB is a React-based integration component library that provides a web 
 
 - [StackOne HUB](#stackone-hub)
   - [📋 Table of Contents](#-table-of-contents)
-  - [⚠️ Alpha Notice](#️-alpha-notice)
+  - [⚠️ Beta Notice](#️-beta-notice)
   - [🚀 Quick Start](#-quick-start)
   - [📦 Installation](#-installation)
     - [Prerequisites](#prerequisites)
@@ -34,15 +34,13 @@ StackOne HUB is a React-based integration component library that provides a web 
     - [Getting Started](#getting-started)
   - [📄 License](#-license)
 
-## ⚠️ Alpha Notice
+## ⚠️ Beta Notice
 
-**This software is in active development and should be considered alpha quality.** 
+**This software is in active development and should be considered beta quality.** 
 
 - 🚧 **Breaking changes** may occur in any release
-- 🐛 **Bugs and incomplete features** are expected
-- 📚 **Documentation** may be outdated or incomplete
+- 📚 **Documentation** is updated regularly
 - 🔄 **APIs are subject to change** without prior notice
-- ❌ **Not recommended for production use**
 
 Please report issues and provide feedback to help us improve!
 
@@ -200,7 +198,7 @@ DASHBOARD_URL=https://dashboard.stackone.com
 
 ## 🤝 Contributing
 
-Since this project is in alpha, we welcome contributions and feedback! However, please keep in mind:
+Since this project is in beta, we welcome contributions and feedback! However, please keep in mind:
 
 - 🔄 **Frequent changes**: The codebase may change rapidly
 - 📋 **No formal process yet**: Contribution guidelines are still being established
@@ -218,8 +216,3 @@ Since this project is in alpha, we welcome contributions and feedback! However, 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
-
-<div align="center">
-  <p><strong>⚠️ Remember: This is alpha software - use at your own risk! ⚠️</strong></p>
-  <p>For questions or support, please open an issue on GitHub.</p>
-</div>
