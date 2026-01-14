@@ -169,25 +169,30 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
     if (field.type === 'select') {
         return (
-            <Dropdown
-                defaultValue={field.value?.toString() || ''}
-                disabled={field.readOnly}
-                items={
-                    field.options?.map((option) => ({
-                        id: option.value,
-                        label: option.label,
-                    })) ?? []
-                }
-                onItemSelected={(value) =>
-                    setValue(key, value ?? '', {
-                        shouldValidate: true,
-                    })
-                }
-                name={key}
-                label={field.label}
-                tooltip={field.guide?.tooltip}
-                description={field.guide?.description}
-            />
+            <>
+                <Dropdown
+                    defaultValue={field.value?.toString() || ''}
+                    disabled={field.readOnly}
+                    items={
+                        field.options?.map((option) => ({
+                            id: option.value,
+                            label: option.label,
+                        })) ?? []
+                    }
+                    onItemSelected={(value) =>
+                        setValue(key, value ?? '', {
+                            shouldValidate: true,
+                        })
+                    }
+                    name={key}
+                    label={field.label}
+                    tooltip={field.guide?.tooltip}
+                    description={field.guide?.description}
+                    required={field.required}
+                    error={!!errors[key]}
+                />
+                {errorMessage}
+            </>
         );
     }
 
