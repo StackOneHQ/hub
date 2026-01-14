@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.8](https://github.com/StackOneHQ/hub/compare/hub-v0.12.7...hub-v0.12.8) (2026-01-14)
+
+
+### Bug Fixes
+
+* **ENG-11507:** Display required/optional indicators for dropdown ([#99](https://github.com/StackOneHQ/hub/issues/99)) ([93547a4](https://github.com/StackOneHQ/hub/commit/93547a415a106adc9756c4b201566fa2867ab5f0))
+
 ## [0.12.7](https://github.com/StackOneHQ/hub/compare/hub-v0.12.6...hub-v0.12.7) (2025-12-22)
 
 
