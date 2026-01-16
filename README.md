@@ -25,6 +25,8 @@ StackOne HUB is a React-based integration component library that provides a web 
   - [📖 Usage](#-usage)
     - [🌐 Web Component Integration](#-web-component-integration)
     - [⚛️ React Component Integration](#️-react-component-integration)
+    - [Next.js App Router](#nextjs-app-router)
+    - [Next.js Pages Router](#nextjs-pages-router)
     - [💻 Local Development Usage](#-local-development-usage)
       - [Web Component (Local)](#web-component-local)
       - [React Component (Local)](#react-component-local)
@@ -142,18 +144,116 @@ For vanilla HTML/JavaScript applications:
 For React applications:
 
 ```tsx
-import StackOneHub from "@stackone/StackOneHub";
+import { StackOneHub } from "@stackone/hub";
 
 function App() {
   return (
     <div className="app">
       <h1>My Application</h1>
-      <StackOneHub />
+      <StackOneHub
+        mode="integration-picker"
+        token="your-session-token"
+      />
     </div>
   );
 }
 
 export default App;
+```
+
+### Next.js App Router
+
+The library includes the `"use client"` directive, so it works out-of-the-box with Next.js 13+ App Router:
+
+```tsx
+// app/integrations/page.tsx
+import { StackOneHub } from "@stackone/hub";
+
+export default function IntegrationsPage() {
+  return (
+    <main>
+      <h1>Connect Your Integrations</h1>
+      <StackOneHub
+        mode="integration-picker"
+        token="your-session-token"
+      />
+    </main>
+  );
+}
+```
+
+**With dynamic token fetching:**
+
+```tsx
+// app/integrations/page.tsx
+import { HubContainer } from "./hub-container";
+
+// Server Component - fetch token on server
+async function getSessionToken() {
+  const response = await fetch("https://api.stackone.com/connect/sessions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${process.env.STACKONE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      origin_owner_id: "your-owner-id",
+      origin_owner_name: "Your Company",
+    }),
+  });
+  const data = await response.json();
+  return data.token;
+}
+
+export default async function IntegrationsPage() {
+  const token = await getSessionToken();
+
+  return (
+    <main>
+      <h1>Connect Your Integrations</h1>
+      <HubContainer token={token} />
+    </main>
+  );
+}
+
+// app/integrations/hub-container.tsx
+"use client";
+
+import { StackOneHub } from "@stackone/hub";
+
+interface HubContainerProps {
+  token: string;
+}
+
+export function HubContainer({ token }: HubContainerProps) {
+  return (
+    <StackOneHub
+      mode="integration-picker"
+      token={token}
+    />
+  );
+}
+```
+
+### Next.js Pages Router
+
+For the Pages Router, simply import and use the component:
+
+```tsx
+// pages/integrations.tsx
+import { StackOneHub } from "@stackone/hub";
+
+export default function IntegrationsPage() {
+  return (
+    <div>
+      <h1>Connect Your Integrations</h1>
+      <StackOneHub
+        mode="integration-picker"
+        token="your-session-token"
+      />
+    </div>
+  );
+}
 ```
 
 ### 💻 Local Development Usage

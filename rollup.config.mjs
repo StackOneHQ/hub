@@ -16,10 +16,12 @@ export default [
       {
         file: "dist/index.esm.js",
         format: "esm",
+        banner: '"use client";',
       },
       {
         file: "dist/index.js",
         format: "cjs",
+        banner: '"use client";',
       },
     ],
     external: ["react", "react-dom", "react-hook-form"],
@@ -41,7 +43,11 @@ export default [
         preventAssignment: true,
         "process.env.NODE_ENV": JSON.stringify("production"),
       }),
-      terser(),
+      terser({
+        compress: {
+          directives: false,
+        },
+      }),
     ],
   },
 
