@@ -135,7 +135,7 @@ export const useIntegrationPicker = ({
 
             window.removeEventListener('message', processMessageCallback, false);
         },
-        [handleSuccess],
+        [handleSuccess, allowedOrigins],
     );
 
     const handleOAuthResultFromAnyChannel = useCallback(
