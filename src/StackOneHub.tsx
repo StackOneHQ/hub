@@ -90,26 +90,6 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
             </MalachiteContext>
         );
     }
-    if (!mode) {
-        return (
-            <MalachiteContext>
-                <ErrorBoundary
-                    fallback={
-                        <Card height={height}>
-                            <ErrorContainer />
-                        </Card>
-                    }
-                >
-                    <Card height={height} footer={<FooterLinks />}>
-                        <Flex justify={FlexJustify.Center} align={FlexAlign.Center} fullHeight>
-                            <Typography.PageTitle>No mode selected</Typography.PageTitle>
-                        </Flex>
-                    </Card>
-                </ErrorBoundary>
-            </MalachiteContext>
-        );
-    }
-
     return (
         <MalachiteContext>
             <ErrorBoundary
@@ -121,7 +101,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
             >
                 <QueryClientProvider client={queryClient}>
                     <Hub
-                        mode={mode}
+                        mode={mode ?? 'integration-picker'}
                         token={token}
                         apiUrl={apiUrl}
                         dashboardUrl={dashboardUrl}
