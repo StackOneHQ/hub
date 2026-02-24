@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.9](https://github.com/StackOneHQ/hub/compare/hub-v0.12.8...hub-v0.12.9) (2026-02-24)
+
+
+### Bug Fixes
+
+* **ENG-12199:** extend allowed origins and set default mode ([#103](https://github.com/StackOneHQ/hub/issues/103)) ([418e133](https://github.com/StackOneHQ/hub/commit/418e133faf8476b962bcd36691d5cdedcf20051e))
+
 ## [0.12.8](https://github.com/StackOneHQ/hub/compare/hub-v0.12.7...hub-v0.12.8) (2026-01-14)
 
 
