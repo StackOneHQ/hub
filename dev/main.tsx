@@ -73,7 +73,6 @@ const HubWrapper: React.FC = () => {
                 <button onClick={() => setMode('integration-picker')}>
                     Set Integration Picker mode
                 </button>
-                <button onClick={() => setMode('csv-importer')}>Set CSV Importer mode</button>
                 <button onClick={() => setTheme((theme) => (theme === 'light' ? 'dark' : 'light'))}>
                     {theme === 'light' ? '🌞' : '🌚'}
                 </button>

@@ -1,1 +1,1 @@
-export type HubModes = 'integration-picker' | 'csv-importer';
+export type HubModes = 'integration-picker';
