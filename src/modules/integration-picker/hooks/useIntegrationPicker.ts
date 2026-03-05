@@ -117,7 +117,14 @@ export const useIntegrationPicker = ({
             }
 
             if (connectWindow.current) {
-                connectWindow.current.close();
+                try {
+                    // COOP (Cross-Origin-Opener-Policy) on the OAuth redirect page may block
+                    // this call. Catch silently — the popup will close itself or the user can
+                    // close it manually; our state is already updated correctly.
+                    connectWindow.current.close();
+                } catch {
+                    // intentionally ignored
+                }
                 connectWindow.current = null;
             }
 
@@ -150,7 +157,14 @@ export const useIntegrationPicker = ({
             }
 
             if (connectWindow.current) {
-                connectWindow.current.close();
+                try {
+                    // COOP (Cross-Origin-Opener-Policy) on the OAuth redirect page may block
+                    // this call. Catch silently — the popup will close itself or the user can
+                    // close it manually; our state is already updated correctly.
+                    connectWindow.current.close();
+                } catch {
+                    // intentionally ignored
+                }
                 connectWindow.current = null;
             }
         },
