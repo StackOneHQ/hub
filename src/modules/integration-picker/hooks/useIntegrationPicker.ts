@@ -91,7 +91,18 @@ export const useIntegrationPicker = ({
 
     const processMessageCallback = useCallback(
         (event: MessageEvent) => {
-            if (event.origin !== window.location.origin) {
+            // Accept messages from the host app's origin (same-origin embedding) OR from
+            // the dashboardUrl origin (e.g. app.stackone.com when Hub is embedded in a
+            // third-party app and the OAuth callback lands on app.stackone.com).
+            const allowedOrigins = new Set([window.location.origin]);
+            if (dashboardUrl) {
+                try {
+                    allowedOrigins.add(new URL(dashboardUrl).origin);
+                } catch {
+                    // invalid URL — skip
+                }
+            }
+            if (!allowedOrigins.has(event.origin)) {
                 return;
             }
 
