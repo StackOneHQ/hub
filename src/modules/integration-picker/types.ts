@@ -10,6 +10,7 @@ export interface Integration {
     type: string;
     version: string;
     authentication_config_key: string;
+    authentication_config_label?: string | null;
     environment: string;
     integration_id: string;
     logo_url: string;

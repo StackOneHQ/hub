@@ -101,7 +101,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         return <SuccessView integrationName={connectorData?.name ?? selectedIntegration.name} />;
     }
 
-    // Step 4: Form view (when auth config is selected and connector data is available)
+    // Form view (when auth config is selected and connector data is available)
     if (selectedIntegration && connectorData) {
         return (
             <IntegrationFormView
@@ -116,7 +116,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         );
     }
 
-    // Step 3.5: Auth Config selection (provider selected, auth config not yet selected)
+    // Auth Config selection (provider selected, auth config not yet selected)
     if (selectedProvider && !selectedIntegration) {
         return (
             <AuthConfigSelectionView
@@ -127,7 +127,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         );
     }
 
-    // Step 3: Provider/Connector selection
+    // Provider/Connector selection
     if (!hubData?.integrations.length) {
         return <ErrorView message="No configured integrations available." />;
     }

@@ -90,11 +90,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
 
     const onBack = () => {
         if (selectedIntegration) {
-            // From form → auth config selection
+            // From form to auth config selection
             setSelectedIntegration(null);
             resetConnectionState();
         } else if (selectedProvider) {
-            // From auth config selection → provider list
+            // From auth config selection to provider list
             setSelectedProvider(null);
             setSelectedCategory(null);
             setSearch('');

@@ -1,12 +1,17 @@
 import {
     Button,
+    Card,
     CustomIcons,
+    Divider,
     Flex,
     FlexAlign,
     FlexDirection,
     FlexGapSize,
     FlexJustify,
     Padded,
+    Spacer,
+    Table,
+    Tag,
     Typography,
 } from '@stackone/malachite';
 import React, { useState } from 'react';
@@ -31,43 +36,6 @@ function getAuthTypeLabel(key: string): string {
     );
 }
 
-const statusBadgeStyle = (active: boolean): React.CSSProperties => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '2px 8px',
-    borderRadius: '9999px',
-    fontSize: '12px',
-    fontWeight: 500,
-    backgroundColor: active ? '#dcfce7' : '#f3f4f6',
-    color: active ? '#166534' : '#6b7280',
-    whiteSpace: 'nowrap',
-});
-
-const authTypeBadgeStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '2px 8px',
-    borderRadius: '4px',
-    fontSize: '12px',
-    border: '1px solid var(--malachite-border-color, #e5e7eb)',
-    backgroundColor: 'var(--malachite-card-background, #fff)',
-};
-
-const cardStyle: React.CSSProperties = {
-    border: '1px solid var(--malachite-border-color, #e5e7eb)',
-    borderRadius: '8px',
-    padding: '16px',
-    width: '100%',
-    boxSizing: 'border-box',
-};
-
-const tabActiveStyle: React.CSSProperties = {
-    padding: '4px 12px',
-    borderBottom: '2px solid #000',
-    fontWeight: 500,
-    fontSize: '14px',
-};
-
 interface AuthConfigCardProps {
     integration: Integration;
     onSelect: (integration: Integration) => void;
@@ -81,7 +49,7 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
     const hasActions = integration.actions && integration.actions.length > 0;
 
     return (
-        <div style={cardStyle}>
+        <Card border="rounded" padding="16px" width="100%">
             {/* Row 1: Name + Status badge + chevron + Select */}
             <Flex
                 direction={FlexDirection.Horizontal}
@@ -94,9 +62,10 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                     gapSize={FlexGapSize.Small}
                 >
                     <Typography.Text fontWeight="semi-bold">{integration.name}</Typography.Text>
-                    <span style={statusBadgeStyle(integration.active)}>
-                        {integration.active ? 'Enabled' : 'Disabled'}
-                    </span>
+                    <Tag
+                        value={integration.active ? 'Enabled' : 'Disabled'}
+                        type={integration.active ? 'success' : 'default'}
+                    />
                 </Flex>
                 <Flex
                     direction={FlexDirection.Horizontal}
@@ -125,97 +94,90 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                 </Flex>
             </Flex>
 
-            {/* Row 2: Auth type + Version (left-aligned) */}
-            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={authTypeBadgeStyle}>
-                    {getAuthTypeLabel(integration.authentication_config_key)}
-                </span>
-                <Typography.SecondaryText>Version {integration.version}</Typography.SecondaryText>
+            {/* Row 2: Auth type + Version */}
+            <div style={{ marginTop: '12px' }}>
+                <Flex
+                    direction={FlexDirection.Horizontal}
+                    align={FlexAlign.Center}
+                    justify={FlexJustify.Left}
+                    gapSize={FlexGapSize.Small}
+                >
+                    <Tag
+                        value={
+                            integration.authentication_config_label ??
+                            getAuthTypeLabel(integration.authentication_config_key)
+                        }
+                        type="default"
+                        textTransform="none"
+                    />
+                    <Typography.SecondaryText>
+                        Version {integration.version}
+                    </Typography.SecondaryText>
+                </Flex>
             </div>
 
             {/* Row 3: Stats */}
-            <div style={{ marginTop: '8px' }}>
+            <div style={{ marginTop: '12px' }}>
                 <Typography.SecondaryText>
                     {actionsCount} {actionsCount === 1 ? 'action' : 'actions'} &middot;{' '}
                     {accountCount} {accountCount === 1 ? 'account' : 'accounts'}
                 </Typography.SecondaryText>
             </div>
 
-            {/* Expanded: Actions table (only when actions data exists) */}
+            {/* Expanded: Actions table */}
             {expanded && hasActions && (
-                <div style={{ marginTop: '12px' }}>
-                    <div
-                        style={{
-                            display: 'flex',
-                            borderBottom: '1px solid var(--malachite-border-color, #e5e7eb)',
-                            marginBottom: '8px',
-                        }}
-                    >
-                        <span style={tabActiveStyle}>Actions {actionsCount}</span>
+                <>
+                    <div style={{ marginTop: '20px' }}>
+                        <Typography.Text fontWeight="semi-bold" size="small">
+                            Actions {actionsCount}
+                        </Typography.Text>
                     </div>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr>
-                                <th
-                                    style={{
-                                        textAlign: 'left',
-                                        padding: '8px 0',
-                                        fontSize: '13px',
-                                        color: '#6b7280',
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    Name
-                                </th>
-                                <th
-                                    style={{
-                                        textAlign: 'right',
-                                        padding: '8px 0',
-                                        fontSize: '13px',
-                                        color: '#6b7280',
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    View
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {integration.actions?.map((action) => (
-                                <tr
-                                    key={action.name}
-                                    style={{
-                                        borderTop:
-                                            '1px solid var(--malachite-border-color, #f3f4f6)',
-                                    }}
-                                >
-                                    <td style={{ padding: '8px 0', fontSize: '14px' }}>
-                                        {action.name}
-                                    </td>
-                                    <td style={{ textAlign: 'right', padding: '8px 0' }}>
-                                        {action.url ? (
+                    <div style={{ marginTop: '8px' }}>
+                        <Table
+                            size="small"
+                            bordered
+                            rowKey="name"
+                            columns={[
+                                {
+                                    title: 'Name',
+                                    dataIndex: 'name',
+                                    key: 'name',
+                                },
+                                {
+                                    title: 'View',
+                                    dataIndex: 'url',
+                                    key: 'view',
+                                    align: 'right',
+                                    width: 60,
+                                    render: (value) =>
+                                        value ? (
                                             <a
-                                                href={action.url}
+                                                href={value as string}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 style={{
-                                                    color: '#6b7280',
+                                                    color: 'var(--malachite-secondary-text-color, #6b7280)',
                                                     textDecoration: 'none',
                                                 }}
                                             >
                                                 &#8599;
                                             </a>
                                         ) : (
-                                            <span style={{ color: '#d1d5db' }}>&#8599;</span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                            <Typography.SecondaryText>
+                                                &#8599;
+                                            </Typography.SecondaryText>
+                                        ),
+                                },
+                            ]}
+                            data={(integration.actions ?? []).map((action) => ({
+                                name: action.name,
+                                url: action.url ?? '',
+                            }))}
+                        />
+                    </div>
+                </>
             )}
-        </div>
+        </Card>
     );
 };
 
@@ -231,46 +193,40 @@ export const AuthConfigSelectionView: React.FC<AuthConfigSelectionViewProps> = (
     onCreateNew,
 }) => {
     return (
-        <Padded vertical="small" horizontal="small" fullHeight={false}>
-            <div style={{ marginBottom: '16px' }}>
-                <Typography.SecondaryText>
-                    Select an existing auth config to link an account, or create a new one.
-                </Typography.SecondaryText>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-                {integrations.map((integration) => (
-                    <AuthConfigCard
-                        key={integration.integration_id}
-                        integration={integration}
-                        onSelect={onSelect}
-                    />
-                ))}
-            </div>
-            {onCreateNew && (
-                <div style={{ marginTop: '16px' }}>
-                    <button
-                        type="button"
-                        onClick={onCreateNew}
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            border: '1px solid var(--malachite-border-color, #e5e7eb)',
-                            borderRadius: '8px',
-                            backgroundColor: 'transparent',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '6px',
-                            color: 'inherit',
-                        }}
-                    >
-                        <span>+</span> Create New Auth Config
-                    </button>
-                </div>
-            )}
+        <Padded vertical="medium" horizontal="medium" fullHeight={false}>
+            <Spacer direction="vertical" size={16} fullWidth align="start">
+                <Flex
+                    direction={FlexDirection.Horizontal}
+                    align={FlexAlign.Center}
+                    justify={FlexJustify.SpaceBetween}
+                    fullWidth
+                    gapSize={FlexGapSize.Small}
+                >
+                    <Typography.SecondaryText>
+                        Select an existing auth config to link an account, or create a new one.
+                    </Typography.SecondaryText>
+                    {onCreateNew && (
+                        <Button
+                            variant="outline"
+                            size="small"
+                            icon={<CustomIcons.PlusIcon size={14} />}
+                            onClick={onCreateNew}
+                            style={{ whiteSpace: 'nowrap' }}
+                        >
+                            Create New Auth Config
+                        </Button>
+                    )}
+                </Flex>
+                <Spacer direction="vertical" size={12} fullWidth>
+                    {integrations.map((integration) => (
+                        <AuthConfigCard
+                            key={integration.integration_id}
+                            integration={integration}
+                            onSelect={onSelect}
+                        />
+                    ))}
+                </Spacer>
+            </Spacer>
         </Padded>
     );
 };
