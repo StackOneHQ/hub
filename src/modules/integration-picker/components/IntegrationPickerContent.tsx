@@ -1,5 +1,6 @@
 import React from 'react';
 import { ConnectorConfig, ConnectorConfigField, HubData, Integration } from '../types';
+import { AuthConfigSelectionView } from './views/AuthConfigSelectionView';
 import { ErrorView } from './views/ErrorView';
 import { IntegrationFormView } from './views/IntegrationFormView';
 import { IntegrationListView } from './views/IntegrationListView';
@@ -21,6 +22,9 @@ interface IntegrationPickerContentProps {
 
     // Data
     selectedIntegration: Integration | null;
+    selectedProvider: string | null;
+    uniqueProviderIntegrations: Integration[];
+    providerIntegrations: Integration[];
     connectorData: ConnectorConfig | null;
     hubData: HubData | null;
     fields: ConnectorConfigField[];
@@ -32,7 +36,9 @@ interface IntegrationPickerContentProps {
     errorConnectorData: Error | null;
 
     // Actions
-    onSelect: (integration: Integration) => void;
+    onProviderSelect: (integration: Integration) => void;
+    onAuthConfigSelect: (integration: Integration) => void;
+    onCreateNewAuthConfig?: () => void;
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
     editingSecrets?: Set<string>;
@@ -44,6 +50,9 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     hasError,
     connectionState,
     selectedIntegration,
+    selectedProvider,
+    uniqueProviderIntegrations,
+    providerIntegrations,
     connectorData,
     hubData,
     fields,
@@ -51,7 +60,9 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     search,
     errorHubData,
     errorConnectorData,
-    onSelect,
+    onProviderSelect,
+    onAuthConfigSelect,
+    onCreateNewAuthConfig,
     onChange,
     onValidationChange,
     editingSecrets,
@@ -90,23 +101,8 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         return <SuccessView integrationName={connectorData?.name ?? selectedIntegration.name} />;
     }
 
-    // Integration selection flow
-    if (!selectedIntegration) {
-        if (!hubData?.integrations.length) {
-            return <ErrorView message="No configured integrations available." />;
-        }
-        return (
-            <IntegrationListView
-                integrations={hubData.integrations}
-                onSelect={onSelect}
-                selectedCategory={selectedCategory}
-                search={search}
-            />
-        );
-    }
-
-    // Form view (when integration is selected and connector data is available)
-    if (connectorData) {
+    // Step 4: Form view (when auth config is selected and connector data is available)
+    if (selectedIntegration && connectorData) {
         return (
             <IntegrationFormView
                 fields={fields}
@@ -120,6 +116,27 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         );
     }
 
-    // Fallback
-    return null;
+    // Step 3.5: Auth Config selection (provider selected, auth config not yet selected)
+    if (selectedProvider && !selectedIntegration) {
+        return (
+            <AuthConfigSelectionView
+                integrations={providerIntegrations}
+                onSelect={onAuthConfigSelect}
+                onCreateNew={onCreateNewAuthConfig}
+            />
+        );
+    }
+
+    // Step 3: Provider/Connector selection
+    if (!hubData?.integrations.length) {
+        return <ErrorView message="No configured integrations available." />;
+    }
+    return (
+        <IntegrationListView
+            integrations={uniqueProviderIntegrations}
+            onSelect={onProviderSelect}
+            selectedCategory={selectedCategory}
+            search={search}
+        />
+    );
 };

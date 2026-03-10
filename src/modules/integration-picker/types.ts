@@ -1,3 +1,8 @@
+export interface IntegrationAction {
+    name: string;
+    url?: string;
+}
+
 export interface Integration {
     active: boolean;
     name: string;
@@ -8,6 +13,11 @@ export interface Integration {
     environment: string;
     integration_id: string;
     logo_url: string;
+    connector_name?: string;
+    account_count?: number;
+    actions_count?: number;
+    triggers_count?: number;
+    actions?: IntegrationAction[];
 }
 
 export interface HubData {
@@ -108,6 +118,21 @@ export interface AccountData {
     authConfigKey?: string;
     environment?: string;
     integrationId: string;
+}
+
+export interface ProviderActionMeta {
+    id?: string;
+    key?: string;
+    name: string;
+    description?: string;
+}
+
+export interface ProviderActionsResponse {
+    key: string;
+    version: string;
+    name?: string;
+    actions?: ProviderActionMeta[];
+    actions_count?: number;
 }
 
 export interface AccountCreationResponse {

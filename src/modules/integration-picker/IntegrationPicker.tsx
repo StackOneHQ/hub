@@ -39,6 +39,10 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         accountData,
         connectorData,
         selectedIntegration,
+        selectedProvider,
+        uniqueProviderIntegrations,
+        providerIntegrations,
+        hasOnlyOneProvider,
         fields,
         guide,
 
@@ -54,6 +58,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
 
         // Actions
         setSelectedIntegration,
+        setSelectedProvider,
+        handleProviderSelect,
+        handleCreateNewAuthConfig,
         setFormData,
         setIsFormValid,
         handleConnect,
@@ -82,10 +89,16 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     }, [hubData]);
 
     const onBack = () => {
-        setSelectedIntegration(null);
-        resetConnectionState();
-        setSelectedCategory(null);
-        setSearch('');
+        if (selectedIntegration) {
+            // From form → auth config selection
+            setSelectedIntegration(null);
+            resetConnectionState();
+        } else if (selectedProvider) {
+            // From auth config selection → provider list
+            setSelectedProvider(null);
+            setSelectedCategory(null);
+            setSearch('');
+        }
     };
 
     return (
@@ -126,13 +139,16 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                             hasOnlyOneIntegration
                         }
                         connectorData={connectorData?.config ?? null}
+                        selectedProvider={selectedProvider}
+                        hasOnlyOneProvider={hasOnlyOneProvider}
+                        uniqueProviderIntegrations={uniqueProviderIntegrations}
                     />
                 )
             }
             height={height}
             padding="0"
             headerConfig={
-                selectedIntegration
+                selectedIntegration || selectedProvider
                     ? undefined
                     : {
                           padding: '0',
@@ -145,12 +161,17 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     hasError={hasError}
                     connectionState={connectionState}
                     selectedIntegration={selectedIntegration}
+                    selectedProvider={selectedProvider}
+                    uniqueProviderIntegrations={uniqueProviderIntegrations}
+                    providerIntegrations={providerIntegrations}
                     connectorData={connectorData?.config ?? null}
                     hubData={hubData ?? null}
                     fields={fields}
                     errorHubData={(errorHubData as Error) ?? null}
                     errorConnectorData={(errorConnectorData as Error) ?? null}
-                    onSelect={setSelectedIntegration}
+                    onProviderSelect={handleProviderSelect}
+                    onAuthConfigSelect={setSelectedIntegration}
+                    onCreateNewAuthConfig={handleCreateNewAuthConfig}
                     onChange={setFormData}
                     onValidationChange={handleValidationChange}
                     selectedCategory={selectedCategory}

@@ -1,3 +1,4 @@
+export { AuthConfigSelectionView } from './AuthConfigSelectionView';
 export { IntegrationListView } from './IntegrationListView';
 export { IntegrationFormView } from './IntegrationFormView';
 export { LoadingView } from './LoadingView';

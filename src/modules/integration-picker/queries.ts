@@ -5,6 +5,7 @@ import {
     ConnectorConfig,
     HubConnectorConfig,
     HubData,
+    ProviderActionsResponse,
 } from './types';
 
 export const getHubData = async (token: string, baseUrl: string, provider?: string) => {
@@ -81,6 +82,16 @@ export const updateAccount = async ({
         body: {
             integration_id: integrationId,
             credentials,
+        },
+    });
+};
+
+export const getProviderActions = async (baseUrl: string, token: string, provider: string) => {
+    return await getRequest<ProviderActionsResponse[]>({
+        url: `${baseUrl}/hub/actions?provider=${encodeURIComponent(provider)}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
         },
     });
 };

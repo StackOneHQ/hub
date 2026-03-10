@@ -1,4 +1,5 @@
-import { ConnectorConfig, HubData } from '../types';
+import { Button, Typography } from '@stackone/malachite';
+import { ConnectorConfig, HubData, Integration } from '../types';
 import CardTitle from './cardTitle';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
@@ -14,6 +15,9 @@ interface IntegrationPickerTitleProps {
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
     hideBackButton?: boolean;
+    selectedProvider: string | null;
+    hasOnlyOneProvider: boolean;
+    uniqueProviderIntegrations: Integration[];
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -28,7 +32,11 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     onCategoryChange,
     onSearchChange,
     hideBackButton,
+    selectedProvider,
+    hasOnlyOneProvider,
+    uniqueProviderIntegrations,
 }) => {
+    // Step 4: Form title (when connector data is loaded after auth config selection)
     if (connectorData) {
         return (
             <CardTitle
@@ -39,6 +47,30 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
         );
     }
 
+    // Step 3.5: Auth Config selection title
+    if (selectedProvider) {
+        const showBackButton = !hasOnlyOneProvider && !accountData;
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    justifyContent: 'flex-start',
+                }}
+            >
+                {showBackButton && (
+                    <Button variant="ghost" onClick={onBack} icon="←" size="small" />
+                )}
+                <Typography.Text fontWeight="semi-bold" size="medium">
+                    Select Auth Config
+                </Typography.Text>
+            </div>
+        );
+    }
+
+    // Step 3: Provider list header
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
@@ -47,7 +79,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
 
     return (
         <IntegrationListHeader
-            integrations={hubData.integrations}
+            integrations={uniqueProviderIntegrations}
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             onSearchChange={onSearchChange}

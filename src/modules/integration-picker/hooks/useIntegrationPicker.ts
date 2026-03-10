@@ -6,11 +6,13 @@ import {
     getAccountData,
     getConnectorConfig,
     getHubData,
+    getProviderActions,
     updateAccount,
 } from '../queries';
 import {
     ConnectorConfigField,
     Integration,
+    IntegrationAction,
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
@@ -60,6 +62,7 @@ export const useIntegrationPicker = ({
     dashboardUrl,
 }: UseIntegrationPickerProps) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
+    const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [editingSecrets, setEditingSecrets] = useState<Set<string>>(new Set());
 
@@ -238,15 +241,17 @@ export const useIntegrationPicker = ({
     }, [accountData, hubData]);
 
     useEffect(() => {
-        if (hubData && !selectedIntegration) {
+        if (hubData && !selectedIntegration && !selectedProvider) {
             const activeIntegrations = hubData.integrations.filter(
                 (integration) => integration.active,
             );
             if (activeIntegrations.length === 1) {
+                // Single integration total - auto-select both provider and config
+                setSelectedProvider(activeIntegrations[0].provider);
                 setSelectedIntegration(activeIntegrations[0]);
             }
         }
-    }, [hubData, selectedIntegration]);
+    }, [hubData, selectedIntegration, selectedProvider]);
 
     const {
         data: connectorData,
@@ -270,6 +275,78 @@ export const useIntegrationPicker = ({
         enabled: Boolean(selectedIntegration) || Boolean(accountData),
         ...RETRY_CONFIG,
     });
+
+    // Fetch provider actions when a provider is selected (for auth config cards)
+    const { data: providerActionsData } = useQuery({
+        queryKey: ['providerActions', selectedProvider],
+        queryFn: async () => {
+            if (!selectedProvider) return null;
+            return getProviderActions(baseUrl, token, selectedProvider);
+        },
+        enabled: Boolean(selectedProvider) && !selectedIntegration,
+        ...RETRY_CONFIG,
+    });
+
+    // Deduplicated list of integrations (one per provider) for the connector list
+    const uniqueProviderIntegrations = useMemo(() => {
+        if (!hubData) return [];
+        const seen = new Set<string>();
+        return hubData.integrations.filter((integration) => {
+            if (seen.has(integration.provider)) return false;
+            seen.add(integration.provider);
+            return true;
+        });
+    }, [hubData]);
+
+    // All integrations for the selected provider, enriched with actions data
+    const providerIntegrations = useMemo(() => {
+        if (!selectedProvider || !hubData) return [];
+        const integrations = hubData.integrations.filter((i) => i.provider === selectedProvider);
+
+        if (!providerActionsData?.length) return integrations;
+
+        // Find the matching provider meta (strict match by provider key AND version)
+        return integrations.map((integration) => {
+            const providerMeta = providerActionsData.find(
+                (p) => p.key === integration.provider && p.version === integration.version,
+            );
+
+            if (!providerMeta?.actions?.length) return integration;
+
+            const actions: IntegrationAction[] = providerMeta.actions.map((a) => ({
+                name: a.name,
+            }));
+
+            return {
+                ...integration,
+                actions,
+                actions_count:
+                    integration.actions_count ?? providerMeta.actions_count ?? actions.length,
+            };
+        });
+    }, [selectedProvider, hubData, providerActionsData]);
+
+    const hasOnlyOneProvider = useMemo(() => {
+        if (!hubData) return false;
+        const activeProviders = new Set(
+            hubData.integrations.filter((i) => i.active).map((i) => i.provider),
+        );
+        return activeProviders.size <= 1;
+    }, [hubData]);
+
+    const handleProviderSelect = useCallback((integration: Integration) => {
+        setSelectedProvider(integration.provider);
+    }, []);
+
+    const handleCreateNewAuthConfig = useCallback(() => {
+        if (!dashboardUrl) return;
+        const params = new URLSearchParams();
+        if (selectedProvider) {
+            params.set('connectorKey', selectedProvider);
+        }
+        const query = params.toString();
+        window.open(`${dashboardUrl}/auth_configs${query ? `?${query}` : ''}`, '_blank');
+    }, [dashboardUrl, selectedProvider]);
 
     const { fields, guide } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
@@ -696,6 +773,10 @@ export const useIntegrationPicker = ({
         accountData,
         connectorData,
         selectedIntegration,
+        selectedProvider,
+        uniqueProviderIntegrations,
+        providerIntegrations,
+        hasOnlyOneProvider,
         fields,
         guide,
 
@@ -713,6 +794,9 @@ export const useIntegrationPicker = ({
 
         // Actions
         setSelectedIntegration,
+        setSelectedProvider,
+        handleProviderSelect,
+        handleCreateNewAuthConfig,
         setFormData: setFormDataCallback,
         setIsFormValid,
         handleConnect,
