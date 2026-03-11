@@ -1,4 +1,5 @@
 export interface IntegrationAction {
+    id?: string;
     name: string;
     url?: string;
 }

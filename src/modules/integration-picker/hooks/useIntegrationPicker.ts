@@ -314,6 +314,7 @@ export const useIntegrationPicker = ({
             if (!providerMeta?.actions?.length) return integration;
 
             const actions: IntegrationAction[] = providerMeta.actions.map((a) => ({
+                id: a.id,
                 name: a.name,
             }));
 

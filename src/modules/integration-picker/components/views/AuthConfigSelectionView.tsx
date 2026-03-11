@@ -2,7 +2,6 @@ import {
     Button,
     Card,
     CustomIcons,
-    Divider,
     Flex,
     FlexAlign,
     FlexDirection,
@@ -136,42 +135,17 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                         <Table
                             size="small"
                             bordered
-                            rowKey="name"
+                            rowKey="id"
                             columns={[
                                 {
                                     title: 'Name',
                                     dataIndex: 'name',
                                     key: 'name',
                                 },
-                                {
-                                    title: 'View',
-                                    dataIndex: 'url',
-                                    key: 'view',
-                                    align: 'right',
-                                    width: 60,
-                                    render: (value) =>
-                                        value ? (
-                                            <a
-                                                href={value as string}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                    color: 'var(--malachite-secondary-text-color, #6b7280)',
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
-                                                &#8599;
-                                            </a>
-                                        ) : (
-                                            <Typography.SecondaryText>
-                                                &#8599;
-                                            </Typography.SecondaryText>
-                                        ),
-                                },
                             ]}
                             data={(integration.actions ?? []).map((action) => ({
+                                id: action.id ?? action.name,
                                 name: action.name,
-                                url: action.url ?? '',
                             }))}
                         />
                     </div>
@@ -199,7 +173,7 @@ export const AuthConfigSelectionView: React.FC<AuthConfigSelectionViewProps> = (
                     direction={FlexDirection.Horizontal}
                     align={FlexAlign.Center}
                     justify={FlexJustify.SpaceBetween}
-                    fullWidth
+                    width="100%"
                     gapSize={FlexGapSize.Small}
                 >
                     <Typography.SecondaryText>
