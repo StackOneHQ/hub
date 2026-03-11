@@ -63,6 +63,7 @@ export const useIntegrationPicker = ({
 }: UseIntegrationPickerProps) => {
     const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
     const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+    const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [editingSecrets, setEditingSecrets] = useState<Set<string>>(new Set());
 
@@ -248,6 +249,7 @@ export const useIntegrationPicker = ({
             if (activeIntegrations.length === 1) {
                 // Single integration total - auto-select both provider and config
                 setSelectedProvider(activeIntegrations[0].provider);
+                setSelectedVersion(activeIntegrations[0].version);
                 setSelectedIntegration(activeIntegrations[0]);
             }
         }
@@ -287,21 +289,26 @@ export const useIntegrationPicker = ({
         ...RETRY_CONFIG,
     });
 
-    // Deduplicated list of integrations (one per provider) for the connector list
+    // Deduplicated list of integrations (one per provider+version) for the connector list
     const uniqueProviderIntegrations = useMemo(() => {
         if (!hubData) return [];
         const seen = new Set<string>();
         return hubData.integrations.filter((integration) => {
-            if (seen.has(integration.provider)) return false;
-            seen.add(integration.provider);
+            const key = `${integration.provider}:${integration.version}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
             return true;
         });
     }, [hubData]);
 
-    // All integrations for the selected provider, enriched with actions data
+    // All integrations for the selected provider+version, enriched with actions data
     const providerIntegrations = useMemo(() => {
         if (!selectedProvider || !hubData) return [];
-        const integrations = hubData.integrations.filter((i) => i.provider === selectedProvider);
+        const integrations = hubData.integrations.filter(
+            (i) =>
+                i.provider === selectedProvider &&
+                (!selectedVersion || i.version === selectedVersion),
+        );
 
         if (!providerActionsData?.length) return integrations;
 
@@ -326,18 +333,19 @@ export const useIntegrationPicker = ({
                     integration.actions_count ?? providerMeta.actions_count ?? actions.length,
             };
         });
-    }, [selectedProvider, hubData, providerActionsData]);
+    }, [selectedProvider, selectedVersion, hubData, providerActionsData]);
 
     const hasOnlyOneProvider = useMemo(() => {
         if (!hubData) return false;
-        const activeProviders = new Set(
-            hubData.integrations.filter((i) => i.active).map((i) => i.provider),
+        const activeProviderVersions = new Set(
+            hubData.integrations.filter((i) => i.active).map((i) => `${i.provider}:${i.version}`),
         );
-        return activeProviders.size <= 1;
+        return activeProviderVersions.size <= 1;
     }, [hubData]);
 
     const handleProviderSelect = useCallback((integration: Integration) => {
         setSelectedProvider(integration.provider);
+        setSelectedVersion(integration.version);
     }, []);
 
     const handleCreateNewAuthConfig = useCallback(() => {
@@ -346,9 +354,12 @@ export const useIntegrationPicker = ({
         if (selectedProvider) {
             params.set('connectorKey', selectedProvider);
         }
+        if (selectedVersion) {
+            params.set('connectorVersion', selectedVersion);
+        }
         const query = params.toString();
         window.open(`${dashboardUrl}/auth_configs${query ? `?${query}` : ''}`, '_blank');
-    }, [dashboardUrl, selectedProvider]);
+    }, [dashboardUrl, selectedProvider, selectedVersion]);
 
     const { fields, guide } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
@@ -797,6 +808,7 @@ export const useIntegrationPicker = ({
         // Actions
         setSelectedIntegration,
         setSelectedProvider,
+        setSelectedVersion,
         handleProviderSelect,
         handleCreateNewAuthConfig,
         setFormData: setFormDataCallback,

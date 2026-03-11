@@ -59,6 +59,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         // Actions
         setSelectedIntegration,
         setSelectedProvider,
+        setSelectedVersion,
         handleProviderSelect,
         handleCreateNewAuthConfig,
         setFormData,
@@ -96,6 +97,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         } else if (selectedProvider) {
             // From auth config selection to provider list
             setSelectedProvider(null);
+            setSelectedVersion(null);
             setSelectedCategory(null);
             setSearch('');
         }
