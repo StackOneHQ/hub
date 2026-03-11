@@ -135,17 +135,39 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                         <Table
                             size="small"
                             bordered
+                            layout="fixed"
                             rowKey="id"
                             columns={[
                                 {
                                     title: 'Name',
                                     dataIndex: 'name',
                                     key: 'name',
+                                    width: '40%',
+                                },
+                                {
+                                    title: 'Description',
+                                    dataIndex: 'description',
+                                    key: 'description',
+                                    width: '60%',
+                                    render: (value: unknown) => {
+                                        const description = value as string;
+                                        return description ? (
+                                            <Typography.EllipsisText
+                                                tooltip={description}
+                                                maxWidth="100%"
+                                            >
+                                                {description}
+                                            </Typography.EllipsisText>
+                                        ) : (
+                                            '\u2014'
+                                        );
+                                    },
                                 },
                             ]}
                             data={(integration.actions ?? []).map((action) => ({
                                 id: action.id ?? action.name,
                                 name: action.name,
+                                description: action.description ?? '',
                             }))}
                         />
                     </div>
