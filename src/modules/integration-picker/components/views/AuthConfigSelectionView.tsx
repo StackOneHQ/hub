@@ -49,7 +49,6 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
 
     return (
         <Card border="rounded" padding="16px" width="100%">
-            {/* Row 1: Name + Status badge + chevron + Select */}
             <Flex
                 direction={FlexDirection.Horizontal}
                 align={FlexAlign.Center}
@@ -93,7 +92,6 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                 </Flex>
             </Flex>
 
-            {/* Row 2: Auth type + Version */}
             <div style={{ marginTop: '12px' }}>
                 <Flex
                     direction={FlexDirection.Horizontal}
@@ -115,7 +113,6 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                 </Flex>
             </div>
 
-            {/* Row 3: Stats */}
             <div style={{ marginTop: '12px' }}>
                 <Typography.SecondaryText>
                     {actionsCount} {actionsCount === 1 ? 'action' : 'actions'} &middot;{' '}
@@ -123,7 +120,6 @@ const AuthConfigCard: React.FC<AuthConfigCardProps> = ({ integration, onSelect }
                 </Typography.SecondaryText>
             </div>
 
-            {/* Expanded: Actions table */}
             {expanded && hasActions && (
                 <>
                     <div style={{ marginTop: '20px' }}>
