@@ -36,7 +36,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     hasOnlyOneProvider,
     uniqueProviderIntegrations,
 }) => {
-    // Step 4: Form title (when connector data is loaded after auth config selection)
     if (connectorData) {
         return (
             <CardTitle
@@ -47,7 +46,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
         );
     }
 
-    // Step 3.5: Auth Config selection title
     if (selectedProvider) {
         const showBackButton = !hasOnlyOneProvider && !accountData;
         return (
@@ -70,7 +68,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
         );
     }
 
-    // Step 3: Provider list header
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
