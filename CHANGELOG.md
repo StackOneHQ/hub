@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.2](https://github.com/StackOneHQ/hub/compare/hub-v0.13.1...hub-v0.13.2) (2026-03-17)
+
+
+### Bug Fixes
+
+* trigger publish with new token ([#114](https://github.com/StackOneHQ/hub/issues/114)) ([c951ef1](https://github.com/StackOneHQ/hub/commit/c951ef19c66d2b62608bacb07edad8f61981a7fa))
+
 ## [0.13.1](https://github.com/StackOneHQ/hub/compare/hub-v0.13.0...hub-v0.13.1) (2026-03-17)
 
 
