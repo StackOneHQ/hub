@@ -1,6 +1,6 @@
 {
     "name": "@stackone/hub",
-    "version": "0.13.2",
+    "version": "1.0.0",
     "description": "StackOne HUB",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",

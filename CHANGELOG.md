@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/StackOneHQ/hub/compare/hub-v0.13.2...hub-v1.0.0) (2026-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* add close label prop ([#116](https://github.com/StackOneHQ/hub/issues/116))
+
+### Features
+
+* add close label prop ([#116](https://github.com/StackOneHQ/hub/issues/116)) ([f6ceb7e](https://github.com/StackOneHQ/hub/commit/f6ceb7eac74b5fe49ac7f0fd355ca70c29e590b5))
+
 ## [0.13.2](https://github.com/StackOneHQ/hub/compare/hub-v0.13.1...hub-v0.13.2) (2026-03-17)
 
 
