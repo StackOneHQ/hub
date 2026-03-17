@@ -11,9 +11,14 @@ import {
 interface CardFooterProps {
     onClose?: () => void;
     showFooterLinks?: boolean;
+    onCloseLabel?: string;
 }
 
-const SuccessCardFooter: React.FC<CardFooterProps> = ({ showFooterLinks = true, onClose }) => {
+const SuccessCardFooter: React.FC<CardFooterProps> = ({
+    showFooterLinks = true,
+    onClose,
+    onCloseLabel,
+}) => {
     const hasFooterLinks = showFooterLinks;
     const hasClose = Boolean(onClose);
 
@@ -35,7 +40,7 @@ const SuccessCardFooter: React.FC<CardFooterProps> = ({ showFooterLinks = true, 
                     <Flex direction={FlexDirection.Horizontal} justify={FlexJustify.Right}>
                         <Spacer direction="horizontal" size={10}>
                             <Button size="small" variant="filled" onClick={onClose}>
-                                Close
+                                {onCloseLabel ?? 'Close'}
                             </Button>
                         </Spacer>
                     </Flex>
