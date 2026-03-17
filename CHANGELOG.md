@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/StackOneHQ/hub/compare/hub-v0.13.0...hub-v0.13.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* trigger publish ([#112](https://github.com/StackOneHQ/hub/issues/112)) ([71cc354](https://github.com/StackOneHQ/hub/commit/71cc354ed3e6000e12f553af98dc052cb77c4695))
+
 ## [0.13.0](https://github.com/StackOneHQ/hub/compare/hub-v0.12.9...hub-v0.13.0) (2026-03-17)
 
 
