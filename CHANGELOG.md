@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/StackOneHQ/hub/compare/hub-v0.12.9...hub-v0.13.0) (2026-03-17)
+
+
+### Features
+
+* dont render close button if no close handler is passed ([#110](https://github.com/StackOneHQ/hub/issues/110)) ([b110f20](https://github.com/StackOneHQ/hub/commit/b110f204cbc9379b623b951a88fbef65711f3dfc))
+
 ## [0.12.9](https://github.com/StackOneHQ/hub/compare/hub-v0.12.8...hub-v0.12.9) (2026-02-24)
 
 
