@@ -15,8 +15,8 @@ interface IntegrationPickerProps {
     dashboardUrl?: string;
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
-    onCancel?: () => void;
     showFooterLinks?: boolean;
+    onCloseLabel?: string;
 }
 
 export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
@@ -28,6 +28,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     onClose,
     dashboardUrl,
     showFooterLinks = true,
+    onCloseLabel,
 }) => {
     const isHubLinkAccountReleaseEnabled = useFeatureFlags('hub_link_account_release');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -93,7 +94,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
             glassFooter
             footer={
                 connectionState.success ? (
-                    <SuccessCardFooter onClose={onClose} showFooterLinks={showFooterLinks} />
+                    <SuccessCardFooter
+                        onClose={onClose}
+                        showFooterLinks={showFooterLinks}
+                        onCloseLabel={onCloseLabel}
+                    />
                 ) : (
                     <CardFooter
                         selectedIntegration={selectedIntegration}

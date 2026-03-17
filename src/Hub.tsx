@@ -13,7 +13,7 @@ interface HubProps {
     height: string;
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
-    onCancel?: () => void;
+    onCloseLabel?: string;
     accountId?: string;
     showFooterLinks?: boolean;
 }
@@ -26,9 +26,9 @@ export const Hub = memo(
         height,
         onSuccess,
         onClose,
-        onCancel,
         accountId,
         showFooterLinks,
+        onCloseLabel,
     }: HubProps) => {
         const { data: settings } = useQuery({
             queryKey: ['settings'],
@@ -45,7 +45,7 @@ export const Hub = memo(
                         height={height}
                         onSuccess={onSuccess}
                         onClose={onClose}
-                        onCancel={onCancel}
+                        onCloseLabel={onCloseLabel}
                         accountId={accountId ?? settings?.existing_account_id}
                         showFooterLinks={showFooterLinks}
                     />
