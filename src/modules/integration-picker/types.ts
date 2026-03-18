@@ -27,6 +27,8 @@ export interface ConnectorConfigField {
         label: string;
         value: string;
     }>;
+    description?: string;
+    tooltip?: string;
     guide?: {
         description: string;
         tooltip: string;

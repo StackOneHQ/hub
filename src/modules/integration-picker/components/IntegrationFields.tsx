@@ -80,8 +80,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                         disabled={true}
                         readOnly={true}
                         defaultValue={fieldValue ? formatSecretPlaceholder(fieldValue) : ''}
-                        description={field.guide?.description}
-                        tooltip={field.guide?.tooltip}
+                        description={field.guide?.description ?? field.description}
+                        tooltip={field.guide?.tooltip ?? field.tooltip}
                         showCopyButton={false}
                         buttons={
                             setEditingSecrets
@@ -126,8 +126,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     disabled={inputDisabled}
                     readOnly={field.readOnly}
                     label={field.label}
-                    tooltip={field.guide?.tooltip}
-                    description={field.guide?.description}
+                    tooltip={field.guide?.tooltip ?? field.tooltip}
+                    description={field.guide?.description ?? field.description}
                     type={field.type}
                     error={!!errors[key]}
                     onChange={(value: string) =>
@@ -153,7 +153,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     placeholder={field.placeholder}
                     disabled={field.readOnly}
                     label={field.label}
-                    tooltip={field.guide?.tooltip}
+                    tooltip={field.guide?.tooltip ?? field.tooltip}
+                    description={field.guide?.description ?? field.description}
                     error={!!errors[key]}
                     onChange={(value: string) =>
                         setValue(key, value, {
@@ -186,8 +187,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     }
                     name={key}
                     label={field.label}
-                    tooltip={field.guide?.tooltip}
-                    description={field.guide?.description}
+                    tooltip={field.guide?.tooltip ?? field.tooltip}
+                    description={field.guide?.description ?? field.description}
                     required={field.required}
                     error={!!errors[key]}
                 />
