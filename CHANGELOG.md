@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/StackOneHQ/hub/compare/hub-v1.0.0...hub-v1.0.1) (2026-03-18)
+
+
+### Bug Fixes
+
+* **ENG-12152:** render description and tooltips for falcon connectors ([#118](https://github.com/StackOneHQ/hub/issues/118)) ([6777742](https://github.com/StackOneHQ/hub/commit/6777742ebcc25b4d52c899421719b86b508dcdd6))
+
 ## [1.0.0](https://github.com/StackOneHQ/hub/compare/hub-v0.13.2...hub-v1.0.0) (2026-03-17)
 
 
