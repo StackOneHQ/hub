@@ -12,7 +12,7 @@ import {
     applyTheme,
 } from '@stackone/malachite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Hub } from './Hub';
 import ErrorContainer from './shared/components/error';
 import ErrorBoundary from './shared/components/errorBoundary';
@@ -73,6 +73,13 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                 },
             }),
     );
+    const prevTokenRef = useRef(token);
+    useEffect(() => {
+        if (prevTokenRef.current !== token) {
+            prevTokenRef.current = token;
+            queryClient.clear();
+        }
+    }, [token, queryClient]);
 
     if (!token) {
         return (
