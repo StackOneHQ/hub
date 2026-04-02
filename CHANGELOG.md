@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/StackOneHQ/hub/compare/hub-v1.0.1...hub-v1.0.2) (2026-04-02)
+
+
+### Bug Fixes
+
+* **ENG-12550:** stateful query client ([#123](https://github.com/StackOneHQ/hub/issues/123)) ([32c13a5](https://github.com/StackOneHQ/hub/commit/32c13a5af728185930c5cf02efd1206953d80609))
+
 ## [1.0.1](https://github.com/StackOneHQ/hub/compare/hub-v1.0.0...hub-v1.0.1) (2026-03-18)
 
 
