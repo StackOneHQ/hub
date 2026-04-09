@@ -13,6 +13,8 @@ export interface Integration {
 export interface HubData {
     integrations: Array<Integration>;
     external_trigger_token?: string;
+    webhooks_url?: string;
+    events_encoded_context?: string;
 }
 
 export interface ConnectorConfigField {

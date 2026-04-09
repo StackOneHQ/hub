@@ -323,6 +323,8 @@ export const useIntegrationPicker = ({
                             ...formData,
                             ...accountData?.setupInformation,
                             external_trigger_token: hubData?.external_trigger_token,
+                            webhooks_url: hubData?.webhooks_url,
+                            events_encoded_context: hubData?.events_encoded_context,
                             hub_settings: connectorData.hub_settings,
                         };
 
