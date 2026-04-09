@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/StackOneHQ/hub/compare/hub-v1.0.2...hub-v1.1.0) (2026-04-09)
+
+
+### Features
+
+* **ENG-12476:** add webhooks_url and events_encoded_context to hub evaluation context ([#127](https://github.com/StackOneHQ/hub/issues/127)) ([0eab6f5](https://github.com/StackOneHQ/hub/commit/0eab6f5dc6910b5740d620a294698cbc5de8d028))
+
 ## [1.0.2](https://github.com/StackOneHQ/hub/compare/hub-v1.0.1...hub-v1.0.2) (2026-04-02)
 
 
