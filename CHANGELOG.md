@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/StackOneHQ/hub/compare/hub-v1.1.0...hub-v1.2.0) (2026-04-14)
+
+
+### Features
+
+* **ENG-12652:** suspense mre and debug log ([#129](https://github.com/StackOneHQ/hub/issues/129)) ([a25da7b](https://github.com/StackOneHQ/hub/commit/a25da7baad4f40d4a4954a8d7fa831fd0c8f8098))
+
 ## [1.1.0](https://github.com/StackOneHQ/hub/compare/hub-v1.0.2...hub-v1.1.0) (2026-04-09)
 
 
