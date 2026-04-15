@@ -579,32 +579,33 @@ export const useIntegrationPicker = ({
 
     const startPopupWatcher = useCallback(() => {
         const check = () => {
-            if (connectWindow.current?.closed) {
-                if (debugRef.current) {
-                    console.debug('[hub] OAuth popup closed', {
-                        resolved: oauthResolvedRef.current,
-                        pollingActive: !!pollingIntervalRef.current,
-                    });
+            if (!connectWindow.current?.closed) {
+                if (connectWindow.current) {
+                    checkStateTimeoutRef.current = window.setTimeout(check, 1000);
                 }
-                connectWindow.current = null;
-                if (checkStateTimeoutRef.current !== null) {
-                    clearTimeout(checkStateTimeoutRef.current);
-                    checkStateTimeoutRef.current = null;
-                }
-                if (!oauthResolvedRef.current) {
-                    window.removeEventListener('message', processMessageCallback, false);
-                    if (!pollingIntervalRef.current) {
-                        if (debugRef.current) {
-                            console.debug(
-                                '[hub] popup closed with no active poll, resetting state',
-                            );
-                        }
-                        setConnectionState({ loading: false, success: false });
-                    }
-                }
-            } else if (connectWindow.current) {
-                checkStateTimeoutRef.current = window.setTimeout(check, 1000);
+                return;
             }
+
+            if (debugRef.current) {
+                console.debug('[hub] OAuth popup closed', {
+                    resolved: oauthResolvedRef.current,
+                    pollingActive: !!pollingIntervalRef.current,
+                });
+            }
+            connectWindow.current = null;
+            if (checkStateTimeoutRef.current !== null) {
+                clearTimeout(checkStateTimeoutRef.current);
+                checkStateTimeoutRef.current = null;
+            }
+            if (oauthResolvedRef.current) return;
+
+            window.removeEventListener('message', processMessageCallback, false);
+            if (pollingIntervalRef.current) return;
+
+            if (debugRef.current) {
+                console.debug('[hub] popup closed with no active poll, resetting state');
+            }
+            setConnectionState({ loading: false, success: false });
         };
         checkStateTimeoutRef.current = window.setTimeout(check, 1000);
     }, [processMessageCallback]);

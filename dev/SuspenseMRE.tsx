@@ -12,7 +12,6 @@ import { relayEnvironment } from './RelayEnvironment';
 import type { SuspenseMREConfirmAccountMutation } from './__generated__/SuspenseMREConfirmAccountMutation.graphql';
 import type { SuspenseMRECreateSessionMutation } from './__generated__/SuspenseMRECreateSessionMutation.graphql';
 import type { SuspenseMREProvidersQuery } from './__generated__/SuspenseMREProvidersQuery.graphql';
-import React from 'react';
 
 const PROVIDER_KEY = 'jira';
 
@@ -110,7 +109,7 @@ function SuspenseMREContent() {
                 },
             });
         },
-        [commitConfirmAccount, setConnectState],
+        [commitConfirmAccount],
     );
 
     const handleClose = useCallback(() => {
@@ -158,7 +157,7 @@ function SuspenseMREContent() {
                 });
             },
         });
-    }, [jiraProvider, commitCreateSession, setConnectState]);
+    }, [jiraProvider, commitCreateSession]);
 
     // Auto-start on mount — matches client's pattern
     // biome-ignore lint/correctness/useExhaustiveDependencies: intentional empty deps to run once on mount
