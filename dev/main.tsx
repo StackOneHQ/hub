@@ -17,9 +17,10 @@ const HubWrapper: React.FC = () => {
     const appUrl = import.meta.env.VITE_APP_URL ?? 'https://app.stackone.com';
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const [accountId, setAccountId] = useState<string>();
-    const [integrationId, setIntegrationId] = useState<string>(
-        import.meta.env.VITE_INTEGRATION_ID ?? 'b6d98311-d01d-4d4a-af1a-8430a8be02e6',
-    );
+    const [integrationId, setIntegrationId] =
+        useState<string>(
+            // import.meta.env.VITE_INTEGRATION_ID ?? 'b6d98311-d01d-4d4a-af1a-8430a8be02e6',
+        );
     const [originOwnerId, setOriginOwnerId] = useState<string>(
         import.meta.env.VITE_ORIGIN_OWNER_ID ?? 'dummy_customer_id',
     );

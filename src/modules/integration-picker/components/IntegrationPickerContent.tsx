@@ -35,6 +35,7 @@ interface IntegrationPickerContentProps {
     onSelect: (integration: Integration) => void;
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
+    onCancelOAuth?: () => void;
     editingSecrets?: Set<string>;
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
@@ -54,6 +55,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     onSelect,
     onChange,
     onValidationChange,
+    onCancelOAuth,
     editingSecrets,
     setEditingSecrets,
 }) => {
@@ -72,6 +74,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
             <LoadingView
                 title={`Connecting to ${connectorData?.name ?? selectedIntegration.name}`}
                 description="Please wait, this may take a moment."
+                onCancel={onCancelOAuth}
             />
         );
     }

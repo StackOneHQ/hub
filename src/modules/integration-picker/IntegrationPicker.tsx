@@ -58,6 +58,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         setFormData,
         setIsFormValid,
         handleConnect,
+        handleCancelOAuth,
         resetConnectionState,
         editingSecrets,
         setEditingSecrets,
@@ -155,6 +156,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 onSelect={setSelectedIntegration}
                 onChange={setFormData}
                 onValidationChange={handleValidationChange}
+                onCancelOAuth={handleCancelOAuth}
                 selectedCategory={selectedCategory}
                 search={search}
                 editingSecrets={editingSecrets}
