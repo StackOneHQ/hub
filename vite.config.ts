@@ -3,10 +3,25 @@ import relay from 'vite-plugin-relay';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    plugins: [relay, react()],
+    plugins: [
+        relay,
+        react(),
+        {
+          name: 'custom-headers',
+          configureServer(server) {
+            server.middlewares.use((_req, res, next) => {
+              res.setHeader('cross-origin-opener-policy', 'same-origin');
+              next();
+            });
+          },
+        },
+    ],
     server: {
-        port: 3001,
+        port: 3000,
         // hmr: true,
+        headers: {
+            'cross-origin-opener-policy': 'same-origin',
+        }
     },
     root: 'dev',
 });

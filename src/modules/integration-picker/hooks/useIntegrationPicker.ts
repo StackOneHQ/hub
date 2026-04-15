@@ -2,10 +2,13 @@ import { evaluate } from '@stackone/expressions';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+    cancelConnectionAttempt,
     connectAccount,
+    createConnectionAttempt,
     getAccountData,
     getConnectorConfig,
     getHubData,
+    pollConnectionAttempt,
     updateAccount,
 } from '../queries';
 import {
@@ -72,6 +75,9 @@ export const useIntegrationPicker = ({
     const checkStateTimeoutRef = useRef<number | null>(null);
     const oauthChannelRef = useRef<BroadcastChannel | null>(null);
     const storageListenerRef = useRef<((event: StorageEvent) => void) | null>(null);
+    const connectionAttemptIdRef = useRef<string | null>(null);
+    const pollingIntervalRef = useRef<number | null>(null);
+    const oauthResolvedRef = useRef(false);
     const [connectionState, setConnectionState] = useState<{
         loading: boolean;
         success: boolean;
@@ -83,6 +89,14 @@ export const useIntegrationPicker = ({
         loading: false,
         success: false,
     });
+    const stopPolling = useCallback(() => {
+        if (pollingIntervalRef.current !== null) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
+        connectionAttemptIdRef.current = null;
+    }, []);
+
     const handleSuccess = useCallback(
         (account: { id: string; provider: string }) => {
             setConnectionState({ loading: false, success: true });
@@ -106,12 +120,20 @@ export const useIntegrationPicker = ({
     const processMessageCallback = useCallback(
         (event: MessageEvent) => {
             if (!allowedOrigins.has(event.origin)) {
+                if (debug) {
+                    console.debug('[hub] postMessage ignored: untrusted origin', event.origin);
+                }
                 return;
             }
 
             if (!event.data?.type) {
                 return;
             }
+
+            if (debug) {
+                console.debug('[hub] OAuth result received via postMessage', event.data);
+            }
+
             if (event.data.type === EventType.AccountConnected) {
                 handleSuccess({ id: event.data.account.id, provider: event.data.account.provider });
                 parent.postMessage(event.data, '*');
@@ -140,8 +162,20 @@ export const useIntegrationPicker = ({
         [handleSuccess, allowedOrigins],
     );
 
+    const teardownOAuth = useCallback(() => {
+        stopPolling();
+        if (connectWindow.current) {
+            connectWindow.current.close();
+            connectWindow.current = null;
+        }
+        window.removeEventListener('message', processMessageCallback, false);
+    }, [stopPolling, processMessageCallback]);
+
     const handleOAuthResultFromAnyChannel = useCallback(
         (data: { type: string; error?: string; errorDescription?: string; account?: unknown }) => {
+            oauthResolvedRef.current = true;
+            teardownOAuth();
+
             if (data.type === EventType.AccountConnected) {
                 handleSuccess({
                     id: (data.account as { id: string; provider: string }).id,
@@ -162,13 +196,8 @@ export const useIntegrationPicker = ({
                     setConnectionState({ loading: false, success: false, error: undefined });
                 }
             }
-
-            if (connectWindow.current) {
-                connectWindow.current.close();
-                connectWindow.current = null;
-            }
         },
-        [handleSuccess],
+        [handleSuccess, teardownOAuth],
     );
 
     useEffect(() => {
@@ -176,6 +205,12 @@ export const useIntegrationPicker = ({
             oauthChannelRef.current = new BroadcastChannel(OAUTH_CHANNEL_NAME);
             oauthChannelRef.current.onmessage = (event) => {
                 if (event.data?.type) {
+                    if (debug) {
+                        console.debug(
+                            '[hub] OAuth result received via BroadcastChannel',
+                            event.data,
+                        );
+                    }
                     handleOAuthResultFromAnyChannel(event.data);
                 }
             };
@@ -187,6 +222,9 @@ export const useIntegrationPicker = ({
             }
             try {
                 const data = JSON.parse(event.newValue);
+                if (debug) {
+                    console.debug('[hub] OAuth result received via localStorage', data);
+                }
                 handleOAuthResultFromAnyChannel(data);
                 localStorage.removeItem(OAUTH_STORAGE_KEY);
             } catch (error) {
@@ -209,8 +247,9 @@ export const useIntegrationPicker = ({
                 window.removeEventListener('storage', storageListenerRef.current, false);
                 storageListenerRef.current = null;
             }
+            stopPolling();
         };
-    }, [handleOAuthResultFromAnyChannel]);
+    }, [handleOAuthResultFromAnyChannel, stopPolling]);
 
     const {
         data: accountData,
@@ -537,13 +576,41 @@ export const useIntegrationPicker = ({
                     ? false
                     : true);
 
+            if (debug) {
+                console.debug('[hub] handleConnect', {
+                    integration: selectedIntegration.integration_id,
+                    path: shouldRedirectForOAuth ? 'oauth-redirect' : 'credential-form',
+                    updating: !!accountId,
+                });
+            }
+
             if (shouldRedirectForOAuth) {
+                oauthResolvedRef.current = false;
+
+                const attemptResult = await createConnectionAttempt(baseUrl, token).catch(
+                    () => null,
+                );
+                const attemptId = attemptResult?.id ?? null;
+                connectionAttemptIdRef.current = attemptId;
+
+                if (debug) {
+                    if (attemptId) {
+                        console.debug('[hub] connection attempt created', { attemptId });
+                    } else {
+                        console.debug('[hub] connection attempt creation failed, polling disabled');
+                    }
+                }
+
                 window.addEventListener('message', processMessageCallback, false);
                 const callbackEmbeddedAccountsUrl = encodeURIComponent(
                     `${dashboardUrl}/embedded/accounts/callback`,
                 );
 
                 let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}`;
+
+                if (attemptId) {
+                    windowUrl += `&connection_attempt_id=${attemptId}`;
+                }
 
                 Object.keys(cleanedFormData).forEach((key) => {
                     windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
@@ -569,29 +636,97 @@ export const useIntegrationPicker = ({
 
                 connectWindow.current = window.open(windowUrl, 'Connect Account', features);
 
-                if (connectWindow.current) {
-                    if (typeof connectWindow.current?.focus === 'function') {
-                        connectWindow.current.focus();
+                if (!connectWindow.current) {
+                    if (debug) {
+                        console.debug('[hub] popup was blocked by browser');
                     }
-
-                    const checkWindowState = () => {
-                        if (connectWindow.current?.closed) {
-                            setConnectionState({ loading: false, success: false });
-                            window.removeEventListener('message', processMessageCallback, false);
-                            connectWindow.current = null;
-                            if (checkStateTimeoutRef.current !== null) {
-                                clearTimeout(checkStateTimeoutRef.current);
-                                checkStateTimeoutRef.current = null;
-                            }
-                        } else if (connectWindow.current) {
-                            checkStateTimeoutRef.current = window.setTimeout(
-                                checkWindowState,
-                                1000,
-                            );
-                        }
-                    };
-                    checkStateTimeoutRef.current = window.setTimeout(checkWindowState, 1000);
+                    window.removeEventListener('message', processMessageCallback, false);
+                    setConnectionState({
+                        loading: false,
+                        success: false,
+                        error: {
+                            message: 'Popup blocked',
+                            provider_response:
+                                'Your browser blocked the login popup. Please allow popups for this site and try again.',
+                        },
+                    });
+                    return;
                 }
+
+                if (typeof connectWindow.current?.focus === 'function') {
+                    connectWindow.current.focus();
+                }
+
+                if (attemptId) {
+                    const provider = selectedIntegration.provider;
+                    pollingIntervalRef.current = window.setInterval(async () => {
+                        const result = await pollConnectionAttempt(baseUrl, attemptId).catch(
+                            () => null,
+                        );
+
+                        if (!result) {
+                            if (debug) {
+                                console.debug('[hub] poll failed (network error), retrying');
+                            }
+                            return;
+                        }
+
+                        if (debug && result.status !== 'pending') {
+                            console.debug('[hub] poll result', { attemptId, ...result });
+                        }
+
+                        if (result.status === 'authenticated' && result.account) {
+                            oauthResolvedRef.current = true;
+                            teardownOAuth();
+                            handleSuccess({ id: result.account.id, provider });
+                        } else if (result.status === 'error') {
+                            oauthResolvedRef.current = true;
+                            teardownOAuth();
+                            setConnectionState({
+                                loading: false,
+                                success: false,
+                                error: {
+                                    message: result.error?.code ?? 'OAuth error',
+                                    provider_response:
+                                        result.error?.description ?? 'No description',
+                                },
+                            });
+                        } else if (result.status === 'cancelled' || result.status === 'expired') {
+                            teardownOAuth();
+                            setConnectionState({ loading: false, success: false });
+                        }
+                    }, 2000);
+                }
+
+                const checkWindowState = () => {
+                    if (connectWindow.current?.closed) {
+                        if (debug) {
+                            console.debug('[hub] OAuth popup closed', {
+                                resolved: oauthResolvedRef.current,
+                                pollingActive: !!pollingIntervalRef.current,
+                            });
+                        }
+                        connectWindow.current = null;
+                        if (checkStateTimeoutRef.current !== null) {
+                            clearTimeout(checkStateTimeoutRef.current);
+                            checkStateTimeoutRef.current = null;
+                        }
+                        if (!oauthResolvedRef.current) {
+                            window.removeEventListener('message', processMessageCallback, false);
+                            if (!pollingIntervalRef.current) {
+                                if (debug) {
+                                    console.debug(
+                                        '[hub] popup closed with no active poll, resetting state',
+                                    );
+                                }
+                                setConnectionState({ loading: false, success: false });
+                            }
+                        }
+                    } else if (connectWindow.current) {
+                        checkStateTimeoutRef.current = window.setTimeout(checkWindowState, 1000);
+                    }
+                };
+                checkStateTimeoutRef.current = window.setTimeout(checkWindowState, 1000);
 
                 return;
             }
@@ -675,8 +810,22 @@ export const useIntegrationPicker = ({
         accountId,
         authConfig,
         processMessageCallback,
+        teardownOAuth,
         isFormValid,
+        debug,
     ]);
+
+    const handleCancelOAuth = useCallback(() => {
+        const attemptId = connectionAttemptIdRef.current;
+        if (debug) {
+            console.debug('[hub] OAuth cancelled by user', { attemptId });
+        }
+        teardownOAuth();
+        setConnectionState({ loading: false, success: false });
+        if (attemptId) {
+            void cancelConnectionAttempt(baseUrl, attemptId);
+        }
+    }, [baseUrl, debug, teardownOAuth]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
@@ -699,7 +848,7 @@ export const useIntegrationPicker = ({
     const prevLoadingRef = useRef(connectionState.loading);
     useEffect(() => {
         if (debug && prevLoadingRef.current && !connectionState.loading) {
-            console.trace('[hub] connectionState.loading → false', connectionState);
+            console.debug('[hub] connectionState.loading → false', connectionState);
         }
         prevLoadingRef.current = connectionState.loading;
     }, [debug, connectionState]);
@@ -740,6 +889,7 @@ export const useIntegrationPicker = ({
         setFormData: setFormDataCallback,
         setIsFormValid,
         handleConnect,
+        handleCancelOAuth,
         resetConnectionState,
         resetAllErrors,
         editingSecrets,

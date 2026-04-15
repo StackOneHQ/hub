@@ -1,4 +1,4 @@
-import { getRequest, patchRequest, postRequest } from '../../shared/httpClient';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../../shared/httpClient';
 import {
     AccountCreationResponse,
     AccountData,
@@ -92,5 +92,40 @@ export const getAccountData = async (baseUrl: string, token: string, accountId: 
             'Content-Type': 'application/json',
             'x-hub-session-token': token,
         },
+    });
+};
+
+export type ConnectionAttemptStatus =
+    | 'pending'
+    | 'authenticated'
+    | 'error'
+    | 'cancelled'
+    | 'expired';
+
+export interface ConnectionAttemptResult {
+    status: ConnectionAttemptStatus;
+    account: { id: string } | null;
+    error: { code: string; description: string | null } | null;
+}
+
+export const createConnectionAttempt = async (baseUrl: string, token: string) => {
+    return await postRequest<{ id: string }>({
+        url: `${baseUrl}/connect_sessions/connection_attempts`,
+        headers: { 'Content-Type': 'application/json' },
+        body: { token },
+    });
+};
+
+export const pollConnectionAttempt = async (baseUrl: string, id: string) => {
+    return await getRequest<ConnectionAttemptResult>({
+        url: `${baseUrl}/connect_sessions/connection_attempts/${id}`,
+        headers: { 'Content-Type': 'application/json' },
+    });
+};
+
+export const cancelConnectionAttempt = async (baseUrl: string, id: string) => {
+    return await deleteRequest<void>({
+        url: `${baseUrl}/connect_sessions/connection_attempts/${id}`,
+        headers: { 'Content-Type': 'application/json' },
     });
 };
