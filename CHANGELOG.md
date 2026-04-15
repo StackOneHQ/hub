@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/StackOneHQ/hub/compare/hub-v1.2.0...hub-v1.3.0) (2026-04-15)
+
+
+### Features
+
+* **ENG-12551:** add polling mechanism ([#131](https://github.com/StackOneHQ/hub/issues/131)) ([cdcc8df](https://github.com/StackOneHQ/hub/commit/cdcc8df2481cc5399245546a001d44b8b11cb6b8))
+
 ## [1.2.0](https://github.com/StackOneHQ/hub/compare/hub-v1.1.0...hub-v1.2.0) (2026-04-14)
 
 
