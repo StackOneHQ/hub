@@ -603,7 +603,7 @@ export const useIntegrationPicker = ({
 
             window.removeEventListener('message', processMessageCallback, false);
 
-            if (coopDetectedRef.current && pollingIntervalRef.current) return;
+            if (pollingIntervalRef.current) return;
 
             const connectionAttemptId = connectionAttemptIdRef.current;
             teardownOAuth();
