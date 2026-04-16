@@ -605,9 +605,10 @@ export const useIntegrationPicker = ({
 
             if (coopDetectedRef.current && pollingIntervalRef.current) return;
 
+            const connectionAttemptId = connectionAttemptIdRef.current;
             teardownOAuth();
-            if (connectionAttemptIdRef.current) {
-                void cancelConnectionAttempt(baseUrl, connectionAttemptIdRef.current);
+            if (connectionAttemptId) {
+                void cancelConnectionAttempt(baseUrl, connectionAttemptId);
             }
             if (debugRef.current) {
                 console.debug('[hub] popup closed, resetting state');
