@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/StackOneHQ/hub/compare/hub-v1.3.0...hub-v1.3.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* **ENG-12551:** fix popup close not resetting state without COOP ([#133](https://github.com/StackOneHQ/hub/issues/133)) ([fdae063](https://github.com/StackOneHQ/hub/commit/fdae0637186b28d747d11495c10ccb5d8dd5a78d))
+
 ## [1.3.0](https://github.com/StackOneHQ/hub/compare/hub-v1.2.0...hub-v1.3.0) (2026-04-15)
 
 
