@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/StackOneHQ/hub/compare/hub-v1.3.1...hub-v1.3.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **ENG-12551:** fix COOP detection race condition and empty response parsing ([#135](https://github.com/StackOneHQ/hub/issues/135)) ([7520687](https://github.com/StackOneHQ/hub/commit/7520687cf148271ef2dc4c6045a9bc62cebfce5f))
+
 ## [1.3.1](https://github.com/StackOneHQ/hub/compare/hub-v1.3.0...hub-v1.3.1) (2026-04-16)
 
 
