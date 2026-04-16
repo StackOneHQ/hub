@@ -111,21 +111,21 @@ export interface ConnectionAttemptResult {
 export const createConnectionAttempt = async (baseUrl: string, token: string) => {
     return await postRequest<{ id: string }>({
         url: `${baseUrl}/hub/connection_attempts`,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-hub-session-token': token },
         body: { token },
     });
 };
 
-export const pollConnectionAttempt = async (baseUrl: string, id: string) => {
+export const pollConnectionAttempt = async (baseUrl: string, token: string, id: string) => {
     return await getRequest<ConnectionAttemptResult>({
         url: `${baseUrl}/hub/connection_attempts/${id}`,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-hub-session-token': token },
     });
 };
 
-export const cancelConnectionAttempt = async (baseUrl: string, id: string) => {
+export const cancelConnectionAttempt = async (baseUrl: string, token: string, id: string) => {
     return await deleteRequest<void>({
         url: `${baseUrl}/hub/connection_attempts/${id}`,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-hub-session-token': token },
     });
 };

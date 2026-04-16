@@ -536,7 +536,9 @@ export const useIntegrationPicker = ({
             const poll = async () => {
                 if (!pollingIntervalRef.current) return;
 
-                const result = await pollConnectionAttempt(baseUrl, attemptId).catch(() => null);
+                const result = await pollConnectionAttempt(baseUrl, token, attemptId).catch(
+                    () => null,
+                );
 
                 if (!result) {
                     if (debugRef.current) {
@@ -554,6 +556,13 @@ export const useIntegrationPicker = ({
                     oauthResolvedRef.current = true;
                     teardownOAuth();
                     handleSuccess({ id: result.account.id, provider });
+                    parent.postMessage(
+                        {
+                            type: EventType.AccountConnected,
+                            account: { id: result.account.id, provider },
+                        },
+                        '*',
+                    );
                 } else if (result.status === 'error') {
                     oauthResolvedRef.current = true;
                     teardownOAuth();
@@ -575,7 +584,7 @@ export const useIntegrationPicker = ({
 
             pollingIntervalRef.current = window.setTimeout(poll, 2000);
         },
-        [baseUrl, teardownOAuth, handleSuccess],
+        [baseUrl, token, teardownOAuth, handleSuccess],
     );
 
     const startPopupWatcher = useCallback(() => {
@@ -608,7 +617,7 @@ export const useIntegrationPicker = ({
             const connectionAttemptId = connectionAttemptIdRef.current;
             teardownOAuth();
             if (connectionAttemptId) {
-                void cancelConnectionAttempt(baseUrl, connectionAttemptId);
+                void cancelConnectionAttempt(baseUrl, token, connectionAttemptId);
             }
             if (debugRef.current) {
                 console.debug('[hub] popup closed, resetting state');
@@ -616,7 +625,7 @@ export const useIntegrationPicker = ({
             setConnectionState({ loading: false, success: false });
         };
         checkStateTimeoutRef.current = window.setTimeout(check, 1000);
-    }, [processMessageCallback, teardownOAuth, baseUrl]);
+    }, [processMessageCallback, teardownOAuth, baseUrl, token]);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) {
@@ -726,7 +735,7 @@ export const useIntegrationPicker = ({
                     }
                     teardownOAuth();
                     if (attemptId) {
-                        void cancelConnectionAttempt(baseUrl, attemptId);
+                        void cancelConnectionAttempt(baseUrl, token, attemptId);
                     }
                     setConnectionState({
                         loading: false,
@@ -842,9 +851,9 @@ export const useIntegrationPicker = ({
         teardownOAuth();
         setConnectionState({ loading: false, success: false });
         if (attemptId) {
-            void cancelConnectionAttempt(baseUrl, attemptId);
+            void cancelConnectionAttempt(baseUrl, token, attemptId);
         }
-    }, [baseUrl, teardownOAuth]);
+    }, [baseUrl, token, teardownOAuth]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
