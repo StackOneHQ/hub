@@ -54,7 +54,9 @@ export async function request<T>({
                 }
             }
 
-            return (await response.json()) as T;
+            const text = await response.text();
+            if (!text) return null;
+            return JSON.parse(text) as T;
         }
     } catch (error) {
         logger.error(`Error making request to ${url}`, error);

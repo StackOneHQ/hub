@@ -19,7 +19,7 @@ export const Loading: React.FC<{
 
     useEffect(() => {
         if (!onCancel) return;
-        timerRef.current = setTimeout(() => setShowCancel(true), 8000);
+        timerRef.current = setTimeout(() => setShowCancel(true), 5000);
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
         };
