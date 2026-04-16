@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3](https://github.com/StackOneHQ/hub/compare/hub-v1.3.2...hub-v1.3.3) (2026-04-16)
+
+
+### Bug Fixes
+
+* **ENG-12551:** add x-hub-session-token header to connection attempt requests ([#139](https://github.com/StackOneHQ/hub/issues/139)) ([73ca0b8](https://github.com/StackOneHQ/hub/commit/73ca0b8177f8cc8de8b9b7c8efad16c3bfc9b3ed))
+* **ENG-12551:** update connection attempts URL to /hub/ path ([#137](https://github.com/StackOneHQ/hub/issues/137)) ([059363d](https://github.com/StackOneHQ/hub/commit/059363daa493b64dda3b42a90d535547c9fc7947))
+
 ## [1.3.2](https://github.com/StackOneHQ/hub/compare/hub-v1.3.1...hub-v1.3.2) (2026-04-16)
 
 
