@@ -77,6 +77,7 @@ export const useIntegrationPicker = ({
     const storageListenerRef = useRef<((event: StorageEvent) => void) | null>(null);
     const connectionAttemptIdRef = useRef<string | null>(null);
     const pollingIntervalRef = useRef<number | null>(null);
+    const coopDetectedRef = useRef(false);
     const oauthResolvedRef = useRef(false);
     const [connectionState, setConnectionState] = useState<{
         loading: boolean;
@@ -590,6 +591,7 @@ export const useIntegrationPicker = ({
                 console.debug('[hub] OAuth popup closed', {
                     resolved: oauthResolvedRef.current,
                     pollingActive: !!pollingIntervalRef.current,
+                    coopDetected: coopDetectedRef.current,
                 });
             }
             connectWindow.current = null;
@@ -600,15 +602,21 @@ export const useIntegrationPicker = ({
             if (oauthResolvedRef.current) return;
 
             window.removeEventListener('message', processMessageCallback, false);
-            if (pollingIntervalRef.current) return;
 
+            if (coopDetectedRef.current && pollingIntervalRef.current) return;
+
+            const connectionAttemptId = connectionAttemptIdRef.current;
+            teardownOAuth();
+            if (connectionAttemptId) {
+                void cancelConnectionAttempt(baseUrl, connectionAttemptId);
+            }
             if (debugRef.current) {
-                console.debug('[hub] popup closed with no active poll, resetting state');
+                console.debug('[hub] popup closed, resetting state');
             }
             setConnectionState({ loading: false, success: false });
         };
         checkStateTimeoutRef.current = window.setTimeout(check, 1000);
-    }, [processMessageCallback]);
+    }, [processMessageCallback, teardownOAuth, baseUrl]);
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) {
@@ -730,6 +738,11 @@ export const useIntegrationPicker = ({
                         },
                     });
                     return;
+                }
+
+                coopDetectedRef.current = connectWindow.current.closed === true;
+                if (debugRef.current && coopDetectedRef.current) {
+                    console.debug('[hub] COOP detected: popup appears closed immediately');
                 }
 
                 if (typeof connectWindow.current.focus === 'function') {
