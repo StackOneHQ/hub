@@ -84,7 +84,8 @@ const HubWrapper: React.FC = () => {
                 <>
                     <p>
                         Paste a connect session token (the /connect_sessions endpoint is
-                        CORS-protected on dev and production so it cannot be automatically created by this frontend only demo app).
+                        CORS-protected on dev and production so it cannot be automatically created
+                        by this frontend only demo app).
                     </p>
                     <input
                         style={{

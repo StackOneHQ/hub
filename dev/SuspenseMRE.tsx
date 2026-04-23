@@ -219,9 +219,7 @@ function SuspenseMREContent() {
                         }}
                     />
                     <button
-                        onClick={() =>
-                            setConnectState({ status: 'hub_open', token: manualToken })
-                        }
+                        onClick={() => setConnectState({ status: 'hub_open', token: manualToken })}
                         disabled={!manualToken}
                     >
                         Use token
