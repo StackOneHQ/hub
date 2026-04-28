@@ -22,7 +22,14 @@ export default [
         format: "cjs",
       },
     ],
-    external: ["react", "react-dom", "react-hook-form"],
+    external: [
+      "react",
+      "react-dom",
+      "react-hook-form",
+      /^react\/.*/,
+      /^react-dom\/.*/,
+      /^react-hook-form\/.*/,
+    ],
     plugins: [
       del({ targets: "dist/*" }),
       resolve({
