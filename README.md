@@ -1,10 +1,6 @@
 # StackOne HUB
 
-> 👉 **BETA SOFTWARE** 
-> This project is currently in **beta stage**. It is evolving quickly, and new versions may include breaking changes.
-
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Status](https://img.shields.io/badge/status-beta-blue.svg)
 ![Node Version](https://img.shields.io/badge/node-%3E%3D22.14.0-brightgreen.svg)
 
 StackOne HUB is a React-based integration component library that provides a web component wrapper for seamless integration into any web application. It enables developers to easily embed StackOne's integrations hub.
@@ -13,7 +9,6 @@ StackOne HUB is a React-based integration component library that provides a web 
 
 - [StackOne HUB](#stackone-hub)
   - [📋 Table of Contents](#-table-of-contents)
-  - [⚠️ Beta Notice](#️-beta-notice)
   - [🚀 Quick Start](#-quick-start)
   - [📦 Installation](#-installation)
     - [Prerequisites](#prerequisites)
@@ -33,16 +28,6 @@ StackOne HUB is a React-based integration component library that provides a web 
   - [🤝 Contributing](#-contributing)
     - [Getting Started](#getting-started)
   - [📄 License](#-license)
-
-## ⚠️ Beta Notice
-
-**This software is in active development and should be considered beta quality.** 
-
-- 🚧 **Breaking changes** may occur in any release
-- 📚 **Documentation** is updated regularly
-- 🔄 **APIs are subject to change** without prior notice
-
-Please report issues and provide feedback to help us improve!
 
 ## 🚀 Quick Start
 
@@ -198,9 +183,8 @@ DASHBOARD_URL=https://dashboard.stackone.com
 
 ## 🤝 Contributing
 
-Since this project is in beta, we welcome contributions and feedback! However, please keep in mind:
+We welcome contributions and feedback! Please keep in mind:
 
-- 🔄 **Frequent changes**: The codebase may change rapidly
 - 📋 **No formal process yet**: Contribution guidelines are still being established
 - 💬 **Communication is key**: Please open an issue before submitting large changes
 
