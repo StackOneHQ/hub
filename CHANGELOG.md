@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/StackOneHQ/hub/compare/hub-v1.3.3...hub-v1.4.0) (2026-04-28)
+
+
+### Features
+
+* **ENG-12266:** support react 19 ([#142](https://github.com/StackOneHQ/hub/issues/142)) ([db9bebf](https://github.com/StackOneHQ/hub/commit/db9bebfc751fd7de312821a59a4c939bf19f7c91))
+
 ## [1.3.3](https://github.com/StackOneHQ/hub/compare/hub-v1.3.2...hub-v1.3.3) (2026-04-16)
 
 
