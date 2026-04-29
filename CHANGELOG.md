@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/StackOneHQ/hub/compare/hub-v1.5.0...hub-v1.5.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ENG-11821:** env file ([#148](https://github.com/StackOneHQ/hub/issues/148)) ([6d3649e](https://github.com/StackOneHQ/hub/commit/6d3649ef0052974fa751c9f65497f73378280cdc))
+
 ## [1.5.0](https://github.com/StackOneHQ/hub/compare/hub-v1.4.0...hub-v1.5.0) (2026-04-29)
 
 
