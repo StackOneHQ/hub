@@ -138,8 +138,8 @@ For vanilla HTML/JavaScript applications:
     <title>StackOne HUB Integration</title>
 </head>
 <body>
-    <script src="<TBD>/StackOneHub.web.js"></script>
-    <my-component></my-component>
+    <script src="<TBD>/webcomponent.js"></script>
+    <stackone-hub token="..."></stackone-hub>
 </body>
 </html>
 ```

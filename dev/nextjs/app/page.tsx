@@ -1,9 +1,31 @@
 import HubWrapper from './HubWrapper';
 
+function isSafeApiUrl(rawUrl: string): boolean {
+    try {
+        const url = new URL(rawUrl);
+        if (url.protocol === 'https:') return true;
+        if (
+            url.protocol === 'http:' &&
+            (url.hostname === 'localhost' || url.hostname === '127.0.0.1')
+        ) {
+            return true;
+        }
+        return false;
+    } catch {
+        return false;
+    }
+}
+
 async function fetchToken(): Promise<string | null> {
     const apiKey = process.env.STACKONE_API_KEY;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.stackone.com';
     if (!apiKey) return null;
+    if (!isSafeApiUrl(apiUrl)) {
+        console.warn(
+            `[hub-nextjs-sandbox] refusing to send API key — NEXT_PUBLIC_API_URL must be https or localhost (got ${apiUrl})`,
+        );
+        return null;
+    }
 
     try {
         const res = await fetch(`${apiUrl}/connect_sessions`, {

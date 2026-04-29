@@ -27,7 +27,12 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
                 <button onClick={() => setToken(manualToken)} disabled={!manualToken}>
                     Use token
                 </button>
-                <button onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}>
+                <button
+                    aria-label={
+                        theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
+                    }
+                    onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+                >
                     {theme === 'light' ? '🌞' : '🌚'}
                 </button>
             </div>

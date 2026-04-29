@@ -24,7 +24,7 @@ Always run `npm run lint` before committing. Biome is the only linter — don't 
 - `src/modules/integration-picker/` — main feature
 - `src/shared/` — error boundary, http client, feature flags, queries
 - `src/WebComponentWrapper.tsx` — separate entry built into `dist/webcomponent.js`
-- `dev/` — Vite-based dev sandbox (`main.tsx`, `index.html`)
+- `dev/vite/` — Vite-based dev sandbox (own `package.json`, hub linked via `file:../..`)
 - `dev/nextjs/` — Next.js 15 + React 19 App Router SSR sandbox (own `package.json`, hub linked via `file:../..`)
 - `rollup.config.mjs` — three bundle outputs (ESM main, CJS main, IIFE webcomponent) plus a `.d.ts` rollup
 - `dist/` — build output, gitignored, the only thing published
