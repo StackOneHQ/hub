@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/StackOneHQ/hub/compare/hub-v1.4.0...hub-v1.5.0) (2026-04-29)
+
+
+### Features
+
+* **ENG-11821:** add SSR support ([#146](https://github.com/StackOneHQ/hub/issues/146)) ([29411f9](https://github.com/StackOneHQ/hub/commit/29411f9e03a002b7c80259f58244e78444ed3092))
+
 ## [1.4.0](https://github.com/StackOneHQ/hub/compare/hub-v1.3.3...hub-v1.4.0) (2026-04-28)
 
 
