@@ -15,7 +15,6 @@ import {
 import { useCallback, useMemo } from 'react';
 import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
 import { Logo } from '../../../shared/components/Logo';
-import { isFalconVersion } from '../../../shared/utils/utils';
 import { Integration } from '../types';
 
 interface IntegrationRowProps {
@@ -44,9 +43,6 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                     style={{ width: '24px', height: '24px' }}
                 />
                 <Typography.Text textAlign="left">{integration.name ?? 'N/A'}</Typography.Text>
-                {isFalconVersion(integration.version) && (
-                    <Typography.SecondaryText>{integration.version}</Typography.SecondaryText>
-                )}
             </Flex>
             <Typography.SecondaryText>
                 {CATEGORIES_WITH_LABELS.find((category) => category.value === integration.type)
