@@ -233,7 +233,11 @@ const NoFieldsView: React.FC<{
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
             {error && (
-                <Alert type="error" message={error.message} hasMargin={false}>
+                <Alert
+                    type="error"
+                    message={error.provider_response?.trim() || error.message}
+                    hasMargin={false}
+                >
                     <ErrorBlock error={error} />
                 </Alert>
             )}
