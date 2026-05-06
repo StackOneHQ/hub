@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/StackOneHQ/hub/compare/hub-v1.5.1...hub-v1.5.2) (2026-05-06)
+
+
+### Bug Fixes
+
+* **ENG-253:** disable connect button while connector is loading ([#151](https://github.com/StackOneHQ/hub/issues/151)) ([567420f](https://github.com/StackOneHQ/hub/commit/567420fb339cd0a0b595ea56556bd739fcff3917))
+
 ## [1.5.1](https://github.com/StackOneHQ/hub/compare/hub-v1.5.0...hub-v1.5.1) (2026-05-01)
 
 
