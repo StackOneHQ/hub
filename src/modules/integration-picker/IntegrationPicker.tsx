@@ -108,6 +108,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                         onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
                         onNext={handleConnect}
                         isFormValid={isFormValid}
+                        isLoading={isLoading}
                         showFooterLinks={showFooterLinks}
                     />
                 )
