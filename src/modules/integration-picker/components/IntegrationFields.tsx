@@ -15,7 +15,7 @@ import {
     TextArea,
     Typography,
 } from '@stackone/malachite';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
@@ -144,6 +144,16 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         );
     }
 
+    if (field.type === 'alert') {
+        return (
+            <Alert
+                type={field.alertType ?? 'info'}
+                message={field.description ?? ''}
+                hasMargin={false}
+            />
+        );
+    }
+
     if (field.type === 'text_area') {
         return (
             <>
@@ -229,7 +239,8 @@ interface IntegrationFieldsProps {
 const NoFieldsView: React.FC<{
     integrationName: string;
     error?: { message: string; provider_response: string };
-}> = ({ integrationName, error }) => {
+    alertFields?: ConnectorConfigField[];
+}> = ({ integrationName, error, alertFields }) => {
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
             {error && (
@@ -240,6 +251,18 @@ const NoFieldsView: React.FC<{
                 >
                     <ErrorBlock error={error} />
                 </Alert>
+            )}
+            {alertFields && alertFields.length > 0 && (
+                <Fragment>
+                    {alertFields.map((field) => (
+                        <Alert
+                            key={field.key}
+                            type={field.alertType ?? 'info'}
+                            message={field.description ?? ''}
+                            hasMargin={false}
+                        />
+                    ))}
+                </Fragment>
             )}
             <Flex
                 direction={FlexDirection.Vertical}
@@ -308,8 +331,17 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
-    if (fields.length === 0) {
-        return <NoFieldsView integrationName={integrationName} error={error} />;
+    const alertOnlyFields = fields.filter((f) => f.type === 'alert');
+    const hasInputFields = fields.some((f) => f.type !== 'alert');
+
+    if (!hasInputFields) {
+        return (
+            <NoFieldsView
+                integrationName={integrationName}
+                error={error}
+                alertFields={alertOnlyFields}
+            />
+        );
     }
 
     return (

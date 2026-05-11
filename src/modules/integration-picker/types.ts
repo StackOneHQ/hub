@@ -18,7 +18,8 @@ export interface HubData {
 }
 
 export interface ConnectorConfigField {
-    type?: 'text' | 'password' | 'number' | 'select' | 'text_area';
+    type?: 'text' | 'password' | 'number' | 'select' | 'text_area' | 'alert';
+    alertType?: 'warning' | 'info';
     label: string;
     key: string;
     required: boolean;
