@@ -16,6 +16,9 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
 
     return (
         <div className={theme}>
+            <p style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>
+                Environment — api: <code>{apiUrl}</code> · app: <code>{appUrl}</code>
+            </p>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                 <input
                     style={{ flex: 1, padding: 6, border: '1px solid #ccc', borderRadius: 4 }}

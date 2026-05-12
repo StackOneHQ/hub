@@ -199,6 +199,9 @@ function SuspenseMREContent() {
 
             {isCorsProtected && connectState.status === 'idle' && (
                 <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>
+                        Environment — api: <code>{apiUrl}</code> · app: <code>{appUrl}</code>
+                    </div>
                     <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
                         Paste a connect session token (the /connect_sessions endpoint is
                         CORS-protected on dev and production so it cannot be automatically created

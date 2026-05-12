@@ -1,4 +1,4 @@
-import { Card } from '@stackone/malachite';
+import { Alert, Card } from '@stackone/malachite';
 import { useCallback, useMemo, useState } from 'react';
 import { IntegrationPickerContent } from './components/IntegrationPickerContent';
 import { IntegrationPickerTitle } from './components/IntegrationPickerTitle';
@@ -144,6 +144,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                       }
             }
         >
+            {connectionState.timedOut && (
+                <Alert type="warning" message="Connection timed out. Please try again." hasMargin />
+            )}
             <IntegrationPickerContent
                 isLoading={isLoading}
                 hasError={hasError}

@@ -100,6 +100,9 @@ const HubWrapper: React.FC = () => {
             <p>Current mode: {mode || 'No mode selected'}</p>
             {isCorsProtected && (
                 <>
+                    <p style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>
+                        Environment — api: <code>{apiUrl}</code> · app: <code>{appUrl}</code>
+                    </p>
                     <p>
                         Paste a connect session token (the /connect_sessions endpoint is
                         CORS-protected on dev and production so it cannot be automatically created

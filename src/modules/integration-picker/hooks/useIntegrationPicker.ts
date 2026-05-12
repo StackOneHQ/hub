@@ -19,9 +19,6 @@ import {
 } from '../types';
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
-const OAUTH_STORAGE_KEY = 'oauth_result';
-const OAUTH_CHANNEL_NAME = 'oauth_channel';
-
 // Shared retry configuration for queries
 const RETRY_CONFIG = {
     retry: (failureCount: number, error: unknown) => {
@@ -52,9 +49,9 @@ interface UseIntegrationPickerProps {
 
 export enum EventType {
     AccountConnected = 'AccountConnected',
-    CloseModal = 'CloseModal',
-    CloseOAuth2 = 'CloseOAuth2',
 }
+
+const POLL_TIMEOUT_MS = 5 * 60 * 1000;
 
 export const useIntegrationPicker = ({
     token,
@@ -72,16 +69,14 @@ export const useIntegrationPicker = ({
         setFormData(data);
     }, []);
     const connectWindow = useRef<Window | null>(null);
-    const checkStateTimeoutRef = useRef<number | null>(null);
-    const oauthChannelRef = useRef<BroadcastChannel | null>(null);
-    const storageListenerRef = useRef<((event: StorageEvent) => void) | null>(null);
     const connectionAttemptIdRef = useRef<string | null>(null);
     const pollingIntervalRef = useRef<number | null>(null);
+    const popupWatcherRef = useRef<number | null>(null);
     const coopDetectedRef = useRef(false);
-    const oauthResolvedRef = useRef(false);
     const [connectionState, setConnectionState] = useState<{
         loading: boolean;
         success: boolean;
+        timedOut?: boolean;
         error?: {
             message: string;
             provider_response: string;
@@ -106,157 +101,31 @@ export const useIntegrationPicker = ({
         [onSuccess],
     );
 
-    const allowedOrigins = useMemo(() => {
-        const origins = new Set<string>();
-        if (typeof window !== 'undefined') {
-            origins.add(window.location.origin);
-        }
-        if (dashboardUrl) {
-            try {
-                origins.add(new URL(dashboardUrl).origin);
-            } catch {
-                // ignore invalid URL
-            }
-        }
-        return origins;
-    }, [dashboardUrl]);
-
     const debugRef = useRef(debug);
     debugRef.current = debug;
 
-    const processMessageCallback = useCallback(
-        (event: MessageEvent) => {
-            if (!allowedOrigins.has(event.origin)) {
-                if (debugRef.current) {
-                    console.debug('[hub] postMessage ignored: untrusted origin', event.origin);
-                }
-                return;
-            }
+    const stopPopupWatcher = useCallback(() => {
+        if (popupWatcherRef.current !== null) {
+            clearTimeout(popupWatcherRef.current);
+            popupWatcherRef.current = null;
+        }
+    }, []);
 
-            if (!event.data?.type) {
-                return;
-            }
-
-            if (debugRef.current) {
-                console.debug('[hub] OAuth result received via postMessage', event.data);
-            }
-
-            if (event.data.type === EventType.AccountConnected) {
-                handleSuccess({ id: event.data.account.id, provider: event.data.account.provider });
-                parent.postMessage(event.data, '*');
-            } else if (event.data.type === EventType.CloseOAuth2) {
-                if (event.data.error) {
-                    setConnectionState({
-                        loading: false,
-                        success: false,
-                        error: {
-                            message: event.data.error,
-                            provider_response: event.data.errorDescription || 'No description',
-                        },
-                    });
-                } else {
-                    setConnectionState({ loading: false, success: false, error: undefined });
-                }
-            }
-
-            if (connectWindow.current) {
-                connectWindow.current.close();
-                connectWindow.current = null;
-            }
-
-            window.removeEventListener('message', processMessageCallback, false);
-        },
-        [handleSuccess, allowedOrigins],
-    );
-
-    const teardownOAuth = useCallback(() => {
+    const closeOAuthPopup = useCallback(() => {
         stopPolling();
+        stopPopupWatcher();
         if (connectWindow.current) {
             connectWindow.current.close();
             connectWindow.current = null;
         }
-        window.removeEventListener('message', processMessageCallback, false);
-    }, [stopPolling, processMessageCallback]);
-
-    const handleOAuthResultFromAnyChannel = useCallback(
-        (data: { type: string; error?: string; errorDescription?: string; account?: unknown }) => {
-            oauthResolvedRef.current = true;
-            teardownOAuth();
-
-            if (data.type === EventType.AccountConnected) {
-                handleSuccess({
-                    id: (data.account as { id: string; provider: string }).id,
-                    provider: (data.account as { id: string; provider: string }).provider,
-                });
-                parent.postMessage(data, '*');
-            } else if (data.type === EventType.CloseOAuth2) {
-                if (data.error) {
-                    setConnectionState({
-                        loading: false,
-                        success: false,
-                        error: {
-                            message: data.error,
-                            provider_response: data.errorDescription || 'No description',
-                        },
-                    });
-                } else {
-                    setConnectionState({ loading: false, success: false, error: undefined });
-                }
-            }
-        },
-        [handleSuccess, teardownOAuth],
-    );
+    }, [stopPolling, stopPopupWatcher]);
 
     useEffect(() => {
-        if (typeof BroadcastChannel !== 'undefined') {
-            oauthChannelRef.current = new BroadcastChannel(OAUTH_CHANNEL_NAME);
-            oauthChannelRef.current.onmessage = (event) => {
-                if (event.data?.type) {
-                    if (debugRef.current) {
-                        console.debug(
-                            '[hub] OAuth result received via BroadcastChannel',
-                            event.data,
-                        );
-                    }
-                    handleOAuthResultFromAnyChannel(event.data);
-                }
-            };
-        }
-
-        const storageListener = (event: StorageEvent) => {
-            if (event.key !== OAUTH_STORAGE_KEY || !event.newValue) {
-                return;
-            }
-            try {
-                const data = JSON.parse(event.newValue);
-                if (debugRef.current) {
-                    console.debug('[hub] OAuth result received via localStorage', data);
-                }
-                handleOAuthResultFromAnyChannel(data);
-                localStorage.removeItem(OAUTH_STORAGE_KEY);
-            } catch (error) {
-                console.error('Failed to parse OAuth result from localStorage:', error);
-            }
-        };
-
-        storageListenerRef.current = storageListener;
-        window.addEventListener('storage', storageListener, false);
-
         return () => {
-            if (checkStateTimeoutRef.current !== null) {
-                clearTimeout(checkStateTimeoutRef.current);
-            }
-            if (oauthChannelRef.current) {
-                oauthChannelRef.current.close();
-                oauthChannelRef.current = null;
-            }
-            if (storageListenerRef.current) {
-                window.removeEventListener('storage', storageListenerRef.current, false);
-                storageListenerRef.current = null;
-            }
             stopPolling();
+            stopPopupWatcher();
         };
-    }, [handleOAuthResultFromAnyChannel, stopPolling]);
+    }, [stopPolling, stopPopupWatcher]);
 
     const {
         data: accountData,
@@ -536,12 +405,33 @@ export const useIntegrationPicker = ({
 
     const startPolling = useCallback(
         (attemptId: string, provider: string) => {
+            const startedAt = Date.now();
+
             const poll = async () => {
                 if (!pollingIntervalRef.current) return;
+
+                if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+                    if (debugRef.current) {
+                        console.debug('[hub] poll timed out', { attemptId });
+                    }
+                    closeOAuthPopup();
+                    cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] cancelConnectionAttempt failed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                    });
+                    setConnectionState({ loading: false, success: false, timedOut: true });
+                    return;
+                }
 
                 const result = await pollConnectionAttempt(baseUrl, token, attemptId).catch(
                     () => null,
                 );
+
+                if (!pollingIntervalRef.current) return;
 
                 if (!result) {
                     if (debugRef.current) {
@@ -556,8 +446,7 @@ export const useIntegrationPicker = ({
                 }
 
                 if (result.status === 'authenticated' && result.account) {
-                    oauthResolvedRef.current = true;
-                    teardownOAuth();
+                    closeOAuthPopup();
                     handleSuccess({ id: result.account.id, provider });
                     parent.postMessage(
                         {
@@ -567,8 +456,7 @@ export const useIntegrationPicker = ({
                         '*',
                     );
                 } else if (result.status === 'error') {
-                    oauthResolvedRef.current = true;
-                    teardownOAuth();
+                    closeOAuthPopup();
                     setConnectionState({
                         loading: false,
                         success: false,
@@ -578,7 +466,7 @@ export const useIntegrationPicker = ({
                         },
                     });
                 } else if (result.status === 'cancelled' || result.status === 'expired') {
-                    teardownOAuth();
+                    closeOAuthPopup();
                     setConnectionState({ loading: false, success: false });
                 } else {
                     pollingIntervalRef.current = window.setTimeout(poll, 2000);
@@ -587,48 +475,92 @@ export const useIntegrationPicker = ({
 
             pollingIntervalRef.current = window.setTimeout(poll, 2000);
         },
-        [baseUrl, token, teardownOAuth, handleSuccess],
+        [baseUrl, token, closeOAuthPopup, handleSuccess],
     );
 
-    const startPopupWatcher = useCallback(() => {
-        const check = () => {
-            if (!connectWindow.current?.closed) {
-                if (connectWindow.current) {
-                    checkStateTimeoutRef.current = window.setTimeout(check, 1000);
+    const startPopupWatcher = useCallback(
+        (provider: string) => {
+            let firstTick = true;
+            const check = async () => {
+                if (firstTick) {
+                    firstTick = false;
+                    if (!connectWindow.current || connectWindow.current.closed) {
+                        if (debugRef.current) {
+                            console.debug(
+                                '[hub] popup reads as closed on first tick, assuming COOP isolation — popup-close detection disabled',
+                            );
+                        }
+                        coopDetectedRef.current = true;
+                        popupWatcherRef.current = null;
+                        return;
+                    }
                 }
-                return;
-            }
 
-            if (debugRef.current) {
-                console.debug('[hub] OAuth popup closed', {
-                    resolved: oauthResolvedRef.current,
-                    pollingActive: !!pollingIntervalRef.current,
-                    coopDetected: coopDetectedRef.current,
+                if (connectWindow.current && !connectWindow.current.closed) {
+                    popupWatcherRef.current = window.setTimeout(check, 1000);
+                    return;
+                }
+
+                popupWatcherRef.current = null;
+
+                if (!pollingIntervalRef.current) return;
+                if (coopDetectedRef.current) return;
+
+                const attemptId = connectionAttemptIdRef.current;
+                if (!attemptId) {
+                    closeOAuthPopup();
+                    setConnectionState({ loading: false, success: false });
+                    return;
+                }
+
+                const final = await pollConnectionAttempt(baseUrl, token, attemptId).catch(
+                    (error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] final poll failed after popup closed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                        return null;
+                    },
+                );
+
+                if (!pollingIntervalRef.current) return;
+
+                if (final?.status === 'authenticated' && final.account) {
+                    if (debugRef.current) {
+                        console.debug('[hub] popup closed but auth completed', { attemptId });
+                    }
+                    closeOAuthPopup();
+                    handleSuccess({ id: final.account.id, provider });
+                    parent.postMessage(
+                        {
+                            type: EventType.AccountConnected,
+                            account: { id: final.account.id, provider },
+                        },
+                        '*',
+                    );
+                    return;
+                }
+
+                if (debugRef.current) {
+                    console.debug('[hub] popup closed by user, cancelling attempt', { attemptId });
+                }
+                closeOAuthPopup();
+                cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                    if (debugRef.current) {
+                        console.debug('[hub] cancelConnectionAttempt failed', {
+                            attemptId,
+                            error,
+                        });
+                    }
                 });
-            }
-            connectWindow.current = null;
-            if (checkStateTimeoutRef.current !== null) {
-                clearTimeout(checkStateTimeoutRef.current);
-                checkStateTimeoutRef.current = null;
-            }
-            if (oauthResolvedRef.current) return;
-
-            window.removeEventListener('message', processMessageCallback, false);
-
-            if (pollingIntervalRef.current) return;
-
-            const connectionAttemptId = connectionAttemptIdRef.current;
-            teardownOAuth();
-            if (connectionAttemptId) {
-                void cancelConnectionAttempt(baseUrl, token, connectionAttemptId);
-            }
-            if (debugRef.current) {
-                console.debug('[hub] popup closed, resetting state');
-            }
-            setConnectionState({ loading: false, success: false });
-        };
-        checkStateTimeoutRef.current = window.setTimeout(check, 1000);
-    }, [processMessageCallback, teardownOAuth, baseUrl, token]);
+                setConnectionState({ loading: false, success: false });
+            };
+            popupWatcherRef.current = window.setTimeout(check, 1000);
+        },
+        [baseUrl, token, closeOAuthPopup, handleSuccess],
+    );
 
     const handleConnect = useCallback(async () => {
         if (!selectedIntegration) {
@@ -683,31 +615,36 @@ export const useIntegrationPicker = ({
             }
 
             if (shouldRedirectForOAuth) {
-                oauthResolvedRef.current = false;
-
                 const attemptResult = await createConnectionAttempt(baseUrl, token).catch(
                     () => null,
                 );
                 const attemptId = attemptResult?.id ?? null;
                 connectionAttemptIdRef.current = attemptId;
 
-                if (debugRef.current) {
-                    if (attemptId) {
-                        console.debug('[hub] connection attempt created', { attemptId });
-                    } else {
-                        console.debug('[hub] connection attempt creation failed, polling disabled');
+                if (!attemptId) {
+                    if (debugRef.current) {
+                        console.debug('[hub] connection attempt creation failed');
                     }
+                    setConnectionState({
+                        loading: false,
+                        success: false,
+                        error: {
+                            message: 'Failed to start OAuth flow',
+                            provider_response:
+                                'Could not create a connection attempt. Please try again.',
+                        },
+                    });
+                    return;
                 }
 
-                window.addEventListener('message', processMessageCallback, false);
+                if (debugRef.current) {
+                    console.debug('[hub] connection attempt created', { attemptId });
+                }
 
                 const callbackEmbeddedAccountsUrl = encodeURIComponent(
                     `${dashboardUrl}/embedded/accounts/callback`,
                 );
-                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}`;
-                if (attemptId) {
-                    windowUrl += `&connection_attempt_id=${attemptId}`;
-                }
+                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}&connection_attempt_id=${attemptId}`;
                 Object.keys(cleanedFormData).forEach((key) => {
                     windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
                 });
@@ -736,10 +673,15 @@ export const useIntegrationPicker = ({
                     if (debugRef.current) {
                         console.debug('[hub] popup was blocked by browser');
                     }
-                    teardownOAuth();
-                    if (attemptId) {
-                        void cancelConnectionAttempt(baseUrl, token, attemptId);
-                    }
+                    closeOAuthPopup();
+                    cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] cancelConnectionAttempt failed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                    });
                     setConnectionState({
                         loading: false,
                         success: false,
@@ -752,18 +694,13 @@ export const useIntegrationPicker = ({
                     return;
                 }
 
-                coopDetectedRef.current = connectWindow.current.closed === true;
-                if (debugRef.current && coopDetectedRef.current) {
-                    console.debug('[hub] COOP detected: popup appears closed immediately');
-                }
+                coopDetectedRef.current = false;
 
                 if (typeof connectWindow.current.focus === 'function') {
                     connectWindow.current.focus();
                 }
-                if (attemptId) {
-                    startPolling(attemptId, selectedIntegration.provider);
-                }
-                startPopupWatcher();
+                startPolling(attemptId, selectedIntegration.provider);
+                startPopupWatcher(selectedIntegration.provider);
                 return;
             }
 
@@ -839,8 +776,7 @@ export const useIntegrationPicker = ({
         fields,
         accountId,
         authConfig,
-        processMessageCallback,
-        teardownOAuth,
+        closeOAuthPopup,
         startPolling,
         startPopupWatcher,
         isFormValid,
@@ -851,12 +787,16 @@ export const useIntegrationPicker = ({
         if (debugRef.current) {
             console.debug('[hub] OAuth cancelled by user', { attemptId });
         }
-        teardownOAuth();
+        closeOAuthPopup();
         setConnectionState({ loading: false, success: false });
         if (attemptId) {
-            void cancelConnectionAttempt(baseUrl, token, attemptId);
+            cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                if (debugRef.current) {
+                    console.debug('[hub] cancelConnectionAttempt failed', { attemptId, error });
+                }
+            });
         }
-    }, [baseUrl, token, teardownOAuth]);
+    }, [baseUrl, token, closeOAuthPopup]);
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
