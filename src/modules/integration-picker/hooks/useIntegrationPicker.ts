@@ -415,7 +415,14 @@ export const useIntegrationPicker = ({
                         console.debug('[hub] poll timed out', { attemptId });
                     }
                     closeOAuthPopup();
-                    void cancelConnectionAttempt(baseUrl, token, attemptId);
+                    cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] cancelConnectionAttempt failed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                    });
                     setConnectionState({ loading: false, success: false, timedOut: true });
                     return;
                 }
@@ -492,7 +499,15 @@ export const useIntegrationPicker = ({
                 }
 
                 const final = await pollConnectionAttempt(baseUrl, token, attemptId).catch(
-                    () => null,
+                    (error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] final poll failed after popup closed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                        return null;
+                    },
                 );
 
                 if (!pollingIntervalRef.current) return;
@@ -517,7 +532,14 @@ export const useIntegrationPicker = ({
                     console.debug('[hub] popup closed by user, cancelling attempt', { attemptId });
                 }
                 closeOAuthPopup();
-                void cancelConnectionAttempt(baseUrl, token, attemptId);
+                cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                    if (debugRef.current) {
+                        console.debug('[hub] cancelConnectionAttempt failed', {
+                            attemptId,
+                            error,
+                        });
+                    }
+                });
                 setConnectionState({ loading: false, success: false });
             };
             popupWatcherRef.current = window.setTimeout(check, 1000);
@@ -604,13 +626,13 @@ export const useIntegrationPicker = ({
                     console.debug('[hub] connection attempt created', { attemptId });
                 }
 
-                const callbackEmbeddedAccountsUrl = encodeURIComponent(
-                    `${dashboardUrl}/embedded/accounts/callback`,
-                );
-                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}&connection_attempt_id=${attemptId}`;
-                Object.keys(cleanedFormData).forEach((key) => {
-                    windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
+                const params = new URLSearchParams({
+                    redirect_uri: `${dashboardUrl}/embedded/accounts/callback`,
+                    token,
+                    connection_attempt_id: attemptId,
+                    ...cleanedFormData,
                 });
+                const windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?${params}`;
 
                 const width = 1024;
                 const height = 800;
@@ -637,7 +659,14 @@ export const useIntegrationPicker = ({
                         console.debug('[hub] popup was blocked by browser');
                     }
                     closeOAuthPopup();
-                    void cancelConnectionAttempt(baseUrl, token, attemptId);
+                    cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                        if (debugRef.current) {
+                            console.debug('[hub] cancelConnectionAttempt failed', {
+                                attemptId,
+                                error,
+                            });
+                        }
+                    });
                     setConnectionState({
                         loading: false,
                         success: false,
@@ -751,7 +780,11 @@ export const useIntegrationPicker = ({
         closeOAuthPopup();
         setConnectionState({ loading: false, success: false });
         if (attemptId) {
-            void cancelConnectionAttempt(baseUrl, token, attemptId);
+            cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
+                if (debugRef.current) {
+                    console.debug('[hub] cancelConnectionAttempt failed', { attemptId, error });
+                }
+            });
         }
     }, [baseUrl, token, closeOAuthPopup]);
 
