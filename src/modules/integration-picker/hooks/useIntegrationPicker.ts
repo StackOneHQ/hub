@@ -626,13 +626,13 @@ export const useIntegrationPicker = ({
                     console.debug('[hub] connection attempt created', { attemptId });
                 }
 
-                const params = new URLSearchParams({
-                    redirect_uri: `${dashboardUrl}/embedded/accounts/callback`,
-                    token,
-                    connection_attempt_id: attemptId,
-                    ...cleanedFormData,
+                const callbackEmbeddedAccountsUrl = encodeURIComponent(
+                    `${dashboardUrl}/embedded/accounts/callback`,
+                );
+                let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}&connection_attempt_id=${attemptId}`;
+                Object.keys(cleanedFormData).forEach((key) => {
+                    windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
                 });
-                const windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?${params}`;
 
                 const width = 1024;
                 const height = 800;
