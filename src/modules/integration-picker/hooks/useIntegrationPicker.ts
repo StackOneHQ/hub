@@ -480,7 +480,22 @@ export const useIntegrationPicker = ({
 
     const startPopupWatcher = useCallback(
         (provider: string) => {
+            let firstTick = true;
             const check = async () => {
+                if (firstTick) {
+                    firstTick = false;
+                    if (!connectWindow.current || connectWindow.current.closed) {
+                        if (debugRef.current) {
+                            console.debug(
+                                '[hub] popup reads as closed on first tick, assuming COOP isolation — popup-close detection disabled',
+                            );
+                        }
+                        coopDetectedRef.current = true;
+                        popupWatcherRef.current = null;
+                        return;
+                    }
+                }
+
                 if (connectWindow.current && !connectWindow.current.closed) {
                     popupWatcherRef.current = window.setTimeout(check, 1000);
                     return;
@@ -679,12 +694,7 @@ export const useIntegrationPicker = ({
                     return;
                 }
 
-                coopDetectedRef.current = connectWindow.current.closed === true;
-                if (debugRef.current && coopDetectedRef.current) {
-                    console.debug(
-                        '[hub] COOP detected: popup appears closed immediately, popup-close detection disabled',
-                    );
-                }
+                coopDetectedRef.current = false;
 
                 if (typeof connectWindow.current.focus === 'function') {
                     connectWindow.current.focus();
