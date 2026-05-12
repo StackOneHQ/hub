@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/StackOneHQ/hub/compare/hub-v1.5.2...hub-v1.6.0) (2026-05-12)
+
+
+### Features
+
+* **ENG-294:** make polling the default OAuth completion mechanism ([#155](https://github.com/StackOneHQ/hub/issues/155)) ([9be098d](https://github.com/StackOneHQ/hub/commit/9be098d50512f45c2dfaf37d834ce3dc709bf994))
+
 ## [1.5.2](https://github.com/StackOneHQ/hub/compare/hub-v1.5.1...hub-v1.5.2) (2026-05-06)
 
 
