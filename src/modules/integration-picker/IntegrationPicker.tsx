@@ -41,6 +41,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         connectorData,
         selectedIntegration,
         fields,
+        notices,
         guide,
 
         // State
@@ -152,6 +153,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 connectorData={connectorData?.config ?? null}
                 hubData={hubData ?? null}
                 fields={fields}
+                notices={notices}
                 errorHubData={(errorHubData as Error) ?? null}
                 errorConnectorData={(errorConnectorData as Error) ?? null}
                 onSelect={setSelectedIntegration}

@@ -18,8 +18,7 @@ export interface HubData {
 }
 
 export interface ConnectorConfigField {
-    type?: 'text' | 'password' | 'number' | 'select' | 'text_area' | 'alert';
-    alertType?: 'warning' | 'info';
+    type?: 'text' | 'password' | 'number' | 'select' | 'text_area';
     label: string;
     key: string;
     required: boolean;
@@ -66,12 +65,21 @@ export interface LegacyConnectorConfig {
     };
 }
 
+export interface AuthenticationNotice {
+    key: string;
+    type: 'warning' | 'info';
+    description: string;
+    position?: 'top' | 'bottom';
+    anchor?: string;
+}
+
 export interface FalconConnectorConfig {
     key: string;
     name: string;
     type: 'oauth2' | 'custom';
     grantType?: 'authorization_code' | 'client_credentials';
     configFields: Array<ConnectorConfigField>;
+    configNotices?: Array<AuthenticationNotice>;
     assets?: {
         icon: string;
     };
@@ -101,7 +109,7 @@ export function isLegacyConnectorConfig(config: ConnectorConfig): config is Lega
 }
 
 export function isFalconConnectorConfig(config: ConnectorConfig): config is FalconConnectorConfig {
-    return 'configFields' in config && !('authentication' in config);
+    return !('authentication' in config);
 }
 
 export interface AccountData {

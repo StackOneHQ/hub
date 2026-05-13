@@ -55,7 +55,6 @@ export function createFormSchema(fields: ConnectorConfigField[]) {
     const schemaShape: Record<string, z.ZodTypeAny> = {};
 
     for (const field of fields) {
-        if (field.type === 'alert') continue;
         schemaShape[field.key] = createFieldSchema(field);
     }
 

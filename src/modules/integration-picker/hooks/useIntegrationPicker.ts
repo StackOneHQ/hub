@@ -12,6 +12,7 @@ import {
     updateAccount,
 } from '../queries';
 import {
+    AuthenticationNotice,
     ConnectorConfigField,
     Integration,
     isFalconConnectorConfig,
@@ -331,88 +332,88 @@ export const useIntegrationPicker = ({
         ...RETRY_CONFIG,
     });
 
-    const { fields, guide } = useMemo(() => {
+    const { fields, guide, notices } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
             const fields: ConnectorConfigField[] = [];
-            return { fields };
+            const notices: AuthenticationNotice[] = [];
+            return { fields, notices };
         }
 
         if (isFalconConnectorConfig(connectorData.config)) {
-            const fieldsWithPrefilledValues: ConnectorConfigField[] =
-                connectorData.config.configFields
-                    .map((field) => {
-                        const setupValue = accountData?.setupInformation?.[field.key];
+            const fieldsWithPrefilledValues: ConnectorConfigField[] = (
+                connectorData.config.configFields ?? []
+            )
+                .map((field) => {
+                    const setupValue = accountData?.setupInformation?.[field.key];
 
-                        if (field.key === 'external-trigger-token') {
-                            return {
-                                ...field,
-                                key: field.key,
-                                value: hubData?.external_trigger_token,
-                            };
-                        }
-
-                        if (accountData && (field.secret !== false || field.type === 'password')) {
-                            const secretValue = accountData.secrets?.[field.key];
-                            if (secretValue) {
-                                return {
-                                    ...field,
-                                    key: field.key,
-                                    value: secretValue,
-                                };
-                            }
-                            return {
-                                ...field,
-                                key: field.key,
-                                value: '',
-                            };
-                        }
-
-                        const evaluationContext = {
-                            ...formData,
-                            ...accountData?.setupInformation,
-                            external_trigger_token: hubData?.external_trigger_token,
-                            webhooks_url: hubData?.webhooks_url,
-                            events_encoded_context: hubData?.events_encoded_context,
-                            hub_settings: connectorData.hub_settings,
-                        };
-
-                        if (field.condition) {
-                            const evaluated = evaluate(field.condition, evaluationContext);
-
-                            const shouldShow = evaluated != null && evaluated !== 'false';
-
-                            if (!shouldShow) {
-                                return;
-                            }
-                        }
-
-                        const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
-
-                        if (!valueToEvaluate) {
-                            return {
-                                ...field,
-                                key: field.key,
-                            };
-                        }
-                        let evaluatedValue = evaluate(
-                            valueToEvaluate?.toString(),
-                            evaluationContext,
-                        );
-
-                        if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
-                            evaluatedValue = JSON.stringify(evaluatedValue);
-                        }
-
+                    if (field.key === 'external-trigger-token') {
                         return {
                             ...field,
                             key: field.key,
-                            value: evaluatedValue as string | number | undefined,
+                            value: hubData?.external_trigger_token,
                         };
-                    })
-                    .filter((value) => value != null);
+                    }
+
+                    if (accountData && (field.secret !== false || field.type === 'password')) {
+                        const secretValue = accountData.secrets?.[field.key];
+                        if (secretValue) {
+                            return {
+                                ...field,
+                                key: field.key,
+                                value: secretValue,
+                            };
+                        }
+                        return {
+                            ...field,
+                            key: field.key,
+                            value: '',
+                        };
+                    }
+
+                    const evaluationContext = {
+                        ...formData,
+                        ...accountData?.setupInformation,
+                        external_trigger_token: hubData?.external_trigger_token,
+                        webhooks_url: hubData?.webhooks_url,
+                        events_encoded_context: hubData?.events_encoded_context,
+                        hub_settings: connectorData.hub_settings,
+                    };
+
+                    if (field.condition) {
+                        const evaluated = evaluate(field.condition, evaluationContext);
+
+                        const shouldShow = evaluated != null && evaluated !== 'false';
+
+                        if (!shouldShow) {
+                            return;
+                        }
+                    }
+
+                    const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
+
+                    if (!valueToEvaluate) {
+                        return {
+                            ...field,
+                            key: field.key,
+                        };
+                    }
+                    let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
+
+                    if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
+                        evaluatedValue = JSON.stringify(evaluatedValue);
+                    }
+
+                    return {
+                        ...field,
+                        key: field.key,
+                        value: evaluatedValue as string | number | undefined,
+                    };
+                })
+                .filter((value) => value != null);
 
             return {
                 fields: fieldsWithPrefilledValues,
+                notices: connectorData.config.configNotices ?? [],
                 guide: {
                     supportLink: connectorData.config.support?.link,
                     description: connectorData.config.support?.description ?? '',
@@ -507,6 +508,7 @@ export const useIntegrationPicker = ({
 
         return {
             fields: fieldsWithPrefilledValues,
+            notices: [],
             guide: authConfigForEnvironment?.guide,
         };
     }, [connectorData, selectedIntegration, accountData, formData, hubData]);
@@ -901,6 +903,7 @@ export const useIntegrationPicker = ({
         connectorData,
         selectedIntegration,
         fields,
+        notices,
         guide,
 
         // State

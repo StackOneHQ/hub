@@ -19,7 +19,8 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
-import { ConnectorConfigField } from '../types';
+import { AuthenticationNotice, ConnectorConfigField } from '../types';
+import { partitionNotices } from '../utils/partitionNotices';
 import { formatSecretPlaceholder, isSecretPlaceholder } from '../utils/secretPlaceholder';
 import { createFormSchema } from '../utils/zodSchema';
 
@@ -144,16 +145,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         );
     }
 
-    if (field.type === 'alert') {
-        return (
-            <Alert
-                type={field.alertType ?? 'info'}
-                message={field.description ?? ''}
-                hasMargin={false}
-            />
-        );
-    }
-
     if (field.type === 'text_area') {
         return (
             <>
@@ -225,6 +216,7 @@ const ErrorBlock = ({ error }: { error?: { message: string; provider_response: s
 };
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
+    notices?: Array<AuthenticationNotice>;
     error?: {
         message: string;
         provider_response: string;
@@ -239,8 +231,9 @@ interface IntegrationFieldsProps {
 const NoFieldsView: React.FC<{
     integrationName: string;
     error?: { message: string; provider_response: string };
-    alertFields?: ConnectorConfigField[];
-}> = ({ integrationName, error, alertFields }) => {
+    notices?: AuthenticationNotice[];
+}> = ({ integrationName, error, notices = [] }) => {
+    const topNotices = notices.filter((n) => !n.position || n.position === 'top');
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
             {error && (
@@ -252,18 +245,9 @@ const NoFieldsView: React.FC<{
                     <ErrorBlock error={error} />
                 </Alert>
             )}
-            {alertFields && alertFields.length > 0 && (
-                <Fragment>
-                    {alertFields.map((field) => (
-                        <Alert
-                            key={field.key}
-                            type={field.alertType ?? 'info'}
-                            message={field.description ?? ''}
-                            hasMargin={false}
-                        />
-                    ))}
-                </Fragment>
-            )}
+            {topNotices.map((n) => (
+                <Alert key={n.key} type={n.type} message={n.description} hasMargin={false} />
+            ))}
             <Flex
                 direction={FlexDirection.Vertical}
                 gapSize={FlexGapSize.Small}
@@ -288,6 +272,7 @@ const NoFieldsView: React.FC<{
 
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     fields,
+    notices = [],
     onChange,
     error,
     onValidationChange,
@@ -295,6 +280,11 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     editingSecrets,
     setEditingSecrets,
 }) => {
+    const displayedFields = fields.filter((f) => f.display !== false);
+    const fieldKeys = displayedFields.map((f) =>
+        typeof f.key === 'object' ? JSON.stringify(f.key) : String(f.key),
+    );
+    const { noticesBefore, noticesAfter } = partitionNotices(notices, fieldKeys);
     const schema = useMemo(() => createFormSchema(fields), [fields]);
 
     const defaultValues = useMemo(() => {
@@ -331,17 +321,8 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
-    const alertOnlyFields = fields.filter((f) => f.type === 'alert');
-    const hasInputFields = fields.some((f) => f.type !== 'alert');
-
-    if (!hasInputFields) {
-        return (
-            <NoFieldsView
-                integrationName={integrationName}
-                error={error}
-                alertFields={alertOnlyFields}
-            />
-        );
+    if (fields.length === 0) {
+        return <NoFieldsView integrationName={integrationName} error={error} notices={notices} />;
     }
 
     return (
@@ -353,25 +334,47 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                     </Alert>
                 )}
                 <Form>
-                    {fields
-                        .filter((field) => field.display !== false)
-                        .map((field) => {
-                            const key =
-                                typeof field.key === 'object'
-                                    ? JSON.stringify(field.key)
-                                    : String(field.key);
-                            return (
-                                <div key={key} style={{ width: '100%' }}>
-                                    <FieldRenderer
-                                        field={field}
-                                        errors={errors}
-                                        setValue={setValue}
-                                        editingSecrets={editingSecrets}
-                                        setEditingSecrets={setEditingSecrets}
+                    {displayedFields.map((field) => {
+                        const key =
+                            typeof field.key === 'object'
+                                ? JSON.stringify(field.key)
+                                : String(field.key);
+                        return (
+                            <div
+                                key={key}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '8px',
+                                    width: '100%',
+                                }}
+                            >
+                                {noticesBefore(key).map((n) => (
+                                    <Alert
+                                        key={n.key}
+                                        type={n.type}
+                                        message={n.description}
+                                        hasMargin={false}
                                     />
-                                </div>
-                            );
-                        })}
+                                ))}
+                                <FieldRenderer
+                                    field={field}
+                                    errors={errors}
+                                    setValue={setValue}
+                                    editingSecrets={editingSecrets}
+                                    setEditingSecrets={setEditingSecrets}
+                                />
+                                {noticesAfter(key).map((n) => (
+                                    <Alert
+                                        key={n.key}
+                                        type={n.type}
+                                        message={n.description}
+                                        hasMargin={false}
+                                    />
+                                ))}
+                            </div>
+                        );
+                    })}
                 </Form>
             </Spacer>
         </Padded>
