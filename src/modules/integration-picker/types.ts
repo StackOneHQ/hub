@@ -82,8 +82,12 @@ type AuthenticationNoticeBottom = {
 
 export type AuthenticationNotice = AuthenticationNoticeTop | AuthenticationNoticeBottom;
 
-export function hasAnchor(notice: AuthenticationNotice): notice is AuthenticationNoticeTop & { anchor: string } {
-    return 'anchor' in notice && typeof notice.anchor === 'string' && notice.anchor.trim().length > 0;
+export function hasAnchor(
+    notice: AuthenticationNotice,
+): notice is AuthenticationNoticeTop & { anchor: string } {
+    return (
+        'anchor' in notice && typeof notice.anchor === 'string' && notice.anchor.trim().length > 0
+    );
 }
 
 export interface FalconConnectorConfig {
