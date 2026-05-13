@@ -1,3 +1,4 @@
+import { hasAnchor } from '../types';
 import type { AuthenticationNotice } from '../types';
 
 export function partitionNotices(notices: AuthenticationNotice[], fieldKeys: string[] = []) {
@@ -6,13 +7,13 @@ export function partitionNotices(notices: AuthenticationNotice[], fieldKeys: str
 
     const noticesBefore = (fieldKey: string) =>
         notices.filter((n) => {
-            if (n.anchor) return n.anchor === fieldKey;
+            if (hasAnchor(n)) return n.anchor === fieldKey;
             return (!n.position || n.position === 'top') && fieldKey === firstKey;
         });
 
     const noticesAfter = (fieldKey: string) =>
         notices.filter((n) => {
-            if (n.anchor) return false;
+            if (hasAnchor(n)) return false;
             return n.position === 'bottom' && fieldKey === lastKey;
         });
 

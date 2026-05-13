@@ -65,12 +65,25 @@ export interface LegacyConnectorConfig {
     };
 }
 
-export interface AuthenticationNotice {
+type AuthenticationNoticeTop = {
     key: string;
     type: 'warning' | 'info';
     description: string;
-    position?: 'top' | 'bottom';
+    position?: 'top';
     anchor?: string;
+};
+
+type AuthenticationNoticeBottom = {
+    key: string;
+    type: 'warning' | 'info';
+    description: string;
+    position: 'bottom';
+};
+
+export type AuthenticationNotice = AuthenticationNoticeTop | AuthenticationNoticeBottom;
+
+export function hasAnchor(notice: AuthenticationNotice): notice is AuthenticationNoticeTop & { anchor: string } {
+    return 'anchor' in notice && typeof notice.anchor === 'string' && notice.anchor.trim().length > 0;
 }
 
 export interface FalconConnectorConfig {
@@ -78,7 +91,7 @@ export interface FalconConnectorConfig {
     name: string;
     type: 'oauth2' | 'custom';
     grantType?: 'authorization_code' | 'client_credentials';
-    configFields: Array<ConnectorConfigField>;
+    configFields?: Array<ConnectorConfigField>;
     configNotices?: Array<AuthenticationNotice>;
     assets?: {
         icon: string;
@@ -109,7 +122,7 @@ export function isLegacyConnectorConfig(config: ConnectorConfig): config is Lega
 }
 
 export function isFalconConnectorConfig(config: ConnectorConfig): config is FalconConnectorConfig {
-    return !('authentication' in config);
+    return ('configFields' in config || 'configNotices' in config) && !('authentication' in config);
 }
 
 export interface AccountData {
