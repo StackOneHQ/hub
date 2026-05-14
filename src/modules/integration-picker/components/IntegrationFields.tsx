@@ -15,7 +15,7 @@ import {
     TextArea,
     Typography,
 } from '@stackone/malachite';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
@@ -321,7 +321,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
 
-    if (fields.length === 0) {
+    if (displayedFields.length === 0) {
         return <NoFieldsView integrationName={integrationName} error={error} notices={notices} />;
     }
 
@@ -339,13 +339,17 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                             typeof field.key === 'object'
                                 ? JSON.stringify(field.key)
                                 : String(field.key);
+                        const hasNotices =
+                            noticesBefore(key).length > 0 || noticesAfter(key).length > 0;
                         return (
                             <div
                                 key={key}
                                 style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '8px',
+                                    ...(hasNotices && {
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '8px',
+                                    }),
                                     width: '100%',
                                 }}
                             >
