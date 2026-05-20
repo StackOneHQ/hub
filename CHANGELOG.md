@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/StackOneHQ/hub/compare/hub-v1.6.0...hub-v1.7.0) (2026-05-20)
+
+
+### Features
+
+* **ENG-295:** Support dynamic type alert in configFields ([#153](https://github.com/StackOneHQ/hub/issues/153)) ([6387813](https://github.com/StackOneHQ/hub/commit/6387813a12088eebb79236687b091730a1e2a9cb))
+
 ## [1.6.0](https://github.com/StackOneHQ/hub/compare/hub-v1.5.2...hub-v1.6.0) (2026-05-12)
 
 
