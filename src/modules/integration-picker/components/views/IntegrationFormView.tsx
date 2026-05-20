@@ -1,9 +1,10 @@
 import React from 'react';
-import { ConnectorConfigField } from '../../types';
+import { AuthenticationNotice, ConnectorConfigField } from '../../types';
 import { IntegrationForm } from '../IntegrationFields';
 
 interface IntegrationFormViewProps {
     fields: ConnectorConfigField[];
+    notices?: AuthenticationNotice[];
     error?: {
         message: string;
         provider_response: string;
@@ -17,6 +18,7 @@ interface IntegrationFormViewProps {
 
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     fields,
+    notices,
     error,
     onChange,
     onValidationChange,
@@ -27,6 +29,7 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     return (
         <IntegrationForm
             fields={fields}
+            notices={notices}
             error={error}
             onChange={onChange}
             onValidationChange={onValidationChange}

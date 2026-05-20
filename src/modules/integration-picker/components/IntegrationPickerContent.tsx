@@ -1,5 +1,11 @@
 import React from 'react';
-import { ConnectorConfig, ConnectorConfigField, HubData, Integration } from '../types';
+import {
+    AuthenticationNotice,
+    ConnectorConfig,
+    ConnectorConfigField,
+    HubData,
+    Integration,
+} from '../types';
 import { ErrorView } from './views/ErrorView';
 import { IntegrationFormView } from './views/IntegrationFormView';
 import { IntegrationListView } from './views/IntegrationListView';
@@ -24,6 +30,7 @@ interface IntegrationPickerContentProps {
     connectorData: ConnectorConfig | null;
     hubData: HubData | null;
     fields: ConnectorConfigField[];
+    notices?: AuthenticationNotice[];
     selectedCategory: string | null;
     search: string;
 
@@ -48,6 +55,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     connectorData,
     hubData,
     fields,
+    notices,
     selectedCategory,
     search,
     errorHubData,
@@ -113,6 +121,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
         return (
             <IntegrationFormView
                 fields={fields}
+                notices={notices}
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}
