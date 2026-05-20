@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/StackOneHQ/hub/compare/hub-v1.7.0...hub-v1.7.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* update token ([#158](https://github.com/StackOneHQ/hub/issues/158)) ([9c1b933](https://github.com/StackOneHQ/hub/commit/9c1b933f5c2932f1c8d800f16d0fa0f6e47bcf72))
+
 ## [1.7.0](https://github.com/StackOneHQ/hub/compare/hub-v1.6.0...hub-v1.7.0) (2026-05-20)
 
 
