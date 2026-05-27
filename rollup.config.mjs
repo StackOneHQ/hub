@@ -64,10 +64,14 @@ export default [
       format: "iife",
       name: "StackOneHubWebComponent",
       sourcemap: true,
+      globals: { crypto: "globalThis.crypto" },
     },
+    external: ["crypto"],
     plugins: [
       resolve({
         preferBuiltins: false,
+        browser: true,
+        exportConditions: ["browser", "module", "import", "default"],
       }),
       commonjs(),
       typescript({ 

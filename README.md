@@ -129,19 +129,147 @@ The build generates multiple bundles in the `dist/` directory:
 
 ### 🌐 Web Component Integration
 
-For vanilla HTML/JavaScript applications:
+`@stackone/hub` also ships a framework-agnostic custom element (`<stackone-hub>`) that works in **plain HTML, Vue, Angular, Svelte, or any other framework**. React + ReactDOM are bundled into the web-component bundle, so consumers do **not** need React installed.
+
+#### Loading the bundle
+
+Install the package and import the web-component subpath once at app startup. The import is side-effecting — it registers `<stackone-hub>` on `customElements`:
+
+```ts
+// main.ts / main.js — anywhere that runs once on app boot
+import '@stackone/hub/webcomponent';
+```
+
+If you'd rather drop a `<script>` tag in plain HTML, point it at the IIFE bundle in `node_modules` (or your own static host):
+
+```html
+<script src="/node_modules/@stackone/hub/dist/webcomponent.js"></script>
+<stackone-hub token="..."></stackone-hub>
+```
+
+#### Attributes
+
+All scalar `StackOneHub` props are exposed as kebab-case HTML attributes:
+
+| Attribute | Type | Notes |
+|---|---|---|
+| `token` | string | Connect-session token (required to render the picker). |
+| `base-url` | string | API base URL. Defaults to `https://api.stackone.com`. |
+| `app-url` | string | Dashboard URL. Defaults to `https://app.stackone.com`. |
+| `mode` | string | Currently only `integration-picker`. |
+| `height` | string | CSS height (e.g. `600px`). Defaults to `500px`. |
+| `theme` | `light` \| `dark` \| JSON | Either the keyword or a JSON-encoded `PartialMalachiteTheme` object. |
+| `account-id` | string | Optional account filter. |
+| `on-close-label` | string | Override the close-button label. |
+| `show-footer-links` | boolean attr | Presence = `true`, value `"false"` = `false`. |
+| `debug` | boolean attr | Enables debug logging. |
+
+#### Events
+
+Callbacks are dispatched as `CustomEvent`s on the host element:
+
+| Event | `event.detail` |
+|---|---|
+| `success` | `{ id: string; provider: string }` — emitted when an account is connected. |
+| `close` | `undefined` — emitted when the user closes the picker. |
+
+Both events `bubble` and `compose`.
+
+#### JS-only properties
+
+For values that don't fit in HTML attributes, set them as JS properties on the element:
+
+| Property | Type | Purpose |
+|---|---|---|
+| `el.onSuccess` | `(account) => void` | Function alternative to the `success` event. |
+| `el.onClose` | `() => void` | Function alternative to the `close` event. |
+| `el.themeObject` | `PartialMalachiteTheme` | Structured theme; overrides the `theme` attribute. |
+
+#### Vanilla HTML
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>StackOne HUB Integration</title>
+  <script src="/node_modules/@stackone/hub/dist/webcomponent.js"></script>
 </head>
 <body>
-    <script src="<TBD>/webcomponent.js"></script>
-    <stackone-hub token="..."></stackone-hub>
+  <stackone-hub id="hub" token="..." mode="integration-picker" height="600px"></stackone-hub>
+  <script>
+    const el = document.getElementById('hub');
+    el.addEventListener('success', (e) => console.log('connected', e.detail));
+    el.addEventListener('close', () => console.log('closed'));
+  </script>
 </body>
 </html>
+```
+
+#### Vue 3
+
+Tell Vue that `<stackone-hub>` is a custom element so the compiler doesn't try to resolve it as a Vue component:
+
+```ts
+// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import '@stackone/hub/webcomponent';
+
+const app = createApp(App);
+app.config.compilerOptions.isCustomElement = (tag) => tag === 'stackone-hub';
+app.mount('#app');
+```
+
+```vue
+<!-- App.vue -->
+<script setup lang="ts">
+import { ref } from 'vue';
+const token = ref('...');
+const onSuccess = (event: CustomEvent<{ id: string; provider: string }>) => {
+  console.log('connected', event.detail);
+};
+</script>
+
+<template>
+  <stackone-hub :token="token" mode="integration-picker" @success="onSuccess" @close="() => {}" />
+</template>
+```
+
+#### Angular
+
+Add `CUSTOM_ELEMENTS_SCHEMA` to the module (or standalone component) that uses `<stackone-hub>` so Angular treats unknown tags as custom elements:
+
+```ts
+// app.module.ts
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import '@stackone/hub/webcomponent';
+
+@NgModule({
+  declarations: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+```html
+<!-- app.component.html -->
+<stackone-hub
+  [attr.token]="token"
+  mode="integration-picker"
+  (success)="onSuccess($event)"
+  (close)="onClose()"
+></stackone-hub>
+```
+
+```ts
+// app.component.ts
+onSuccess(event: Event) {
+  const { id, provider } = (event as CustomEvent<{ id: string; provider: string }>).detail;
+  console.log('connected', id, provider);
+}
+onClose() {
+  console.log('closed');
+}
 ```
 
 ### ⚛️ React Component Integration
