@@ -43,13 +43,19 @@ const parseTheme = (value: string | null): ThemeProp | undefined => {
     }
     try {
         const parsed = JSON.parse(value);
-        if (parsed && typeof parsed === 'object') {
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
             return parsed as PartialMalachiteTheme;
         }
     } catch {
         return undefined;
     }
     return undefined;
+};
+
+const VALID_MODES: readonly HubModes[] = ['integration-picker'];
+
+const parseMode = (value: string | null): HubModes | undefined => {
+    return VALID_MODES.includes(value as HubModes) ? (value as HubModes) : undefined;
 };
 
 class StackOneHubElement extends HTMLElement {
@@ -128,7 +134,7 @@ class StackOneHubElement extends HTMLElement {
                 token: this.getAttribute('token') ?? undefined,
                 baseUrl: this.getAttribute('base-url') ?? undefined,
                 appUrl: this.getAttribute('app-url') ?? undefined,
-                mode: (this.getAttribute('mode') as HubModes | null) ?? undefined,
+                mode: parseMode(this.getAttribute('mode')),
                 height: this.getAttribute('height') ?? undefined,
                 theme,
                 accountId: this.getAttribute('account-id') ?? undefined,

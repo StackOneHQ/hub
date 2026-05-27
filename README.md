@@ -173,7 +173,7 @@ Callbacks are dispatched as `CustomEvent`s on the host element:
 | `success` | `{ id: string; provider: string }` — emitted when an account is connected. |
 | `close` | `undefined` — emitted when the user closes the picker. |
 
-Both events `bubble` and `compose`.
+Both events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries.
 
 #### JS-only properties
 
