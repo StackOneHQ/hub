@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>stackone-hub — vanilla HTML</title>
+    <script src="./node_modules/@stackone/hub/dist/webcomponent.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>stackone-hub — vanilla HTML</h1>
+      <p>Plain <code>&lt;script src&gt;</code> + <code>addEventListener</code>. No bundler.</p>
+    </header>
+
+    <section class="controls">
+      <label>
+        Token
+        <input id="token" type="text" placeholder="paste connect-session token" />
+      </label>
+      <label>
+        Base URL
+        <input id="base-url" type="text" value="https://api.stackone.com" />
+      </label>
+      <div class="row">
+        <button id="theme-light" type="button">Light</button>
+        <button id="theme-dark" type="button">Dark</button>
+      </div>
+    </section>
+
+    <stackone-hub id="hub" mode="integration-picker" height="600px" theme="light"></stackone-hub>
+
+    <section class="events">
+      <h2>Event log</h2>
+      <ol id="event-log"></ol>
+    </section>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

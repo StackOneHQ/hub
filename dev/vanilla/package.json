@@ -1,0 +1,14 @@
+{
+    "name": "stackone-hub-vanilla-test",
+    "private": true,
+    "version": "0.0.0",
+    "scripts": {
+        "dev": "serve -l 3010 ."
+    },
+    "dependencies": {
+        "@stackone/hub": "file:../.."
+    },
+    "devDependencies": {
+        "serve": "^14.2.4"
+    }
+}

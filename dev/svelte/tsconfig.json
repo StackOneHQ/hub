@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "resolveJsonModule": true,
+        "types": ["vite/client", "svelte"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.svelte", "vite.config.ts"]
+}

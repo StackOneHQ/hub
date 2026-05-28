@@ -3,6 +3,10 @@ node_modules/
 
 # Generated files
 dist/
+build/
+.angular/
+.svelte-kit/
+.vite/
 
 # Logs
 npm-debug.log*

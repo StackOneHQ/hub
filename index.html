@@ -1,14 +1,35 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="dist/webcomponent/StackOneHub.web.js"></script>
+    <title>StackOne Hub — Web Component Demo</title>
+    <script src="dist/webcomponent.js"></script>
   </head>
   <body>
-    <!-- Add a  -->
+    <!-- Replace the token below with a connect-session token minted from your StackOne API key. Do not commit real tokens. -->
     <stackone-hub
-      token="eyJyZWdpb25fc2x1ZyI6ImV1IiwidG9rZW4iOiJzclgzU0xUemttcmpWQWQtWTdNZXFUTUh3OV9KaVdNRFk3M3RaenRwdVZIVV9EZERmQU14NGF3X3hWb09wdXZuRkQ1OW11WlJjZlZBRDRQMUxRcmVRdyJ9"
+      id="hub"
+      token="REPLACE_WITH_YOUR_CONNECT_SESSION_TOKEN"
       base-url="http://localhost:4000"
       mode="integration-picker"
+      height="600px"
+      theme="light"
     ></stackone-hub>
+
+    <script>
+      const el = document.getElementById('hub');
+
+      el.addEventListener('success', (event) => {
+        console.log('[hub] success', event.detail);
+      });
+
+      el.addEventListener('close', () => {
+        console.log('[hub] close');
+      });
+
+      // Property-setter equivalents (work alongside the events):
+      // el.onSuccess = (account) => console.log('via property', account);
+      // el.onClose = () => console.log('closed via property');
+      // el.themeObject = { primaryColor: '#7c3aed' };
+    </script>
   </body>
 </html>

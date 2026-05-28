@@ -1,0 +1,20 @@
+{
+    "name": "stackone-hub-svelte-test",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 3012",
+        "build": "vite build",
+        "preview": "vite preview --port 3012"
+    },
+    "dependencies": {
+        "@stackone/hub": "file:../.."
+    },
+    "devDependencies": {
+        "@sveltejs/vite-plugin-svelte": "^5.0.3",
+        "svelte": "^5.16.0",
+        "typescript": "^5.6.3",
+        "vite": "^6.0.5"
+    }
+}
