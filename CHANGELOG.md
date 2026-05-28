@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/StackOneHQ/hub/compare/hub-v1.7.1...hub-v1.8.0) (2026-05-28)
+
+
+### Features
+
+* **ENG-433:** Render hub as webcomponent ([#160](https://github.com/StackOneHQ/hub/issues/160)) ([199e4f4](https://github.com/StackOneHQ/hub/commit/199e4f4fd3fd3a637a1dc4b29dde33f140427a20))
+
 ## [1.7.1](https://github.com/StackOneHQ/hub/compare/hub-v1.7.0...hub-v1.7.1) (2026-05-20)
 
 
