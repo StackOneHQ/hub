@@ -16,7 +16,19 @@ watch(baseUrl, (value) => localStorage.setItem(BASE_URL_KEY, value));
 
 const apiKey = import.meta.env.VITE_STACKONE_API_KEY;
 const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
-if (apiKey && !token.value) {
+const apiHost = (() => {
+    try {
+        return new URL(apiUrl).hostname;
+    } catch {
+        return '';
+    }
+})();
+const isLocalhost = apiHost === 'localhost' || apiHost === '127.0.0.1';
+if (apiKey && !token.value && !isLocalhost) {
+    console.warn(
+        `Skipping connect_sessions auto-fetch — "${apiUrl}" is not localhost. Paste a pre-minted token.`,
+    );
+} else if (apiKey && !token.value) {
     fetch(`${apiUrl}/connect_sessions`, {
         method: 'POST',
         headers: {

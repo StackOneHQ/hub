@@ -46,7 +46,20 @@ export default function App() {
     useEffect(() => {
         const apiKey = import.meta.env.VITE_STACKONE_API_KEY;
         const apiUrl = import.meta.env.VITE_API_URL ?? 'https://api.stackone.com';
-        if (!apiKey || token) {
+        const host = (() => {
+            try {
+                return new URL(apiUrl).hostname;
+            } catch {
+                return '';
+            }
+        })();
+        const isLocalhost = host === 'localhost' || host === '127.0.0.1';
+        if (!apiKey || token || !isLocalhost) {
+            if (apiKey && !isLocalhost) {
+                console.warn(
+                    `Skipping connect_sessions auto-fetch — "${apiUrl}" is not localhost. Paste a pre-minted token.`,
+                );
+            }
             return;
         }
         fetch(`${apiUrl}/connect_sessions`, {

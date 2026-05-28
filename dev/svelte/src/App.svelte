@@ -17,7 +17,19 @@
 
     const apiKey = import.meta.env.VITE_STACKONE_API_KEY as string | undefined;
     const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? 'https://api.stackone.com';
-    if (apiKey && !token) {
+    const apiHost = (() => {
+        try {
+            return new URL(apiUrl).hostname;
+        } catch {
+            return '';
+        }
+    })();
+    const isLocalhost = apiHost === 'localhost' || apiHost === '127.0.0.1';
+    if (apiKey && !token && !isLocalhost) {
+        console.warn(
+            `Skipping connect_sessions auto-fetch — "${apiUrl}" is not localhost. Paste a pre-minted token.`,
+        );
+    } else if (apiKey && !token) {
         fetch(`${apiUrl}/connect_sessions`, {
             method: 'POST',
             headers: {

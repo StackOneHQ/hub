@@ -34,7 +34,7 @@ For auto-fetch, copy `dev/.env.example` to `dev/.env` and set `VITE_STACKONE_API
 
 The Angular sandbox is the one exception: Angular CLI doesn't read `.env` files, so set its values in `angular/src/environments/environment.ts` instead.
 
-> ⚠️ The API key is sent from the browser. Dev key on localhost only.
+> ⚠️ **Localhost only.** The auto-fetch path POSTs to `connect_sessions` from the browser, which only works against a local API. Pointing `VITE_API_URL` at `api.stackone.com`, `api.stackone-dev.com`, or `api.stackone-exp.com` will fail (CORS) — the sandbox detects this and logs a warning instead. For dev/exp/prod, mint a token out-of-band (curl/server/Postman) and paste it into the token input.
 
 The vanilla sandbox is paste-only (no build step to inject env vars).
 

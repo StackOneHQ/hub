@@ -106,7 +106,21 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         if (environment.stackOneApiKey && !this.token) {
-            this.mintToken();
+            const apiHost = (() => {
+                try {
+                    return new URL(environment.apiUrl).hostname;
+                } catch {
+                    return '';
+                }
+            })();
+            const isLocalhost = apiHost === 'localhost' || apiHost === '127.0.0.1';
+            if (!isLocalhost) {
+                console.warn(
+                    `Skipping connect_sessions auto-fetch — "${environment.apiUrl}" is not localhost. Paste a pre-minted token.`,
+                );
+            } else {
+                this.mintToken();
+            }
         }
         const el = this.hubRef?.nativeElement;
         if (el) {
