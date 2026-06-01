@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/StackOneHQ/hub/compare/hub-v1.8.0...hub-v1.9.0) (2026-06-01)
+
+
+### Features
+
+* **ENG-520:** fix browser leak ([#163](https://github.com/StackOneHQ/hub/issues/163)) ([fd83390](https://github.com/StackOneHQ/hub/commit/fd83390b25ae4e1f124fa60f27e9fd7cf982c07b))
+
 ## [1.8.0](https://github.com/StackOneHQ/hub/compare/hub-v1.7.1...hub-v1.8.0) (2026-05-28)
 
 
