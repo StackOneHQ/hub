@@ -36,6 +36,7 @@ export default [
       del({ targets: "dist/*" }),
       resolve({
         preferBuiltins: false,
+        browser: true,
       }),
       commonjs(),
       typescript({ 
