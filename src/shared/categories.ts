@@ -2,6 +2,7 @@ export const CATEGORIES = [
     'ats',
     'crm',
     'hris',
+    'hrisLegacy',
     'marketing',
     'iam',
     'lms',
@@ -11,12 +12,17 @@ export const CATEGORIES = [
     'messaging',
     'accounting',
     'scheduling',
+    'stackOne',
 ];
 
 export const CATEGORIES_WITH_LABELS = [
     {
         label: 'HRIS',
         value: 'hris',
+    },
+    {
+        label: 'HRIS Legacy',
+        value: 'hrisLegacy',
     },
     {
         label: 'ATS',
@@ -61,5 +67,9 @@ export const CATEGORIES_WITH_LABELS = [
     {
         label: 'Scheduling',
         value: 'scheduling',
+    },
+    {
+        label: 'StackOne',
+        value: 'stackOne',
     },
 ];
