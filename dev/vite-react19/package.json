@@ -1,0 +1,26 @@
+{
+    "name": "@stackone/hub-vite-react19-sandbox",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 3015",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview --port 3015"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^5.2.2",
+        "@stackone/hub": "file:../..",
+        "react": "19.2.5",
+        "react-dom": "19.2.5",
+        "react-hook-form": "7.60.0",
+        "zod": "^4.1.12"
+    },
+    "devDependencies": {
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "@vitejs/plugin-react": "^4.3.4",
+        "typescript": "^5.8.3",
+        "vite": "^6.0.0"
+    }
+}
