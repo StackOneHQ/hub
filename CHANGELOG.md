@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/StackOneHQ/hub/compare/hub-v1.9.0...hub-v1.10.0) (2026-06-02)
+
+
+### Features
+
+* **ENG-520:** bump packages ([#166](https://github.com/StackOneHQ/hub/issues/166)) ([0ebeba1](https://github.com/StackOneHQ/hub/commit/0ebeba1d325d362e95869d8b716cf5e04add7141))
+
 ## [1.9.0](https://github.com/StackOneHQ/hub/compare/hub-v1.8.0...hub-v1.9.0) (2026-06-01)
 
 
