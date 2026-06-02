@@ -12,14 +12,22 @@ import postcss from "rollup-plugin-postcss";
 // AND edge builds top-level `import { Saml20 } from "saml"`. `saml` drags in
 // `xml-crypto`/`xml-encryption`, leaking `crypto`/`fs`/`path` into the browser
 // bundle. The integration picker only uses `evaluate`, never SAML assertion
-// generation, so we resolve `saml` to an empty stub.
+// generation, so we resolve `saml` to a stub. The stub throws on use so an
+// unexpected SAML code path fails with an actionable error rather than a cryptic
+// `Saml20 is not a constructor`.
+const SAML_STUB =
+  "export class Saml20 {\n" +
+  "  constructor() {\n" +
+  "    throw new Error('@stackone/hub: `saml` is stubbed out of the browser bundle — SAML assertion generation is not available client-side.');\n" +
+  "  }\n" +
+  "}\n";
 const stubSaml = {
   name: "stub-saml",
   resolveId(source) {
     return source === "saml" ? "\0saml-stub" : null;
   },
   load(id) {
-    return id === "\0saml-stub" ? "export const Saml20 = {};" : null;
+    return id === "\0saml-stub" ? SAML_STUB : null;
   },
 };
 
