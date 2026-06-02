@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/StackOneHQ/hub/compare/hub-v1.10.0...hub-v1.10.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* **ENG-520:** stop crypto/fs/path leaking into the browser bundle ([#169](https://github.com/StackOneHQ/hub/issues/169)) ([0aee9f0](https://github.com/StackOneHQ/hub/commit/0aee9f0736117376f692a28440f31bda75936b82))
+
 ## [1.10.0](https://github.com/StackOneHQ/hub/compare/hub-v1.9.0...hub-v1.10.0) (2026-06-02)
 
 
