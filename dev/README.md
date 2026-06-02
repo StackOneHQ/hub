@@ -5,11 +5,13 @@ Each folder is a self-contained dev app that consumes the hub via `"@stackone/hu
 | Folder | What it exercises | Stack | Port | Run from hub root |
 |---|---|---|---|---|
 | `vite/` | React export (`<StackOneHub>`) on a Vite SPA | React 18 + Vite | 3001 | `npm run dev` |
+| `vite-react19/` | React export (`<StackOneHub>`) on a Vite SPA, React 19 | React 19 + Vite | 3015 | `npm run dev:react19` |
 | `nextjs/` | React export (`<StackOneHub>`) under Next.js SSR | React 19 + Next.js 15 | 3002 | `npm run dev:nextjs` |
 | `vanilla/` | `<stackone-hub>` custom element via `<script src>` | Plain HTML + `serve` | 3010 | `npm run dev:vanilla` |
 | `vue/` | `<stackone-hub>` in a Vue template | Vue 3.5 + Vite 5 | 3011 | `npm run dev:vue` |
 | `svelte/` | `<stackone-hub>` in a Svelte component | Svelte 5 + Vite 6 | 3012 | `npm run dev:svelte` |
 | `react/` | `<stackone-hub>` mounted from React (not the React export) | React 19 + Vite 5 | 3013 | `npm run dev:react-wc` |
+| `rsbuild/` | React export (`<StackOneHub>`) bundled by Rspack — catches Node built-in leaks | React 19 + rsbuild | 3014 | `npm run dev:rsbuild` |
 | `angular/` | `<stackone-hub>` in an Angular template | Angular 18 + Angular CLI | 4201 | `npm run dev:angular` |
 
 ## First-time setup

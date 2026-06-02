@@ -8,6 +8,21 @@ import dts from "rollup-plugin-dts";
 import external from "rollup-plugin-peer-deps-external";
 import postcss from "rollup-plugin-postcss";
 
+// `@stackone/expressions` pulls in the full `@stackone/utils` barrel, whose node
+// AND edge builds top-level `import { Saml20 } from "saml"`. `saml` drags in
+// `xml-crypto`/`xml-encryption`, leaking `crypto`/`fs`/`path` into the browser
+// bundle. The integration picker only uses `evaluate`, never SAML assertion
+// generation, so we resolve `saml` to an empty stub.
+const stubSaml = {
+  name: "stub-saml",
+  resolveId(source) {
+    return source === "saml" ? "\0saml-stub" : null;
+  },
+  load(id) {
+    return id === "\0saml-stub" ? "export const Saml20 = {};" : null;
+  },
+};
+
 export default [
   // Main React Component Bundle
   {
@@ -34,6 +49,7 @@ export default [
     ],
     plugins: [
       del({ targets: "dist/*" }),
+      stubSaml,
       resolve({
         preferBuiltins: false,
         browser: true,
@@ -69,6 +85,7 @@ export default [
     },
     external: ["crypto"],
     plugins: [
+      stubSaml,
       resolve({
         preferBuiltins: false,
         browser: true,

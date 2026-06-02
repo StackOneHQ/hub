@@ -1,4 +1,4 @@
-import { isString } from '@stackone/utils';
+const isString = (value: unknown): value is string => typeof value === 'string';
 
 const SECRET_PLACEHOLDER_REGEX = /^__secretvalue:\*\*redacted\*\*(.*)$/;
 
