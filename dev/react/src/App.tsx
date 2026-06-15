@@ -121,6 +121,7 @@ export default function App() {
                     Token
                     <input
                         type="text"
+                        name="token"
                         value={token}
                         placeholder="paste connect-session token"
                         onChange={(e) => setToken(e.target.value)}
@@ -130,6 +131,7 @@ export default function App() {
                     Base URL
                     <input
                         type="text"
+                        name="baseUrl"
                         value={baseUrl}
                         onChange={(e) => setBaseUrl(e.target.value)}
                     />

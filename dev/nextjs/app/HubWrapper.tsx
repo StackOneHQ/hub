@@ -23,6 +23,7 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
                 <input
                     style={{ flex: 1, padding: 6, border: '1px solid #ccc', borderRadius: 4 }}
                     type="text"
+                    name="token"
                     placeholder="Paste a connect session token"
                     value={manualToken}
                     onChange={(e) => setManualToken(e.target.value)}

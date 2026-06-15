@@ -33,11 +33,11 @@ interface LogEntry {
         <section class="controls">
             <label>
                 Token
-                <input type="text" [(ngModel)]="token" (ngModelChange)="persistToken()" placeholder="paste connect-session token" />
+                <input type="text" name="token" [(ngModel)]="token" (ngModelChange)="persistToken()" placeholder="paste connect-session token" />
             </label>
             <label>
                 Base URL
-                <input type="text" [(ngModel)]="baseUrl" (ngModelChange)="persistBaseUrl()" />
+                <input type="text" name="baseUrl" [(ngModel)]="baseUrl" (ngModelChange)="persistBaseUrl()" />
             </label>
             <div class="row">
                 <button type="button" (click)="setTheme('light')">Light</button>

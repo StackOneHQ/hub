@@ -77,11 +77,11 @@ const setTheme = (next: 'light' | 'dark') => {
     <section class="controls">
         <label>
             Token
-            <input v-model="token" type="text" placeholder="paste connect-session token" />
+            <input v-model="token" name="token" type="text" placeholder="paste connect-session token" />
         </label>
         <label>
             Base URL
-            <input v-model="baseUrl" type="text" />
+            <input v-model="baseUrl" name="baseUrl" type="text" />
         </label>
         <div class="row">
             <button type="button" @click="setTheme('light')">Light</button>
