@@ -1,4 +1,3 @@
-import { evaluate } from '@stackone/expressions';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -239,43 +238,19 @@ export const useIntegrationPicker = ({
                         };
                     }
 
-                    const evaluationContext = {
-                        ...formData,
-                        ...accountData?.setupInformation,
-                        external_trigger_token: hubData?.external_trigger_token,
-                        webhooks_url: hubData?.webhooks_url,
-                        events_encoded_context: hubData?.events_encoded_context,
-                        hub_settings: connectorData.hub_settings,
-                    };
+                    const prefilledValue = setupValue !== undefined ? setupValue : field.value;
 
-                    if (field.condition) {
-                        const evaluated = evaluate(field.condition, evaluationContext);
-
-                        const shouldShow = evaluated != null && evaluated !== 'false';
-
-                        if (!shouldShow) {
-                            return;
-                        }
-                    }
-
-                    const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
-
-                    if (!valueToEvaluate) {
+                    if (!prefilledValue) {
                         return {
                             ...field,
                             key: field.key,
                         };
                     }
-                    let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
-
-                    if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
-                        evaluatedValue = JSON.stringify(evaluatedValue);
-                    }
 
                     return {
                         ...field,
                         key: field.key,
-                        value: evaluatedValue as string | number | undefined,
+                        value: prefilledValue,
                     };
                 })
                 .filter((value) => value != null);
@@ -318,25 +293,6 @@ export const useIntegrationPicker = ({
                     };
                 }
 
-                const evaluationContext = {
-                    ...formData,
-                    ...accountData?.setupInformation,
-                    external_trigger_token: hubData?.external_trigger_token,
-                    hub_settings: connectorData.hub_settings,
-                };
-
-                if (field.condition) {
-                    const evaluated = evaluate(field.condition, evaluationContext);
-
-                    const shouldShow = evaluated != null && evaluated !== 'false';
-
-                    return {
-                        ...field,
-                        key: field.key,
-                        display: shouldShow,
-                    };
-                }
-
                 if (accountData && (field.secret !== false || field.type === 'password')) {
                     const secretValue = accountData.secrets?.[field.key];
                     if (secretValue) {
@@ -353,24 +309,19 @@ export const useIntegrationPicker = ({
                     };
                 }
 
-                const valueToEvaluate = setupValue !== undefined ? setupValue : field.value;
+                const prefilledValue = setupValue !== undefined ? setupValue : field.value;
 
-                if (!valueToEvaluate) {
+                if (!prefilledValue) {
                     return {
                         ...field,
                         key: field.key,
                     };
                 }
-                let evaluatedValue = evaluate(valueToEvaluate?.toString(), evaluationContext);
-
-                if (typeof evaluatedValue === 'object' && evaluatedValue !== null) {
-                    evaluatedValue = JSON.stringify(evaluatedValue);
-                }
 
                 return {
                     ...field,
                     key: field.key,
-                    value: evaluatedValue as string | number | undefined,
+                    value: prefilledValue,
                 };
             })
             .filter((value) => value != null);
@@ -380,7 +331,7 @@ export const useIntegrationPicker = ({
             notices: [],
             guide: authConfigForEnvironment?.guide,
         };
-    }, [connectorData, selectedIntegration, accountData, formData, hubData]);
+    }, [connectorData, selectedIntegration, accountData, hubData]);
 
     const authConfig = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
