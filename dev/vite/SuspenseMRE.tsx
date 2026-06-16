@@ -209,6 +209,7 @@ function SuspenseMREContent() {
                     </div>
                     <input
                         type="text"
+                        name="token"
                         placeholder="Connect session token"
                         value={manualToken}
                         onChange={(e) => setManualToken(e.target.value)}

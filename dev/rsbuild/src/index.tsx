@@ -31,6 +31,7 @@ function App() {
                 Token
                 <input
                     style={{ display: 'block', width: '100%' }}
+                    name="token"
                     value={token}
                     onChange={(event) => setToken(event.target.value)}
                     placeholder="paste a connect-session token"
@@ -40,6 +41,7 @@ function App() {
                 Base URL
                 <input
                     style={{ display: 'block', width: '100%' }}
+                    name="baseUrl"
                     value={baseUrl}
                     onChange={(event) => setBaseUrl(event.target.value)}
                 />

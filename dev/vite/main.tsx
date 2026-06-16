@@ -117,6 +117,7 @@ const HubWrapper: React.FC = () => {
                             padding: '5px',
                         }}
                         type="text"
+                        name="token"
                         placeholder="Connect session token"
                         value={manualToken}
                         onChange={(e) => setManualToken(e.target.value)}
@@ -147,6 +148,7 @@ const HubWrapper: React.FC = () => {
                     padding: '5px',
                 }}
                 type="text"
+                name="accountId"
                 value={accountId}
                 onChange={(e) => setAccountId(e.target.value)}
             />
@@ -159,6 +161,7 @@ const HubWrapper: React.FC = () => {
                     padding: '5px',
                 }}
                 type="text"
+                name="originOwnerId"
                 value={originOwnerId}
                 onChange={(e) => setOriginOwnerId(e.target.value)}
             />
@@ -171,6 +174,7 @@ const HubWrapper: React.FC = () => {
                     padding: '5px',
                 }}
                 type="text"
+                name="originOwnerName"
                 value={originOwnerName}
                 onChange={(e) => setOriginOwnerName(e.target.value)}
             />
@@ -183,6 +187,7 @@ const HubWrapper: React.FC = () => {
                     padding: '5px',
                 }}
                 type="text"
+                name="originUsername"
                 value={originUsername}
                 onChange={(e) => setOriginUsername(e.target.value)}
             />
@@ -195,6 +200,7 @@ const HubWrapper: React.FC = () => {
                     padding: '5px',
                 }}
                 type="text"
+                name="integrationId"
                 value={integrationId}
                 onChange={(e) => setIntegrationId(e.target.value)}
             />

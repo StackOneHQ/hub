@@ -78,11 +78,11 @@
 <section class="controls">
     <label>
         Token
-        <input bind:value={token} type="text" placeholder="paste connect-session token" />
+        <input bind:value={token} name="token" type="text" placeholder="paste connect-session token" />
     </label>
     <label>
         Base URL
-        <input bind:value={baseUrl} type="text" />
+        <input bind:value={baseUrl} name="baseUrl" type="text" />
     </label>
     <div class="row">
         <button type="button" onclick={() => setTheme('light')}>Light</button>
