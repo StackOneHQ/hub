@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/StackOneHQ/hub/compare/hub-v1.10.1...hub-v1.10.2) (2026-06-16)
+
+
+### Bug Fixes
+
+* **ENG-520:** drop @stackone/expressions to stop crypto leaking into the browser bundle ([#173](https://github.com/StackOneHQ/hub/issues/173)) ([ea9fc20](https://github.com/StackOneHQ/hub/commit/ea9fc206ff9449b9365ac2986250278b130d6ed6))
+
 ## [1.10.1](https://github.com/StackOneHQ/hub/compare/hub-v1.10.0...hub-v1.10.1) (2026-06-02)
 
 
