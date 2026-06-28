@@ -216,9 +216,14 @@ const MultiSelectField: React.FC<{
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
 }> = ({ field, fieldKey, errors, setValue }) => {
-    const delimiter = field.delimiter ?? ' ';
+    const delimiter = field.delimiter?.trim() || ' ';
     const initialValue = field.value?.toString() || '';
-    const defaultValues = initialValue ? initialValue.split(delimiter).filter(Boolean) : [];
+    const defaultValues = initialValue
+        ? initialValue
+              .split(delimiter)
+              .map((v) => v.trim())
+              .filter(Boolean)
+        : [];
 
     const multiSelectOptions: MultiSelectOption[] = (field.options ?? []).map((opt) => ({
         value: opt.value,
@@ -249,6 +254,7 @@ const MultiSelectField: React.FC<{
                 description={field.guide?.description ?? field.description}
                 tooltip={field.guide?.tooltip ?? field.tooltip}
                 required={field.required}
+                disabled={field.readOnly}
                 chips
                 chipsMax={4}
                 inlineSearch
