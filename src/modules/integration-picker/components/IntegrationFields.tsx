@@ -10,6 +10,8 @@ import {
     FlexJustify,
     Form,
     Input,
+    MultiSelect,
+    type MultiSelectOption,
     Padded,
     Spacer,
     TextArea,
@@ -198,7 +200,67 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         );
     }
 
+    if (field.type === 'multi-select') {
+        return (
+            <MultiSelectField
+                field={field}
+                fieldKey={key}
+                errors={errors}
+                setValue={setValue}
+            />
+        );
+    }
+
     return null;
+};
+
+/** Multi-select field using Malachite MultiSelect with defaultValue (uncontrolled mode) */
+const MultiSelectField: React.FC<{
+    field: ConnectorConfigField;
+    fieldKey: string;
+    errors: FieldErrors;
+    setValue: UseFormSetValue<Record<string, unknown>>;
+}> = ({ field, fieldKey, errors, setValue }) => {
+    const delimiter = field.delimiter ?? ' ';
+    const initialValue = field.value?.toString() || '';
+    const defaultValues = initialValue ? initialValue.split(delimiter).filter(Boolean) : [];
+
+    const multiSelectOptions: MultiSelectOption[] = (field.options ?? []).map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+    }));
+
+    const errorMessage = errors[fieldKey] && (
+        <Typography.Text color="error" style={{ fontSize: '12px' }}>
+            {errors[fieldKey]?.message as string}
+        </Typography.Text>
+    );
+
+    return (
+        <>
+            <MultiSelect
+                options={multiSelectOptions}
+                defaultValue={defaultValues}
+                onChange={(selected: string[]) => {
+                    setValue(fieldKey, selected.join(delimiter), {
+                        shouldValidate: true,
+                    });
+                }}
+                placeholder={field.placeholder || 'Select...'}
+                size="medium"
+                error={!!errors[fieldKey]}
+                name={fieldKey}
+                label={field.label}
+                description={field.guide?.description ?? field.description}
+                tooltip={field.guide?.tooltip ?? field.tooltip}
+                required={field.required}
+                chips
+                chipsMax={4}
+                inlineSearch
+            />
+            {errorMessage}
+        </>
+    );
 };
 
 const ErrorBlock = ({ error }: { error?: { message: string; provider_response: string } }) => {

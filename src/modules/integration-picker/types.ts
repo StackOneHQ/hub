@@ -18,7 +18,7 @@ export interface HubData {
 }
 
 export interface ConnectorConfigField {
-    type?: 'text' | 'password' | 'number' | 'select' | 'text_area';
+    type?: 'text' | 'password' | 'number' | 'select' | 'multi-select' | 'text_area';
     label: string;
     key: string;
     required: boolean;
@@ -43,6 +43,8 @@ export interface ConnectorConfigField {
         error?: string;
     };
     display?: boolean;
+    /** Delimiter for joining multi-select values. Defaults to space. */
+    delimiter?: string;
 }
 
 export interface LegacyConnectorConfig {
