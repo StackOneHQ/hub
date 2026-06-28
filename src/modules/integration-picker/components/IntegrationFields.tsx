@@ -202,12 +202,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
     if (field.type === 'multi-select') {
         return (
-            <MultiSelectField
-                field={field}
-                fieldKey={key}
-                errors={errors}
-                setValue={setValue}
-            />
+            <MultiSelectField field={field} fieldKey={key} errors={errors} setValue={setValue} />
         );
     }
 
