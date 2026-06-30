@@ -547,8 +547,11 @@ export const useIntegrationPicker = ({
                 });
             }
 
+            const multiSelectKeys = new Set(
+                fields.filter((f) => f.type === 'multi-select').map((f) => f.key),
+            );
             Object.keys(cleanedFormData).forEach((key) => {
-                if (cleanedFormData[key] === '') {
+                if (cleanedFormData[key] === '' && !multiSelectKeys.has(key)) {
                     delete cleanedFormData[key];
                 }
             });
