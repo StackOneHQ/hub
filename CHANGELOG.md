@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.3](https://github.com/StackOneHQ/hub/compare/hub-v1.10.2...hub-v1.10.3) (2026-07-01)
+
+
+### Bug Fixes
+
+* **ENG-950:** don't cancel OAuth attempt on cross-origin popup false-close ([#177](https://github.com/StackOneHQ/hub/issues/177)) ([809e9d2](https://github.com/StackOneHQ/hub/commit/809e9d2f5e76e2134f97e316f5dd773cd41e37a6))
+
 ## [1.10.2](https://github.com/StackOneHQ/hub/compare/hub-v1.10.1...hub-v1.10.2) (2026-06-16)
 
 

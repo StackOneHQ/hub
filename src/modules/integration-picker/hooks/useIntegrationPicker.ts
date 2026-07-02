@@ -460,12 +460,13 @@ export const useIntegrationPicker = ({
                 if (coopDetectedRef.current) return;
 
                 const attemptId = connectionAttemptIdRef.current;
-                if (!attemptId) {
-                    closeOAuthPopup();
-                    setConnectionState({ loading: false, success: false });
-                    return;
-                }
+                if (!attemptId) return;
 
+                // A cross-origin popup under COOP reports `closed === true` once it navigates to the
+                // provider, even while the user is still authenticating — indistinguishable from a
+                // genuine user-close. So never cancel a still-pending attempt here; defer to the poll
+                // loop (authenticated / error / cancelled / expired / timeout), as the first-tick COOP
+                // path already does. Genuine closes resolve via the poll timeout or the Cancel button.
                 const final = await pollConnectionAttempt(baseUrl, token, attemptId).catch(
                     (error) => {
                         if (debugRef.current) {
@@ -497,18 +498,11 @@ export const useIntegrationPicker = ({
                 }
 
                 if (debugRef.current) {
-                    console.debug('[hub] popup closed by user, cancelling attempt', { attemptId });
+                    console.debug(
+                        '[hub] popup reported closed but attempt still pending — deferring to poll loop (likely cross-origin/COOP false-close)',
+                        { attemptId },
+                    );
                 }
-                closeOAuthPopup();
-                cancelConnectionAttempt(baseUrl, token, attemptId).catch((error) => {
-                    if (debugRef.current) {
-                        console.debug('[hub] cancelConnectionAttempt failed', {
-                            attemptId,
-                            error,
-                        });
-                    }
-                });
-                setConnectionState({ loading: false, success: false });
             };
             popupWatcherRef.current = window.setTimeout(check, 1000);
         },
