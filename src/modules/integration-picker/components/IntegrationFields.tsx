@@ -228,6 +228,9 @@ const MultiSelectField: React.FC<{
     const multiSelectOptions: MultiSelectOption[] = (field.options ?? []).map((opt) => ({
         value: opt.value,
         label: opt.label,
+        ...(opt.description
+            ? { description: opt.description, descriptionMode: 'icon' as const }
+            : {}),
     }));
 
     const errorMessage = errors[fieldKey] && (

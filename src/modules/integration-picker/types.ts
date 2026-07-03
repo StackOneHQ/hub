@@ -28,6 +28,7 @@ export interface ConnectorConfigField {
     options?: Array<{
         label: string;
         value: string;
+        description?: string;
     }>;
     description?: string;
     tooltip?: string;
