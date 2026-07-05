@@ -47,6 +47,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 }) => {
     const key = typeof field.key === 'object' ? JSON.stringify(field.key) : String(field.key);
 
+    const dropdownItems = useMemo(
+        () => field.options?.map((option) => ({ id: option.value, label: option.label })) ?? [],
+        [field.options],
+    );
+
     const errorMessage = errors[key] && (
         <Typography.Text
             color="error"
@@ -177,12 +182,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 <Dropdown
                     defaultValue={field.value?.toString() || ''}
                     disabled={field.readOnly}
-                    items={
-                        field.options?.map((option) => ({
-                            id: option.value,
-                            label: option.label,
-                        })) ?? []
-                    }
+                    items={dropdownItems}
                     onItemSelected={(value) =>
                         setValue(key, value ?? '', {
                             shouldValidate: true,
