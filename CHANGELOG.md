@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.4](https://github.com/StackOneHQ/hub/compare/hub-v1.10.3...hub-v1.10.4) (2026-07-06)
+
+
+### Bug Fixes
+
+* **ENG-1104:** bump @stackone/malachite for the unified glass footer treatment ([#179](https://github.com/StackOneHQ/hub/issues/179)) ([b592e47](https://github.com/StackOneHQ/hub/commit/b592e47503a90089646b808b1f40d6ef2625a61b))
+
 ## [1.10.3](https://github.com/StackOneHQ/hub/compare/hub-v1.10.2...hub-v1.10.3) (2026-07-01)
 
 
