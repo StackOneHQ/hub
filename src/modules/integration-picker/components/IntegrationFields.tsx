@@ -216,7 +216,8 @@ const MultiSelectField: React.FC<{
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
 }> = ({ field, fieldKey, errors, setValue }) => {
-    const delimiter = field.delimiter?.trim() || ' ';
+    const delimiter =
+        field.delimiter === undefined || field.delimiter === '' ? ' ' : field.delimiter;
     const initialValue = field.value?.toString() || '';
     const defaultValues = initialValue
         ? initialValue
