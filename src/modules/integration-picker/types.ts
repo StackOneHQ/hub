@@ -17,6 +17,31 @@ export interface HubData {
     events_encoded_context?: string;
 }
 
+// V2/legacy TS connectors — always discriminated by the required `type` on the wire; message field is `error`
+export interface LegacyFieldValidation {
+    type: 'html-pattern' | 'domain';
+    pattern: string;
+    error?: string;
+    format?: never;
+    errorMessage?: never;
+}
+
+// Local copy of the format names from `@stackone/core`'s `InputFormat` (connect repo,
+// `packages/core/src/connector/types.ts`) — the hub deliberately carries no @stackone
+// package dependencies for this feature; keep in sync when a format is added. The
+// FORMAT_PATTERNS copy in utils/zodSchema.ts and the vector check in
+// scripts/check-format-vectors.ts guard the regexes themselves.
+export type FormatName = 'email' | 'url' | 'uuid' | 'date' | 'datetime' | 'uri';
+
+// Falcon connectors — no `type`; exactly one of pattern/format is set (XOR), message
+// field is `errorMessage`. Local copy of `AuthenticationFieldValidation` from
+// `@stackone/core` (connect repo) — keep in sync if the authoring contract changes.
+export type FalconFieldValidation =
+    | { type?: never; error?: never; pattern: string; format?: never; errorMessage?: string }
+    | { type?: never; error?: never; format: FormatName; pattern?: never; errorMessage?: string };
+
+export type FieldValidation = LegacyFieldValidation | FalconFieldValidation;
+
 export interface ConnectorConfigField {
     type?: 'text' | 'password' | 'number' | 'select' | 'text_area';
     label: string;
@@ -37,11 +62,7 @@ export interface ConnectorConfigField {
     };
     value?: string | number;
     condition?: string;
-    validation?: {
-        type: 'html-pattern' | 'domain';
-        pattern: string;
-        error?: string;
-    };
+    validation?: FieldValidation;
     display?: boolean;
 }
 

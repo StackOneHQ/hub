@@ -20,7 +20,7 @@
         "./dist/webcomponent.js"
     ],
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "npx -y tsx scripts/check-format-vectors.ts",
         "build": "rollup -c",
         "dev": "cd dev/vite && npm run dev",
         "dev:setup": "npm run build && cd dev/vite && npm install",
