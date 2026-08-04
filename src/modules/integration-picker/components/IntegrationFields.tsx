@@ -188,6 +188,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     }
                     name={key}
                     label={field.label}
+                    placeholder={field.placeholder}
                     tooltip={field.guide?.tooltip ?? field.tooltip}
                     description={field.guide?.description ?? field.description}
                     required={field.required}
