@@ -31,9 +31,13 @@ export default [
       /^react\/.*/,
       /^react-dom\/.*/,
       /^react-hook-form\/.*/,
+      // Left to the consumer's bundler so they ship one copy, not two.
+      "@stackone/malachite",
+      /^@stackone\/malachite\/.*/,
     ],
     plugins: [
       del({ targets: "dist/*" }),
+      external(),
       resolve({
         preferBuiltins: false,
         browser: true,
@@ -65,6 +69,8 @@ export default [
       format: "iife",
       name: "StackOneHubWebComponent",
       sourcemap: true,
+      // malachite lazy-loads CodeBlock; an IIFE has to be a single file.
+      inlineDynamicImports: true,
     },
     plugins: [
       resolve({
