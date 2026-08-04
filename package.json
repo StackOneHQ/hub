@@ -62,9 +62,6 @@
         "react-hook-form": "7.60.0",
         "zod": "^4.1.12"
     },
-    "engines": {
-        "node": ">=20.19 <21 || >=22.12"
-    },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
         "@rollup/plugin-commonjs": "^28.0.3",
