@@ -17,8 +17,6 @@ export interface RequestParams {
     logger?: Console;
 }
 
-// Drops any caller-supplied variant first: header names are case-insensitive to the
-// server but object keys are not, so keeping both makes `Headers` join them.
 const withHubVersion = (headers?: Record<string, string>): Record<string, string> => {
     const merged: Record<string, string> = {};
 

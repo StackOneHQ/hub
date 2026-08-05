@@ -7,8 +7,6 @@ const { version } = require("../package.json");
 const HEADER = "x-hub-version";
 const TOKEN = "__HUB_VERSION__";
 
-// Quote-agnostic: rollup emits these single-quoted and only terser's default
-// normalises them to double, so matching one style would couple this to the minifier.
 const quoted = (literal) => new RegExp(`["']${literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["']`);
 const BANNER = /^["']use client["'];/;
 

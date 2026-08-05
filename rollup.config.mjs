@@ -11,8 +11,6 @@ import postcss from "rollup-plugin-postcss";
 
 const pkg = createRequire(import.meta.url)("./package.json");
 
-// Every JS target needs this: one that omits it still builds clean and silently ships
-// `x-hub-version: unknown`. `npm run verify:build` is the guard.
 const replaceValues = {
   preventAssignment: true,
   "process.env.NODE_ENV": JSON.stringify("production"),
