@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.6](https://github.com/StackOneHQ/hub/compare/hub-v1.10.5...hub-v1.10.6) (2026-08-05)
+
+
+### Bug Fixes
+
+* **ENG-1529:** release the malachite 0.66.0 bundling and placeholder fixes ([#191](https://github.com/StackOneHQ/hub/issues/191)) ([d85cb55](https://github.com/StackOneHQ/hub/commit/d85cb55c9d8173109ff857dd0f31c056cfd89afa))
+
 ## [1.10.5](https://github.com/StackOneHQ/hub/compare/hub-v1.10.4...hub-v1.10.5) (2026-07-08)
 
 
