@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
@@ -7,6 +8,16 @@ import del from "rollup-plugin-delete";
 import dts from "rollup-plugin-dts";
 import external from "rollup-plugin-peer-deps-external";
 import postcss from "rollup-plugin-postcss";
+
+const pkg = createRequire(import.meta.url)("./package.json");
+
+// Every JS target needs this: one that omits it still builds clean and silently ships
+// `x-hub-version: unknown`. `npm run verify:build` is the guard.
+const replaceValues = {
+  preventAssignment: true,
+  "process.env.NODE_ENV": JSON.stringify("production"),
+  __HUB_VERSION__: JSON.stringify(pkg.version),
+};
 
 export default [
   // Main React Component Bundle
@@ -51,10 +62,7 @@ export default [
         extract: false,
         inject: true,
       }),
-      replace({
-        preventAssignment: true,
-        "process.env.NODE_ENV": JSON.stringify("production"),
-      }),
+      replace(replaceValues),
       terser({
         compress: { directives: false },
       }),
@@ -87,10 +95,7 @@ export default [
         extract: false,
         inject: true,
       }),
-      replace({
-        preventAssignment: true,
-        "process.env.NODE_ENV": JSON.stringify("production"),
-      }),
+      replace(replaceValues),
       terser({
         compress: { directives: false },
       }),

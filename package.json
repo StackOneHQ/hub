@@ -22,6 +22,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "rollup -c",
+        "verify:build": "node scripts/verify-build.mjs",
         "dev": "cd dev/vite && npm run dev",
         "dev:setup": "npm run build && cd dev/vite && npm install",
         "dev:nextjs": "cd dev/nextjs && npm run dev",

@@ -1,3 +1,5 @@
+import { HUB_VERSION, HUB_VERSION_HEADER } from './version';
+
 export interface ErrorDetails {
     message: string;
     statusCode: number;
@@ -14,6 +16,22 @@ export interface RequestParams {
     requestFn?: typeof fetch;
     logger?: Console;
 }
+
+// Drops any caller-supplied variant first: header names are case-insensitive to the
+// server but object keys are not, so keeping both makes `Headers` join them.
+const withHubVersion = (headers?: Record<string, string>): Record<string, string> => {
+    const merged: Record<string, string> = {};
+
+    for (const [name, value] of Object.entries(headers ?? {})) {
+        if (name.toLowerCase() !== HUB_VERSION_HEADER.toLowerCase()) {
+            merged[name] = value;
+        }
+    }
+
+    merged[HUB_VERSION_HEADER] = HUB_VERSION;
+
+    return merged;
+};
 
 const isTokenExpired = (response: Response): boolean => {
     if (response?.status === 401 || response?.status === 403) {
@@ -33,7 +51,7 @@ export async function request<T>({
     try {
         const response = await requestFn(url, {
             method,
-            headers,
+            headers: withHubVersion(headers),
             body: JSON.stringify(body),
         });
 

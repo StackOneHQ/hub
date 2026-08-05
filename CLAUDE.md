@@ -39,6 +39,7 @@ The package is consumed by SSR frameworks (Next.js App Router). When changing `s
 4. **Theme application mutates `<html>`.** `applyTheme`/`applyLightTheme`/`applyDarkTheme` from `@stackone/malachite` set CSS custom properties on `document.documentElement`. This requires consumers to add `suppressHydrationWarning` to their `<html>` tag (documented in README). Don't move these calls out of `useEffect`.
 5. **`package.json` `sideEffects` field** marks only `./dist/webcomponent.js` as side-effecting so bundlers can tree-shake the React entry. Keep it that way.
 6. **Single React instance.** `react`/`react-dom`/`react-hook-form` are peer deps and the bundle imports them at runtime — two copies in the consumer's tree breaks hooks (`Invalid hook call`). Standard `npm install` hoists React and is fine. Monorepos, pnpm without hoist, and `file:`/`link:` deps may require explicit deduping by the consumer. The README's "Invalid hook call — duplicate React" section documents fixes.
+7. **Every JS bundle must apply `replaceValues`** from `rollup.config.mjs`. It stamps `__HUB_VERSION__` with the package version, which `src/shared/version.ts` sends as the `x-hub-version` header on every request. A new bundle target that omits it still builds clean and silently reports `x-hub-version: unknown`. `npm run verify:build` (wired into both CI workflows) is the guard — add any new bundle to the list in `scripts/verify-build.mjs`.
 
 ## Build output
 
