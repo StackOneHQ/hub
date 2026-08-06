@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/StackOneHQ/hub/compare/hub-v1.10.6...hub-v1.11.0) (2026-08-06)
+
+
+### Features
+
+* **ENG-1528:** send x-hub-version header on every request ([#193](https://github.com/StackOneHQ/hub/issues/193)) ([6c348ae](https://github.com/StackOneHQ/hub/commit/6c348aeeda32564d19f6f1eb6be7bb606958df98))
+
 ## [1.10.6](https://github.com/StackOneHQ/hub/compare/hub-v1.10.5...hub-v1.10.6) (2026-08-05)
 
 
