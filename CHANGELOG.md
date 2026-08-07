@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/StackOneHQ/hub/compare/hub-v1.11.0...hub-v1.11.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **ENG-1541:** bump @stackone/malachite to ^0.67.1 ([#195](https://github.com/StackOneHQ/hub/issues/195)) ([f02158b](https://github.com/StackOneHQ/hub/commit/f02158ba7c2fe4641e4c1037333ec0810f8eeb21))
+
 ## [1.11.0](https://github.com/StackOneHQ/hub/compare/hub-v1.10.6...hub-v1.11.0) (2026-08-06)
 
 
