@@ -235,6 +235,7 @@ const NoFieldsView: React.FC<{
     notices?: AuthenticationNotice[];
 }> = ({ integrationName, error, notices = [] }) => {
     const topNotices = notices.filter((n) => !n.position || n.position === 'top');
+    const bottomNotices = notices.filter((n) => n.position === 'bottom');
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
             {error && (
@@ -267,6 +268,9 @@ const NoFieldsView: React.FC<{
                     </Typography.Text>
                 </Spacer>
             </Flex>
+            {bottomNotices.map((n) => (
+                <Alert key={n.key} type={n.type} message={n.description} hasMargin={false} />
+            ))}
         </Padded>
     );
 };
