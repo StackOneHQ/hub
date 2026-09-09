@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.3](https://github.com/StackOneHQ/hub/compare/hub-v1.11.2...hub-v1.11.3) (2026-09-09)
+
+
+### Bug Fixes
+
+* **ENG-2451:** render bottom notices on field-less auth screen ([#201](https://github.com/StackOneHQ/hub/issues/201)) ([1b1f168](https://github.com/StackOneHQ/hub/commit/1b1f168dd05fa25ee658de2bd95776930e021c61))
+
 ## [1.11.2](https://github.com/StackOneHQ/hub/compare/hub-v1.11.1...hub-v1.11.2) (2026-08-13)
 
 
