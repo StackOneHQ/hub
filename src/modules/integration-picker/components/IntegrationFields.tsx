@@ -234,7 +234,8 @@ const NoFieldsView: React.FC<{
     error?: { message: string; provider_response: string };
     notices?: AuthenticationNotice[];
 }> = ({ integrationName, error, notices = [] }) => {
-    const topNotices = notices.filter((n) => !n.position || n.position === 'top');
+    // No fields for a notice to sit above or below, so position is irrelevant here —
+    // render every notice together rather than orphaning bottom ones under the card.
     return (
         <Padded vertical="large" horizontal="medium" overflow="auto" fullHeight>
             {error && (
@@ -246,7 +247,7 @@ const NoFieldsView: React.FC<{
                     <ErrorBlock error={error} />
                 </Alert>
             )}
-            {topNotices.map((n) => (
+            {notices.map((n) => (
                 <Alert key={n.key} type={n.type} message={n.description} hasMargin={false} />
             ))}
             <Flex
