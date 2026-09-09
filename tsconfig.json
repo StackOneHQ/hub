@@ -13,7 +13,7 @@
     "jsxImportSource": "react",
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "exclude": ["**/*.d.ts"],
   "files": ["src/index.ts"]
 }

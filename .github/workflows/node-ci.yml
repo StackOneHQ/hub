@@ -20,3 +20,5 @@ jobs:
         run: npm run verify:build
       - name: Lint
         run: npm run lint
+      - name: Test (format-vector conformance)
+        run: npm test

@@ -20,7 +20,7 @@
         "./dist/webcomponent.js"
     ],
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "tsx scripts/check-format-vectors.ts && vitest run",
         "build": "rollup -c",
         "verify:build": "node scripts/verify-build.mjs",
         "dev": "cd dev/vite && npm run dev",
@@ -43,9 +43,9 @@
         "dev:angular": "cd dev/angular && npm run dev",
         "dev:angular:setup": "npm run build && cd dev/angular && npm install",
         "relay": "cd dev/vite && npm run relay",
-        "code:format": "biome format ./src ./dev",
-        "code:format:fix": "biome format --write ./src ./dev",
-        "lint": "biome lint --error-on-warnings ./src ./dev && biome check ./src ./dev",
+        "code:format": "biome format ./src ./dev ./scripts",
+        "code:format:fix": "biome format --write ./src ./dev ./scripts",
+        "lint": "biome lint --error-on-warnings ./src ./dev ./scripts && biome check ./src ./dev ./scripts && tsc --noEmit",
         "lint:fix": "biome lint --write ./src ./dev && biome check --write ./src ./dev",
         "publish-release": "npm publish --access=public"
     },
@@ -79,7 +79,9 @@
         "rollup-plugin-peer-deps-external": "^2.2.4",
         "rollup-plugin-postcss": "^4.0.2",
         "tslib": "^2.8.1",
-        "typescript": "^5.8.3"
+        "tsx": "^4.23.12",
+        "typescript": "^5.8.3",
+        "vitest": "^4.1.10"
     },
     "overrides": {
         "@xmldom/xmldom": "0.8.13",

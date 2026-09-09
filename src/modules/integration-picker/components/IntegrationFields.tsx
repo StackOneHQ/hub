@@ -22,7 +22,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect';
 import { AuthenticationNotice, ConnectorConfigField } from '../types';
 import { partitionNotices } from '../utils/partitionNotices';
 import { formatSecretPlaceholder, isSecretPlaceholder } from '../utils/secretPlaceholder';
-import { createFormSchema } from '../utils/zodSchema';
+import { createFormSchema, createValidationFailureRecorder } from '../utils/zodSchema';
 
 const isInputField = (type: string | undefined): type is 'text' | 'number' | 'password' => {
     return type === 'text' || type === 'number' || type === 'password';
@@ -225,6 +225,7 @@ interface IntegrationFieldsProps {
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
     integrationName: string;
+    connectorKey?: string;
     editingSecrets?: Set<string>;
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
@@ -279,6 +280,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     error,
     onValidationChange,
     integrationName,
+    connectorKey,
     editingSecrets,
     setEditingSecrets,
 }) => {
@@ -287,7 +289,17 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         typeof f.key === 'object' ? JSON.stringify(f.key) : String(f.key),
     );
     const { noticesBefore, noticesAfter } = partitionNotices(notices, fieldKeys);
-    const schema = useMemo(() => createFormSchema(fields), [fields]);
+
+    // One recorder for the life of this form session (re-created only when the connector
+    // changes), NOT per schema build. The schema rebuilds when the connector or account
+    // data changes (useIntegrationPicker's `fields` memo), so a recorder owned by that memo
+    // would reset its per-field dedupe on those rebuilds; owning it here keeps the dedupe for
+    // the whole session. Mirrors the unified-cloud DynamicForm and embedded-widget wiring.
+    const recordFailure = useMemo(
+        () => createValidationFailureRecorder(connectorKey),
+        [connectorKey],
+    );
+    const schema = useMemo(() => createFormSchema(fields, recordFailure), [fields, recordFailure]);
 
     const defaultValues = useMemo(() => {
         const initialData: Record<string, string> = {};

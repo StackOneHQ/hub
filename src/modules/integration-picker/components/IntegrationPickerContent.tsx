@@ -126,6 +126,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
                 onChange={onChange}
                 onValidationChange={onValidationChange}
                 integrationName={connectorData.name}
+                connectorKey={connectorData.key}
                 editingSecrets={editingSecrets}
                 setEditingSecrets={setEditingSecrets}
             />
