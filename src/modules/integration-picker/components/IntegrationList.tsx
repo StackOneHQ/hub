@@ -52,7 +52,7 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
             </Flex>
             {/* Capped because a provider-defined category can be arbitrarily long. The
                 dimmed colour sits outside the tooltip so the ellipsis inherits it too. */}
-            <Typography.SecondaryText style={{ maxWidth: '45%', flexShrink: 0 }}>
+            <Typography.SecondaryText size="xsmall" style={{ maxWidth: '45%', flexShrink: 0 }}>
                 <TruncatedTooltip text={formatConnectorCategoryLabel(integration.type)}>
                     {formatConnectorCategoryLabel(integration.type)}
                 </TruncatedTooltip>
