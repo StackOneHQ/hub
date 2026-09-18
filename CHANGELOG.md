@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.4](https://github.com/StackOneHQ/hub/compare/hub-v1.11.3...hub-v1.11.4) (2026-09-18)
+
+
+### Bug Fixes
+
+* **ENG-2728:** format connector categories the way the connectors page does ([#206](https://github.com/StackOneHQ/hub/issues/206)) ([4974712](https://github.com/StackOneHQ/hub/commit/4974712358c0596e8b51a659e6e287e0f12161e7))
+
 ## [1.11.3](https://github.com/StackOneHQ/hub/compare/hub-v1.11.2...hub-v1.11.3) (2026-09-09)
 
 
