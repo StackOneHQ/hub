@@ -105,7 +105,6 @@ export const IntegrationListHeader: React.FC<{
                             style={{
                                 overflowX: 'auto',
                                 overflowY: 'hidden',
-                                backgroundColor: 'var(--malachite-card-background)',
                                 scrollbarWidth: 'none',
                                 msOverflowStyle: 'none',
                             }}

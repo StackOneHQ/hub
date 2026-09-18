@@ -95,6 +95,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     return (
         <Card
             glassFooter
+            glassHeader
             footer={
                 connectionState.success ? (
                     <SuccessCardFooter
