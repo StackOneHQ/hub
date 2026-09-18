@@ -120,6 +120,7 @@ export const IntegrationListHeader: React.FC<{
                                         fullHeight={false}
                                     >
                                         <PillButton
+                                            size="xsmall"
                                             label={formatConnectorCategoryLabel(category)}
                                             selected={selectedCategory === category}
                                             onClick={() => handleCategoryClick(category)}
