@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.11.4](https://github.com/StackOneHQ/hub/compare/hub-v1.11.3...hub-v1.11.4) (2026-09-18)
+
+
+### Bug Fixes
+
+* **ENG-2728:** format connector categories the way the connectors page does ([#206](https://github.com/StackOneHQ/hub/issues/206)) ([4974712](https://github.com/StackOneHQ/hub/commit/4974712358c0596e8b51a659e6e287e0f12161e7))
+
+## [1.11.3](https://github.com/StackOneHQ/hub/compare/hub-v1.11.2...hub-v1.11.3) (2026-09-09)
+
+
+### Bug Fixes
+
+* **ENG-2451:** render bottom notices on field-less auth screen ([#201](https://github.com/StackOneHQ/hub/issues/201)) ([1b1f168](https://github.com/StackOneHQ/hub/commit/1b1f168dd05fa25ee658de2bd95776930e021c61))
+
+## [1.11.2](https://github.com/StackOneHQ/hub/compare/hub-v1.11.1...hub-v1.11.2) (2026-08-13)
+
+
+### Bug Fixes
+
+* bump @stackone/malachite to ^0.67.2 ([#197](https://github.com/StackOneHQ/hub/issues/197)) ([b693167](https://github.com/StackOneHQ/hub/commit/b6931679924bb2d82c15be064503a72e1e1b4b8e))
+
 ## [1.11.1](https://github.com/StackOneHQ/hub/compare/hub-v1.11.0...hub-v1.11.1) (2026-08-07)
 
 

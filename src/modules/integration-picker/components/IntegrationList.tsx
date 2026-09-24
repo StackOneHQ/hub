@@ -10,12 +10,18 @@ import {
     Padded,
     PillButton,
     Spacer,
+    TruncatedTooltip,
     Typography,
 } from '@stackone/malachite';
 import { useCallback, useMemo } from 'react';
-import { CATEGORIES_WITH_LABELS } from '../../../shared/categories';
+import { formatConnectorCategoryLabel, getConnectorCategoryKey } from '../../../shared/categories';
 import { Logo } from '../../../shared/components/Logo';
 import { Integration } from '../types';
+
+// The list renders only these, so the filter chips must be built from the same set:
+// a category carried only by inactive connectors would otherwise offer an empty filter.
+const isSelectable = (integration: Integration): boolean =>
+    Boolean(integration.active && integration.name);
 
 interface IntegrationRowProps {
     integration: Integration;
@@ -44,9 +50,12 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                 />
                 <Typography.Text textAlign="left">{integration.name ?? 'N/A'}</Typography.Text>
             </Flex>
-            <Typography.SecondaryText>
-                {CATEGORIES_WITH_LABELS.find((category) => category.value === integration.type)
-                    ?.label || integration.type}
+            {/* Capped because a provider-defined category can be arbitrarily long. The
+                dimmed colour sits outside the tooltip so the ellipsis inherits it too. */}
+            <Typography.SecondaryText size="xsmall" style={{ maxWidth: '45%', flexShrink: 0 }}>
+                <TruncatedTooltip text={formatConnectorCategoryLabel(integration.type)}>
+                    {formatConnectorCategoryLabel(integration.type)}
+                </TruncatedTooltip>
             </Typography.SecondaryText>
         </Flex>
     );
@@ -70,7 +79,13 @@ export const IntegrationListHeader: React.FC<{
     );
 
     const availableCategories = useMemo(() => {
-        return Array.from(new Set(integrations.map((integration) => integration.type)));
+        return Array.from(
+            new Set(
+                integrations
+                    .filter(isSelectable)
+                    .map((integration) => getConnectorCategoryKey(integration.type)),
+            ),
+        );
     }, [integrations]);
 
     return (
@@ -105,11 +120,8 @@ export const IntegrationListHeader: React.FC<{
                                         fullHeight={false}
                                     >
                                         <PillButton
-                                            label={
-                                                CATEGORIES_WITH_LABELS.find(
-                                                    (c) => c.value === category,
-                                                )?.label || category
-                                            }
+                                            size="xsmall"
+                                            label={formatConnectorCategoryLabel(category)}
                                             selected={selectedCategory === category}
                                             onClick={() => handleCategoryClick(category)}
                                         />
@@ -133,9 +145,10 @@ export const IntegrationList: React.FC<{
     const availableIntegrations = useMemo(() => {
         return integrations.filter(
             (integration) =>
-                integration.active &&
-                integration.name &&
-                (selectedCategory ? integration.type === selectedCategory : true) &&
+                isSelectable(integration) &&
+                (selectedCategory
+                    ? getConnectorCategoryKey(integration.type) === selectedCategory
+                    : true) &&
                 (search ? integration.name.toLowerCase().includes(search.toLowerCase()) : true),
         );
     }, [integrations, selectedCategory, search]);

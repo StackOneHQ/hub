@@ -1,65 +1,16 @@
-export const CATEGORIES = [
-    'ats',
-    'crm',
-    'hris',
-    'marketing',
-    'iam',
-    'lms',
-    'documents',
-    'ticketing',
-    'screening',
-    'messaging',
-    'accounting',
-    'scheduling',
-];
+// Mirrors the connectors page in unified-cloud (`shared/utils/categories.ts`), because both
+// render whatever category the API reports and the catalog mixes lowercase slugs, title case
+// and acronyms — `hris` and `HRIS` are one category, and `project_management` reads as words.
+// unified-cloud consults a CATEGORIES_MAP first; every entry there uppercases to the same
+// string this produces, so it is left out rather than duplicated as a no-op table.
 
-export const CATEGORIES_WITH_LABELS = [
-    {
-        label: 'HRIS',
-        value: 'hris',
-    },
-    {
-        label: 'ATS',
-        value: 'ats',
-    },
-    {
-        label: 'CRM',
-        value: 'crm',
-    },
-    {
-        label: 'Marketing',
-        value: 'marketing',
-    },
-    {
-        label: 'IAM',
-        value: 'iam',
-    },
-    {
-        label: 'LMS',
-        value: 'lms',
-    },
-    {
-        label: 'Documents',
-        value: 'documents',
-    },
-    {
-        label: 'Ticketing',
-        value: 'ticketing',
-    },
-    {
-        label: 'Screening',
-        value: 'screening',
-    },
-    {
-        label: 'Messaging',
-        value: 'messaging',
-    },
-    {
-        label: 'Accounting',
-        value: 'accounting',
-    },
-    {
-        label: 'Scheduling',
-        value: 'scheduling',
-    },
-];
+const words = (category: string): string[] => category.split(/[-_\s]+/).filter(Boolean);
+
+// Compare and group on this, never on the reported spelling. unified-cloud only lowercases
+// here, which leaves `project_management` and `Project Management` as two keys that render
+// one label — i.e. two identical filters. Splitting first folds those together too.
+export const getConnectorCategoryKey = (category: string): string =>
+    words(category).join(' ').toLowerCase();
+
+export const formatConnectorCategoryLabel = (category: string): string =>
+    words(category).join(' ').toUpperCase();
