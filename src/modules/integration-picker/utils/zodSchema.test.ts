@@ -213,25 +213,71 @@ describe('createFormSchema — robustness', () => {
         warn.mockRestore();
     });
 
-    it('skips an author pattern for a value over the length cap (fail-open), but never caps a format rule', () => {
+    it('skips an author pattern for a value over the length cap (fail-open, warned once), but never caps a format rule', () => {
         // Author patterns can backtrack quadratically (the star-height lint misses that
         // shape), so a value past the cap is not run. FORMAT_PATTERNS are linear/safe and
         // never capped — a long invalid value still fails.
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
         const authorSchema = createFormSchema([field({ validation: { pattern: '^[a-z]+$' } })]);
         expect(authorSchema.safeParse({ field: 'A'.repeat(513) }).success).toBe(true);
+        expect(authorSchema.safeParse({ field: 'A'.repeat(514) }).success).toBe(true);
+        expect(warn).toHaveBeenCalledTimes(1);
+        warn.mockRestore();
 
         const formatSchema = createFormSchema([field({ validation: { format: 'email' } })]);
         expect(formatSchema.safeParse({ field: 'x'.repeat(513) }).success).toBe(false);
     });
 
     it('accepts a saved-secret placeholder on a NUMBER field, so reconnect is not blocked', () => {
-        // The number branch returns before the string secret-placeholder short-circuit, so
+        // The numeric check runs independently of the rule's secret-placeholder guard, so
         // without its own guard a saved secret would fail `/^\d+$/` and gate Connect.
         const schema = createFormSchema([field({ type: 'number', required: true, secret: true })]);
 
         expect(schema.safeParse({ field: '__secretvalue:**redacted**abcd' }).success).toBe(true);
         expect(schema.safeParse({ field: '42' }).success).toBe(true);
         expect(schema.safeParse({ field: 'abc' }).success).toBe(false);
+    });
+
+    it('applies a legacy html-pattern rule on a NUMBER field on top of the numeric check', () => {
+        // V2 connectors put html-pattern rules on number fields (e.g. a 1–3 level picker).
+        const schema = createFormSchema([
+            field({
+                type: 'number',
+                required: true,
+                validation: { type: 'html-pattern', pattern: '^[1-3]$', error: 'Level 1, 2 or 3' },
+            }),
+        ]);
+
+        expect(schema.safeParse({ field: '2' }).success).toBe(true);
+        const outOfRange = schema.safeParse({ field: '5' });
+        expect(outOfRange.success).toBe(false);
+        if (!outOfRange.success) {
+            expect(outOfRange.error.issues[0].message).toBe('Level 1, 2 or 3');
+        }
+        const nonNumeric = schema.safeParse({ field: 'abc' });
+        if (!nonNumeric.success) {
+            expect(nonNumeric.error.issues[0].message).toBe('Must be a valid number');
+        }
+    });
+
+    it('accepts an empty OPTIONAL number field with a rule', () => {
+        const schema = createFormSchema([
+            field({ type: 'number', validation: { type: 'html-pattern', pattern: '^[1-3]$' } }),
+        ]);
+
+        expect(schema.safeParse({ field: '' }).success).toBe(true);
+    });
+
+    it('treats a format naming an Object.prototype key as unknown instead of throwing', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const schema = createFormSchema([
+            field({ validation: { format: 'constructor' as never } }),
+        ]);
+
+        expect(() => schema.safeParse({ field: 'anything' })).not.toThrow();
+        expect(schema.safeParse({ field: 'anything' }).success).toBe(true);
+        expect(warn).toHaveBeenCalledTimes(1);
+        warn.mockRestore();
     });
 
     it('accepts the widened datetime offsets synced from @stackone/core', () => {

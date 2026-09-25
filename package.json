@@ -46,7 +46,7 @@
         "code:format": "biome format ./src ./dev ./scripts",
         "code:format:fix": "biome format --write ./src ./dev ./scripts",
         "lint": "biome lint --error-on-warnings ./src ./dev ./scripts && biome check ./src ./dev ./scripts && tsc --noEmit",
-        "lint:fix": "biome lint --write ./src ./dev && biome check --write ./src ./dev",
+        "lint:fix": "biome lint --write ./src ./dev ./scripts && biome check --write ./src ./dev ./scripts",
         "publish-release": "npm publish --access=public"
     },
     "author": "StackOne",

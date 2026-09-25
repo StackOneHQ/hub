@@ -50,7 +50,11 @@ interface ValidationRule {
 // which some live legacy patterns have. Bound the value fed to an author pattern so a
 // pathological one can't hang the tab on crafted long input — the same mitigation the
 // canonical lint's own docstring recommends. Auth values (tenant, key, url) are far
-// shorter; a value over the cap fails open (skips the rule), matching the degrade elsewhere.
+// shorter; a value over the cap fails open (skips the rule) and warns, matching the
+// degrade elsewhere.
+// Known residual: the cap bounds the quadratic (two adjacent quantifiers) shape to a few
+// ms, but a chain of k ≥ 3 overlapping unbounded quantifiers (`^\w*\w*\w*\w*$`) is O(nᵏ)
+// and still costs seconds at 512. Neither lint catches it, and no live pattern has it.
 const MAX_PATTERN_INPUT_LENGTH = 512;
 
 function isLegacyValidation(validation: FieldValidation): validation is LegacyFieldValidation {
@@ -116,14 +120,19 @@ function resolveFalconRule(
     label: string,
 ): ValidationRule | null {
     if (validation.format) {
-        const pattern = FORMAT_PATTERNS[validation.format];
+        // Own-key lookup: a `format` naming an Object.prototype key (`constructor`) must
+        // hit the unknown-format branch, not resolve to a function and throw on `.test`.
+        const pattern = Object.prototype.hasOwnProperty.call(FORMAT_PATTERNS, validation.format)
+            ? FORMAT_PATTERNS[validation.format]
+            : undefined;
         if (!pattern) {
             // Unknown format: connect-sdk derives its `format` enum from the canonical
             // registry keys, so a format it accepts is missing here — this copy has drifted
             // from `@stackone/core`. Fail open (failing closed would lock customers out on a
             // hub-version skew) but loudly, since the field then renders unvalidated on the
-            // only enforcement layer. `scripts/check-format-vectors.ts` should catch this in
-            // CI; this warns at runtime if a drift ever reaches a customer.
+            // only enforcement layer. `scripts/check-format-vectors.ts` cannot catch a format
+            // added upstream (both its sides are hub-local snapshots), so this runtime warning
+            // is the only signal for that drift.
             console.warn(
                 `[stackone-hub] no pattern for format "${validation.format}" — field validation skipped; hub FORMAT_PATTERNS has drifted from @stackone/core`,
             );
@@ -209,26 +218,27 @@ function createFieldSchema(
         schema = schema.min(1, `${field.label} is required`);
     }
 
+    // zod 4 accumulates all checks (it does not short-circuit on `.min(1)`), so each
+    // refine below runs on empty values too. Empty is a "required" failure (or valid on an
+    // optional field), never a format failure.
+    const unlessEmpty = (check: (val: string) => boolean) => (val: string) =>
+        val === '' ? !field.required : check(val);
+
     if (field.type === 'number') {
-        // Per the connector schema, number fields carry no `validation:`, so they never
-        // reach the rule section below. A saved secret pre-fills as the redacted sentinel
-        // and must pass on reconnect (same as string fields), so admit it alongside the
-        // numeric check — otherwise `/^\d+$/` rejects the sentinel and gates Connect.
-        const isNumericOrSecret = (val: string) => isSecretPlaceholder(val) || /^\d+$/.test(val);
-        if (field.required) {
-            return z
-                .string()
-                .min(1, `${field.label} is required`)
-                .refine(isNumericOrSecret, 'Must be a valid number');
-        }
-        return z
-            .string()
-            .refine((val) => val === '' || isNumericOrSecret(val), 'Must be a valid number');
+        // A saved secret pre-fills as the redacted sentinel and must pass on reconnect
+        // (same as string fields), otherwise `/^\d+$/` rejects it and gates Connect.
+        schema = schema.refine(
+            unlessEmpty((val) => isSecretPlaceholder(val) || /^\d+$/.test(val)),
+            'Must be a valid number',
+        );
     }
 
+    // Number fields fall through to the rule too: Falcon number fields carry no
+    // `validation:`, but V2 ones do (e.g. an html-pattern restricting the range).
     const validation = field.validation;
     const rule = resolveValidationRule(field);
     if (rule && validation) {
+        let warnedOverCap = false;
         const testWithMetric = (val: string) => {
             // A saved secret is pre-filled as the redacted sentinel (`__secretvalue:**…`),
             // not the real value the customer typed. RHF validates `defaultValues` eagerly,
@@ -238,33 +248,31 @@ function createFieldSchema(
             if (isSecretPlaceholder(val)) return true;
             // An author pattern over the length cap can't be run safely (see
             // MAX_PATTERN_INPUT_LENGTH); skip it (fail-open) rather than risk a hang.
-            if (rule.capInput && val.length > MAX_PATTERN_INPUT_LENGTH) return true;
-            // The `&& val` guard is load-bearing: zod 4 accumulates all checks (it does not
-            // short-circuit on `.min(1)`), so this predicate runs on empty values too. Empty
-            // is a "required" failure, not a format failure — without `&& val` every
-            // untouched required field would emit a spurious event.
+            if (rule.capInput && val.length > MAX_PATTERN_INPUT_LENGTH) {
+                if (!warnedOverCap) {
+                    warnedOverCap = true;
+                    console.warn(
+                        `[stackone-hub] value for field "${field.key}" exceeds ${MAX_PATTERN_INPUT_LENGTH} characters — field validation skipped`,
+                    );
+                }
+                return true;
+            }
             const ok = rule.pattern.test(val);
-            if (!ok && val) {
+            if (!ok) {
                 recordFailure(field, validation);
             }
             return ok;
         };
-        if (field.required) {
-            return schema.refine((val) => testWithMetric(val), rule.errorMessage);
-        }
-        return z.string().refine((val) => val === '' || testWithMetric(val), rule.errorMessage);
-    }
-
-    if (!field.required) {
-        return z.union([z.string().length(0), schema]);
+        schema = schema.refine(unlessEmpty(testWithMetric), rule.errorMessage);
     }
 
     return schema;
 }
 
 // `recordFailure` is owned by the caller and must outlive this schema (see
-// createValidationFailureRecorder's lifetime note) — schemas are rebuilt per
-// keystroke, so a recorder created here would count keystrokes, not fields.
+// createValidationFailureRecorder's lifetime note) — schemas are rebuilt when the
+// connector or account data changes, so a recorder created here would reset its
+// per-field dedupe on each rebuild.
 // Defaults to a no-op for callers without telemetry (tests, the vector check).
 const noopRecorder: RecordValidationFailure = () => undefined;
 

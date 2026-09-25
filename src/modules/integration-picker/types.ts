@@ -66,8 +66,8 @@ export interface ConnectorConfigField {
     // `select` branch (values already constrained by `options[]`) — this flat copy cannot
     // express that, so a select field with `validation` would build a rule here. Exposure
     // is nil in practice (0 of 1695 setup/config fields across 503 connectors declare
-    // `validation` on a select). The build-time rejection of the combination ships in
-    // connect#1304 (unmerged), not connect `main` yet.
+    // `validation` on a select). connect-sdk rejects the combination at connector build
+    // time (connect#1304), so only connectors built before that gate can carry it.
     validation?: FieldValidation;
     display?: boolean;
 }
