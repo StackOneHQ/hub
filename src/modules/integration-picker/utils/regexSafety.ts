@@ -14,9 +14,8 @@
  *
  * Catches EXPONENTIAL backtracking only. The quadratic "adjacent unbounded quantifier"
  * shape (`^a+a+$`) is a deliberate false negative here, as in the canonical lint — some
- * live legacy patterns have it. The caller bounds the input length instead
- * (MAX_PATTERN_INPUT_LENGTH in zodSchema.ts), the canonical docstring's own recommendation
- * for that shape.
+ * live legacy patterns have it. Like connect-sdk and unified-cloud, the hub does not cap
+ * input length to compensate (see zodSchema.ts); closing that residue is connect's call.
  */
 export const hasCatastrophicBacktrackingRisk = (source: string): boolean => {
     const groups: { hasVariable: boolean; hasAlternation: boolean }[] = [];

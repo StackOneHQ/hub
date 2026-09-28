@@ -38,24 +38,13 @@ export const FORMAT_PATTERNS: Record<FormatName, RegExp> = {
 interface ValidationRule {
     pattern: RegExp;
     errorMessage: string;
-    // Author-supplied patterns (legacy html-pattern/domain, Falcon pattern) pass the
-    // ReDoS lint but can still backtrack quadratically on long input (adjacent unbounded
-    // quantifiers, a shape the star-height lint deliberately misses), so their input is
-    // length-capped. FORMAT_PATTERNS are canonical + linear and never capped.
-    capInput?: boolean;
 }
 
-// The star-height lint (regexSafety.ts, canonical connect-sdk copy) catches exponential
-// backtracking; it does not catch the quadratic "adjacent unbounded quantifier" shape,
-// which some live legacy patterns have. Bound the value fed to an author pattern so a
-// pathological one can't hang the tab on crafted long input — the same mitigation the
-// canonical lint's own docstring recommends. Auth values (tenant, key, url) are far
-// shorter; a value over the cap fails open (skips the rule) and warns, matching the
-// degrade elsewhere.
-// Known residual: the cap bounds the quadratic (two adjacent quantifiers) shape to a few
-// ms, but a chain of k ≥ 3 overlapping unbounded quantifiers (`^\w*\w*\w*\w*$`) is O(nᵏ)
-// and still costs seconds at 512. Neither lint catches it, and no live pattern has it.
-const MAX_PATTERN_INPUT_LENGTH = 512;
+// No input-length cap, matching unified-cloud's enforcing surfaces: connect-sdk is the
+// source of truth for field validation and bounds nothing but the pattern itself, so a
+// value its rule rejects must be rejected here too — a cap would let long invalid values
+// through. The lint still rejects exponential shapes; the polynomial residue it
+// deliberately admits (adjacent unbounded quantifiers, `^a*a*$`) is connect's to close.
 
 function isLegacyValidation(validation: FieldValidation): validation is LegacyFieldValidation {
     return validation.type !== undefined;
@@ -95,7 +84,6 @@ function resolveLegacyRule(validation: LegacyFieldValidation): ValidationRule | 
         if (!pattern) return null;
         return {
             pattern,
-            capInput: true,
             errorMessage:
                 validation.error || `Please match the required format: ${validation.pattern}`,
         };
@@ -106,7 +94,6 @@ function resolveLegacyRule(validation: LegacyFieldValidation): ValidationRule | 
         if (!pattern) return null;
         return {
             pattern,
-            capInput: true,
             errorMessage:
                 validation.error || `Please enter a valid ${validation.pattern}.com domain`,
         };
@@ -149,7 +136,6 @@ function resolveFalconRule(
         if (!pattern) return null;
         return {
             pattern,
-            capInput: true,
             errorMessage: validation.errorMessage || `${label} format is invalid`,
         };
     }
@@ -233,12 +219,12 @@ function createFieldSchema(
         );
     }
 
-    // Number fields fall through to the rule too: Falcon number fields carry no
-    // `validation:`, but V2 ones do (e.g. an html-pattern restricting the range).
+    // Required number fields fall through to the rule too: Falcon number fields carry no
+    // `validation:`, but V2 ones do (e.g. an html-pattern restricting the range). Optional
+    // number fields never had their rule applied on V2, so they stay numeric-only.
     const validation = field.validation;
-    const rule = resolveValidationRule(field);
+    const rule = field.type === 'number' && !field.required ? null : resolveValidationRule(field);
     if (rule && validation) {
-        let warnedOverCap = false;
         const testWithMetric = (val: string) => {
             // A saved secret is pre-filled as the redacted sentinel (`__secretvalue:**…`),
             // not the real value the customer typed. RHF validates `defaultValues` eagerly,
@@ -246,17 +232,6 @@ function createFieldSchema(
             // anything — blocking reconnect (gating the Connect button) and emitting a
             // failure event for an untouched field. Treat it as valid.
             if (isSecretPlaceholder(val)) return true;
-            // An author pattern over the length cap can't be run safely (see
-            // MAX_PATTERN_INPUT_LENGTH); skip it (fail-open) rather than risk a hang.
-            if (rule.capInput && val.length > MAX_PATTERN_INPUT_LENGTH) {
-                if (!warnedOverCap) {
-                    warnedOverCap = true;
-                    console.warn(
-                        `[stackone-hub] value for field "${field.key}" exceeds ${MAX_PATTERN_INPUT_LENGTH} characters — field validation skipped`,
-                    );
-                }
-                return true;
-            }
             const ok = rule.pattern.test(val);
             if (!ok) {
                 recordFailure(field, validation);

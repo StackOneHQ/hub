@@ -213,19 +213,13 @@ describe('createFormSchema — robustness', () => {
         warn.mockRestore();
     });
 
-    it('skips an author pattern for a value over the length cap (fail-open, warned once), but never caps a format rule', () => {
-        // Author patterns can backtrack quadratically (the star-height lint misses that
-        // shape), so a value past the cap is not run. FORMAT_PATTERNS are linear/safe and
-        // never capped — a long invalid value still fails.
-        const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    it('validates long values against author patterns too — no input-length cap, matching connect', () => {
         const authorSchema = createFormSchema([field({ validation: { pattern: '^[a-z]+$' } })]);
-        expect(authorSchema.safeParse({ field: 'A'.repeat(513) }).success).toBe(true);
-        expect(authorSchema.safeParse({ field: 'A'.repeat(514) }).success).toBe(true);
-        expect(warn).toHaveBeenCalledTimes(1);
-        warn.mockRestore();
+        expect(authorSchema.safeParse({ field: 'A'.repeat(600) }).success).toBe(false);
+        expect(authorSchema.safeParse({ field: 'a'.repeat(600) }).success).toBe(true);
 
         const formatSchema = createFormSchema([field({ validation: { format: 'email' } })]);
-        expect(formatSchema.safeParse({ field: 'x'.repeat(513) }).success).toBe(false);
+        expect(formatSchema.safeParse({ field: 'x'.repeat(600) }).success).toBe(false);
     });
 
     it('accepts a saved-secret placeholder on a NUMBER field, so reconnect is not blocked', () => {
@@ -255,17 +249,20 @@ describe('createFormSchema — robustness', () => {
             expect(outOfRange.error.issues[0].message).toBe('Level 1, 2 or 3');
         }
         const nonNumeric = schema.safeParse({ field: 'abc' });
+        expect(nonNumeric.success).toBe(false);
         if (!nonNumeric.success) {
             expect(nonNumeric.error.issues[0].message).toBe('Must be a valid number');
         }
     });
 
-    it('accepts an empty OPTIONAL number field with a rule', () => {
+    it('keeps an OPTIONAL number field numeric-only, as V2 never applied its rule', () => {
         const schema = createFormSchema([
             field({ type: 'number', validation: { type: 'html-pattern', pattern: '^[1-3]$' } }),
         ]);
 
         expect(schema.safeParse({ field: '' }).success).toBe(true);
+        expect(schema.safeParse({ field: '5' }).success).toBe(true);
+        expect(schema.safeParse({ field: 'abc' }).success).toBe(false);
     });
 
     it('treats a format naming an Object.prototype key as unknown instead of throwing', () => {
