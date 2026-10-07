@@ -158,12 +158,6 @@ export function isFalconConnectorConfig(config: ConnectorConfig): config is Falc
     return ('configFields' in config || 'configNotices' in config) && !('authentication' in config);
 }
 
-export function isLinkedAtSignIn(config: ConnectorConfig | undefined): boolean {
-    return (
-        config !== undefined && isFalconConnectorConfig(config) && config.linkedAtSignIn === true
-    );
-}
-
 export interface AccountData {
     secureId: string;
     provider: string;

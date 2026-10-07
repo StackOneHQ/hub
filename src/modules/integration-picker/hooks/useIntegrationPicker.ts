@@ -16,7 +16,6 @@ import {
     Integration,
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
-    isLinkedAtSignIn,
 } from '../types';
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
@@ -201,7 +200,7 @@ export const useIntegrationPicker = ({
         ...RETRY_CONFIG,
     });
 
-    const { fields, guide, notices } = useMemo(() => {
+    const { fields, guide, notices, linkedAtSignIn } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
             const fields: ConnectorConfigField[] = [];
             const notices: AuthenticationNotice[] = [];
@@ -259,6 +258,7 @@ export const useIntegrationPicker = ({
             return {
                 fields: fieldsWithPrefilledValues,
                 notices: connectorData.config.configNotices ?? [],
+                linkedAtSignIn: connectorData.config.linkedAtSignIn === true,
                 guide: {
                     supportLink: connectorData.config.support?.link,
                     description: connectorData.config.support?.description ?? '',
@@ -791,7 +791,7 @@ export const useIntegrationPicker = ({
         fields,
         notices,
         guide,
-        linkedAtSignIn: isLinkedAtSignIn(connectorData?.config),
+        linkedAtSignIn,
 
         // State
         formData,

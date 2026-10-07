@@ -38,35 +38,30 @@ const CardFooter: React.FC<CardFooterProps> = ({
             return [];
         }
 
-        const buttons: Array<{
-            label: string;
-            type: 'outline' | 'filled';
-            onClick: () => void;
-            disabled: boolean;
-            loading: boolean;
-        }> = [];
-
-        if (onBack) {
-            buttons.push({
-                label: 'Back',
-                type: 'outline' as const,
-                onClick: onBack,
-                disabled: isLoading,
-                loading: false,
-            });
-        }
-
-        if (canConnect) {
-            buttons.push({
-                label: 'Connect',
-                type: 'filled' as const,
-                onClick: onNext,
-                disabled: !isFormValid || isLoading,
-                loading: isLoading,
-            });
-        }
-
-        return buttons;
+        return [
+            ...(onBack
+                ? [
+                      {
+                          label: 'Back',
+                          type: 'outline' as const,
+                          onClick: onBack,
+                          disabled: isLoading,
+                          loading: false,
+                      },
+                  ]
+                : []),
+            ...(canConnect
+                ? [
+                      {
+                          label: 'Connect',
+                          type: 'filled' as const,
+                          onClick: onNext,
+                          disabled: !isFormValid || isLoading,
+                          loading: isLoading,
+                      },
+                  ]
+                : []),
+        ];
     }, [selectedIntegration, onBack, onNext, showActions, canConnect, isFormValid, isLoading]);
 
     if (buttons.length === 0) {
