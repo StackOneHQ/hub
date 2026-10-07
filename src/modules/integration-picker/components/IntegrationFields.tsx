@@ -218,6 +218,7 @@ const ErrorBlock = ({ error }: { error?: { message: string; provider_response: s
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
     notices?: Array<AuthenticationNotice>;
+    linkedAtSignIn?: boolean;
     error?: {
         message: string;
         provider_response: string;
@@ -234,7 +235,8 @@ const NoFieldsView: React.FC<{
     integrationName: string;
     error?: { message: string; provider_response: string };
     notices?: AuthenticationNotice[];
-}> = ({ integrationName, error, notices = [] }) => {
+    linkedAtSignIn?: boolean;
+}> = ({ integrationName, error, notices = [], linkedAtSignIn = false }) => {
     // No fields for a notice to sit above or below, so position is irrelevant here —
     // render every notice together rather than orphaning bottom ones under the card.
     return (
@@ -251,24 +253,26 @@ const NoFieldsView: React.FC<{
             {notices.map((n) => (
                 <Alert key={n.key} type={n.type} message={n.description} hasMargin={false} />
             ))}
-            <Flex
-                direction={FlexDirection.Vertical}
-                gapSize={FlexGapSize.Small}
-                fullHeight
-                justify={FlexJustify.Center}
-                align={FlexAlign.Center}
-            >
-                <Spacer direction="vertical" size={8} fullWidth>
-                    <Typography.Text size="small" fontWeight={'semi-bold'}>
-                        Press "Connect" below to authenticate
-                    </Typography.Text>
-                    <Typography.Text size="small" color="secondary">
-                        An authentication window for {integrationName} will display,
-                        <br />
-                        please complete the necessary steps.
-                    </Typography.Text>
-                </Spacer>
-            </Flex>
+            {!linkedAtSignIn && (
+                <Flex
+                    direction={FlexDirection.Vertical}
+                    gapSize={FlexGapSize.Small}
+                    fullHeight
+                    justify={FlexJustify.Center}
+                    align={FlexAlign.Center}
+                >
+                    <Spacer direction="vertical" size={8} fullWidth>
+                        <Typography.Text size="small" fontWeight={'semi-bold'}>
+                            Press "Connect" below to authenticate
+                        </Typography.Text>
+                        <Typography.Text size="small" color="secondary">
+                            An authentication window for {integrationName} will display,
+                            <br />
+                            please complete the necessary steps.
+                        </Typography.Text>
+                    </Spacer>
+                </Flex>
+            )}
         </Padded>
     );
 };
@@ -276,6 +280,7 @@ const NoFieldsView: React.FC<{
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     fields,
     notices = [],
+    linkedAtSignIn,
     onChange,
     error,
     onValidationChange,
@@ -336,7 +341,14 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     }, [isValid, onValidationChange]);
 
     if (displayedFields.length === 0) {
-        return <NoFieldsView integrationName={integrationName} error={error} notices={notices} />;
+        return (
+            <NoFieldsView
+                integrationName={integrationName}
+                error={error}
+                notices={notices}
+                linkedAtSignIn={linkedAtSignIn}
+            />
+        );
     }
 
     return (

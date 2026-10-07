@@ -16,6 +16,7 @@ import {
     Integration,
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
+    isLinkedAtSignIn,
 } from '../types';
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
@@ -790,6 +791,7 @@ export const useIntegrationPicker = ({
         fields,
         notices,
         guide,
+        linkedAtSignIn: isLinkedAtSignIn(connectorData?.config),
 
         // State
         formData,

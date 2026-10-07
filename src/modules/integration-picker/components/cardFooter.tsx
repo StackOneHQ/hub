@@ -16,6 +16,7 @@ interface CardFooterProps {
     showActions?: boolean;
     onBack?: () => void;
     onNext: () => void;
+    canConnect?: boolean;
     isFormValid?: boolean;
     isLoading?: boolean;
     showFooterLinks?: boolean;
@@ -27,6 +28,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
     showActions,
     onBack,
     onNext,
+    canConnect = true,
     isFormValid = true,
     isLoading = false,
     showFooterLinks = true,
@@ -54,16 +56,18 @@ const CardFooter: React.FC<CardFooterProps> = ({
             });
         }
 
-        buttons.push({
-            label: 'Connect',
-            type: 'filled' as const,
-            onClick: onNext,
-            disabled: !isFormValid || isLoading,
-            loading: isLoading,
-        });
+        if (canConnect) {
+            buttons.push({
+                label: 'Connect',
+                type: 'filled' as const,
+                onClick: onNext,
+                disabled: !isFormValid || isLoading,
+                loading: isLoading,
+            });
+        }
 
         return buttons;
-    }, [selectedIntegration, onBack, onNext, showActions, isFormValid, isLoading]);
+    }, [selectedIntegration, onBack, onNext, showActions, canConnect, isFormValid, isLoading]);
 
     if (buttons.length === 0) {
         if (!showFooterLinks) {

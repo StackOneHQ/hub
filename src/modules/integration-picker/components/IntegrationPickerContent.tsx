@@ -31,6 +31,7 @@ interface IntegrationPickerContentProps {
     hubData: HubData | null;
     fields: ConnectorConfigField[];
     notices?: AuthenticationNotice[];
+    linkedAtSignIn?: boolean;
     selectedCategory: string | null;
     search: string;
 
@@ -56,6 +57,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     hubData,
     fields,
     notices,
+    linkedAtSignIn,
     selectedCategory,
     search,
     errorHubData,
@@ -122,6 +124,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
             <IntegrationFormView
                 fields={fields}
                 notices={notices}
+                linkedAtSignIn={linkedAtSignIn}
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}

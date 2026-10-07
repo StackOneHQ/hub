@@ -5,6 +5,7 @@ import { IntegrationForm } from '../IntegrationFields';
 interface IntegrationFormViewProps {
     fields: ConnectorConfigField[];
     notices?: AuthenticationNotice[];
+    linkedAtSignIn?: boolean;
     error?: {
         message: string;
         provider_response: string;
@@ -20,6 +21,7 @@ interface IntegrationFormViewProps {
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     fields,
     notices,
+    linkedAtSignIn,
     error,
     onChange,
     onValidationChange,
@@ -32,6 +34,7 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
         <IntegrationForm
             fields={fields}
             notices={notices}
+            linkedAtSignIn={linkedAtSignIn}
             error={error}
             onChange={onChange}
             onValidationChange={onValidationChange}

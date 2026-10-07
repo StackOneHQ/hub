@@ -124,6 +124,8 @@ export interface FalconConnectorConfig {
     grantType?: 'authorization_code' | 'client_credentials';
     configFields?: Array<ConnectorConfigField>;
     configNotices?: Array<AuthenticationNotice>;
+    /** The identity provider links these accounts when the user signs in, so there is nothing to connect. */
+    linkedAtSignIn?: boolean;
     assets?: {
         icon: string;
     };
@@ -154,6 +156,12 @@ export function isLegacyConnectorConfig(config: ConnectorConfig): config is Lega
 
 export function isFalconConnectorConfig(config: ConnectorConfig): config is FalconConnectorConfig {
     return ('configFields' in config || 'configNotices' in config) && !('authentication' in config);
+}
+
+export function isLinkedAtSignIn(config: ConnectorConfig | undefined): boolean {
+    return (
+        config !== undefined && isFalconConnectorConfig(config) && config.linkedAtSignIn === true
+    );
 }
 
 export interface AccountData {

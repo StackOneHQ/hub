@@ -43,6 +43,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         fields,
         notices,
         guide,
+        linkedAtSignIn,
 
         // State
         connectionState,
@@ -108,6 +109,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                         showActions={!connectionState.loading && !connectionState.success}
                         onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
                         onNext={handleConnect}
+                        canConnect={!linkedAtSignIn}
                         isFormValid={isFormValid}
                         isLoading={isLoading}
                         showFooterLinks={showFooterLinks}
@@ -157,6 +159,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 hubData={hubData ?? null}
                 fields={fields}
                 notices={notices}
+                linkedAtSignIn={linkedAtSignIn}
                 errorHubData={(errorHubData as Error) ?? null}
                 errorConnectorData={(errorConnectorData as Error) ?? null}
                 onSelect={setSelectedIntegration}
