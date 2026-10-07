@@ -258,7 +258,7 @@ export const useIntegrationPicker = ({
             return {
                 fields: fieldsWithPrefilledValues,
                 notices: connectorData.config.configNotices ?? [],
-                linkedAtSignIn: connectorData.config.linkedAtSignIn === true,
+                linkedAtSignIn: connectorData.config.linkedAtSignIn,
                 guide: {
                     supportLink: connectorData.config.support?.link,
                     description: connectorData.config.support?.description ?? '',

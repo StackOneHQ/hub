@@ -106,10 +106,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 ) : (
                     <CardFooter
                         selectedIntegration={selectedIntegration}
-                        showActions={!connectionState.loading && !connectionState.success}
+                        showActions={
+                            !connectionState.loading && !connectionState.success && !linkedAtSignIn
+                        }
                         onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
                         onNext={handleConnect}
-                        canConnect={!linkedAtSignIn}
                         isFormValid={isFormValid}
                         isLoading={isLoading}
                         showFooterLinks={showFooterLinks}

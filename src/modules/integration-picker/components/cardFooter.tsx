@@ -16,7 +16,6 @@ interface CardFooterProps {
     showActions?: boolean;
     onBack?: () => void;
     onNext: () => void;
-    canConnect?: boolean;
     isFormValid?: boolean;
     isLoading?: boolean;
     showFooterLinks?: boolean;
@@ -28,7 +27,6 @@ const CardFooter: React.FC<CardFooterProps> = ({
     showActions,
     onBack,
     onNext,
-    canConnect = true,
     isFormValid = true,
     isLoading = false,
     showFooterLinks = true,
@@ -38,31 +36,34 @@ const CardFooter: React.FC<CardFooterProps> = ({
             return [];
         }
 
-        return [
-            ...(onBack
-                ? [
-                      {
-                          label: 'Back',
-                          type: 'outline' as const,
-                          onClick: onBack,
-                          disabled: isLoading,
-                          loading: false,
-                      },
-                  ]
-                : []),
-            ...(canConnect
-                ? [
-                      {
-                          label: 'Connect',
-                          type: 'filled' as const,
-                          onClick: onNext,
-                          disabled: !isFormValid || isLoading,
-                          loading: isLoading,
-                      },
-                  ]
-                : []),
-        ];
-    }, [selectedIntegration, onBack, onNext, showActions, canConnect, isFormValid, isLoading]);
+        const buttons: Array<{
+            label: string;
+            type: 'outline' | 'filled';
+            onClick: () => void;
+            disabled: boolean;
+            loading: boolean;
+        }> = [];
+
+        if (onBack) {
+            buttons.push({
+                label: 'Back',
+                type: 'outline' as const,
+                onClick: onBack,
+                disabled: isLoading,
+                loading: false,
+            });
+        }
+
+        buttons.push({
+            label: 'Connect',
+            type: 'filled' as const,
+            onClick: onNext,
+            disabled: !isFormValid || isLoading,
+            loading: isLoading,
+        });
+
+        return buttons;
+    }, [selectedIntegration, onBack, onNext, showActions, isFormValid, isLoading]);
 
     if (buttons.length === 0) {
         if (!showFooterLinks) {

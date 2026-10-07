@@ -236,7 +236,7 @@ const NoFieldsView: React.FC<{
     error?: { message: string; provider_response: string };
     notices?: AuthenticationNotice[];
     linkedAtSignIn?: boolean;
-}> = ({ integrationName, error, notices = [], linkedAtSignIn = false }) => {
+}> = ({ integrationName, error, notices = [], linkedAtSignIn }) => {
     // No fields for a notice to sit above or below, so position is irrelevant here —
     // render every notice together rather than orphaning bottom ones under the card.
     return (
