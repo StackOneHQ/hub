@@ -45,7 +45,7 @@
         "relay": "cd dev/vite && npm run relay",
         "code:format": "biome format ./src ./dev ./scripts",
         "code:format:fix": "biome format --write ./src ./dev ./scripts",
-        "lint": "biome lint --error-on-warnings ./src ./dev ./scripts && biome check ./src ./dev ./scripts && tsc --noEmit",
+        "lint": "biome lint --error-on-warnings ./src ./dev ./scripts && biome check ./src ./dev ./scripts && node node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.typecheck.json",
         "lint:fix": "biome lint --write ./src ./dev ./scripts && biome check --write ./src ./dev ./scripts",
         "publish-release": "npm publish --access=public"
     },
@@ -73,6 +73,7 @@
         "@types/node": "^22.15.17",
         "@types/react": "^18.3.23",
         "@types/react-dom": "^18.3.7",
+        "@typescript/native": "npm:typescript@7.0.2",
         "rollup": "^4.40.2",
         "rollup-plugin-delete": "^3.0.1",
         "rollup-plugin-dts": "^6.2.1",
