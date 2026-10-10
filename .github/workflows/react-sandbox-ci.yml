@@ -10,11 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - sandbox: react
-            install: npm install
-          - sandbox: vite-react19
-            install: npm ci
+        sandbox: [react, vite-react19]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -29,7 +25,7 @@ jobs:
         run: npm run build && npm run verify:build
       - name: Install sandbox dependencies
         working-directory: dev/${{ matrix.sandbox }}
-        run: ${{ matrix.install }}
+        run: npm ci
       - name: Typecheck and build sandbox
         working-directory: dev/${{ matrix.sandbox }}
         run: npm run build
