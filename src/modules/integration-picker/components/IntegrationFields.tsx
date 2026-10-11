@@ -22,7 +22,12 @@ import useDeepCompareEffect from 'use-deep-compare-effect';
 import { AuthenticationNotice, ConnectorConfigField } from '../types';
 import { partitionNotices } from '../utils/partitionNotices';
 import { formatSecretPlaceholder, isSecretPlaceholder } from '../utils/secretPlaceholder';
-import { createFormSchema, createValidationFailureRecorder } from '../utils/zodSchema';
+import {
+    createFormSchema,
+    createValidationFailureRecorder,
+    failsFieldRule,
+    resolveFieldRules,
+} from '../utils/zodSchema';
 
 const isInputField = (type: string | undefined): type is 'text' | 'number' | 'password' => {
     return type === 'text' || type === 'number' || type === 'password';
@@ -32,6 +37,7 @@ interface FieldRendererProps {
     field: ConnectorConfigField;
     errors: FieldErrors;
     setValue: UseFormSetValue<Record<string, unknown>>;
+    onLeave?: () => void;
     editingSecrets?: Set<string>;
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
@@ -40,6 +46,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     field,
     errors,
     setValue,
+    onLeave,
     editingSecrets,
     setEditingSecrets,
 }) => {
@@ -136,6 +143,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             shouldValidate: true,
                         })
                     }
+                    onBlur={onLeave}
                     defaultValue={isSecret && isBeingEdited ? '' : fieldValue}
                     showPasswordToggle={false}
                     onCopyClick={inputOnCopyClick}
@@ -162,6 +170,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             shouldValidate: true,
                         })
                     }
+                    onBlur={onLeave}
                     defaultValue={field.value?.toString() || ''}
                 />
                 {errorMessage}
@@ -291,15 +300,13 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     const { noticesBefore, noticesAfter } = partitionNotices(notices, fieldKeys);
 
     // One recorder for the life of this form session (re-created only when the connector
-    // changes), NOT per schema build. The schema rebuilds when the connector or account
-    // data changes (useIntegrationPicker's `fields` memo), so a recorder owned by that memo
-    // would reset its per-field dedupe on those rebuilds; owning it here keeps the dedupe for
-    // the whole session. Mirrors the unified-cloud DynamicForm and embedded-widget wiring.
+    // changes), NOT per schema build — see createValidationFailureRecorder's lifetime note.
     const recordFailure = useMemo(
         () => createValidationFailureRecorder(connectorKey),
         [connectorKey],
     );
-    const schema = useMemo(() => createFormSchema(fields, recordFailure), [fields, recordFailure]);
+    const rules = useMemo(() => resolveFieldRules(fields), [fields]);
+    const schema = useMemo(() => createFormSchema(fields, rules), [fields, rules]);
 
     const defaultValues = useMemo(() => {
         const initialData: Record<string, string> = {};
@@ -313,7 +320,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
         return initialData;
     }, [fields]);
 
-    const { formState, watch, reset, setValue } = useForm({
+    const { formState, watch, reset, setValue, getValues } = useForm({
         resolver: zodResolver(schema),
         mode: 'onTouched',
         defaultValues,
@@ -334,6 +341,17 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     useEffect(() => {
         onValidationChange?.(isValid);
     }, [isValid, onValidationChange]);
+
+    // Recorded when the customer leaves a field holding a value that fails its rule, not
+    // from validation: every keystroke validates (`shouldValidate`), so a partially typed
+    // valid value (`a`, `ad`, … of an email) would otherwise count as a failure. Switching
+    // tab or app mid-typing also blurs the field; the document has lost focus then, so skip.
+    const recordIfFailing = (field: ConnectorConfigField) => {
+        if (!document.hasFocus()) return;
+        if (field.validation && failsFieldRule(field, rules, getValues(field.key))) {
+            recordFailure(field, field.validation);
+        }
+    };
 
     if (displayedFields.length === 0) {
         return <NoFieldsView integrationName={integrationName} error={error} notices={notices} />;
@@ -379,6 +397,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                                     field={field}
                                     errors={errors}
                                     setValue={setValue}
+                                    onLeave={() => recordIfFailing(field)}
                                     editingSecrets={editingSecrets}
                                     setEditingSecrets={setEditingSecrets}
                                 />
