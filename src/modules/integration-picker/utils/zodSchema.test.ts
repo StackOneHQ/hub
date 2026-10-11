@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ConnectorConfigField, FieldValidation } from '../types';
-import { createFormSchema, createValidationFailureRecorder } from './zodSchema';
+import {
+    createFormSchema,
+    createValidationFailureRecorder,
+    failsFieldRule,
+    resolveFieldRules,
+} from './zodSchema';
 
 // Minimal factory: builds a single-field connector config. Only the properties the
 // Zod builder reads (`key`, `label`, `type`, `required`, `validation`) actually matter;
@@ -290,22 +295,19 @@ describe('createFormSchema — robustness', () => {
     });
 });
 
-describe('createValidationFailureRecorder — lifetime', () => {
+describe('createValidationFailureRecorder', () => {
     afterEach(() => {
         vi.unstubAllGlobals();
     });
 
-    it('dispatches at most once per field across schema rebuilds when the recorder outlives the schema', () => {
+    it('dispatches at most once per field for the life of the recorder', () => {
         const dispatchEvent = vi.fn();
         vi.stubGlobal('window', { dispatchEvent });
 
-        // The schema rebuilds when the connector or account data changes (the fields memo),
-        // so the recorder is owned by the component and passed in. Two builds with failing
-        // parses simulate two rebuilds; the dedupe must survive them.
         const recordFailure = createValidationFailureRecorder('workday');
-        const fields = [field({ validation: { pattern: '^[a-z]+$' } })];
-        createFormSchema(fields, recordFailure).safeParse({ field: 'BAD1' });
-        createFormSchema(fields, recordFailure).safeParse({ field: 'BAD12' });
+        const validation: FieldValidation = { pattern: '^[a-z]+$' };
+        recordFailure(field({ validation }), validation);
+        recordFailure(field({ validation }), validation);
 
         expect(dispatchEvent).toHaveBeenCalledTimes(1);
     });
@@ -314,16 +316,40 @@ describe('createValidationFailureRecorder — lifetime', () => {
         const dispatchEvent = vi.fn();
         vi.stubGlobal('window', { dispatchEvent });
 
-        const recordFailure = createValidationFailureRecorder('workday');
-        createFormSchema([field({ validation: { pattern: '^[a-z]+$' } })], recordFailure).safeParse(
-            { field: 'BAD1' },
-        );
+        const validation: FieldValidation = { pattern: '^[a-z]+$' };
+        createValidationFailureRecorder('workday')(field({ validation }), validation);
 
         expect(dispatchEvent.mock.calls[0][0].detail).toEqual({
             connector: 'workday',
             field: 'field',
             ruleKind: 'pattern',
         });
+    });
+});
+
+describe('failsFieldRule', () => {
+    const fails = (f: ConnectorConfigField, value: unknown) =>
+        failsFieldRule(f, resolveFieldRules([f]), value);
+
+    it('reports a value that fails the rule', () => {
+        expect(fails(field({ validation: { format: 'email' } }), 'not-an-email')).toBe(true);
+        expect(fails(field({ validation: { pattern: '^[a-z0-9-]+$' } }), 'Acme Corp')).toBe(true);
+    });
+
+    it('passes a matching value, an empty one and a saved secret', () => {
+        const email = field({ validation: { format: 'email' } });
+        expect(fails(email, 'admin@company.com')).toBe(false);
+        expect(fails({ ...email, required: true }, '')).toBe(false);
+        expect(fails(email, '__secretvalue:**redacted**abcd')).toBe(false);
+    });
+
+    it('passes a field with no rule, including an optional number whose rule V2 never applied', () => {
+        expect(fails(field({ type: 'number', required: true }), 'abc')).toBe(false);
+        const optionalNumber = field({
+            type: 'number',
+            validation: { type: 'html-pattern', pattern: '^[1-3]$' },
+        });
+        expect(fails(optionalNumber, '7')).toBe(false);
     });
 });
 
