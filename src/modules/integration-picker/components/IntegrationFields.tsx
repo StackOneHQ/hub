@@ -344,8 +344,10 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
 
     // Recorded when the customer leaves a field holding a value that fails its rule, not
     // from validation: every keystroke validates (`shouldValidate`), so a partially typed
-    // valid value (`a`, `ad`, … of an email) would otherwise count as a failure.
+    // valid value (`a`, `ad`, … of an email) would otherwise count as a failure. Switching
+    // tab or app mid-typing also blurs the field; the document has lost focus then, so skip.
     const recordIfFailing = (field: ConnectorConfigField) => {
+        if (!document.hasFocus()) return;
         if (field.validation && failsFieldRule(field, rules, getValues(field.key))) {
             recordFailure(field, field.validation);
         }

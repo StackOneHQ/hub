@@ -209,8 +209,9 @@ export function resolveFieldRules(fields: ConnectorConfigField[]): FieldRules {
 }
 
 // A saved secret is pre-filled as the redacted sentinel (`__secretvalue:**…`), not the
-// value the customer typed, and must pass so reconnect is never blocked. Empty is a
-// "required" failure (or valid on an optional field), never a rule failure.
+// value the customer typed. RHF validates `defaultValues` on mount, so without this the
+// sentinel fails the rule before anyone touches it and gates Connect on reconnect. Empty
+// is a "required" failure (or valid on an optional field), never a rule failure.
 function violatesRule(rule: ValidationRule | undefined, value: unknown): boolean {
     if (!rule || typeof value !== 'string' || value === '' || isSecretPlaceholder(value)) {
         return false;
