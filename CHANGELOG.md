@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.12.0](https://github.com/StackOneHQ/hub/compare/hub-v1.11.4...hub-v1.12.0) (2026-10-11)
+
+
+### Features
+
+* **ENG-823:** setup and config field validation ([#183](https://github.com/StackOneHQ/hub/issues/183)) ([4fedac9](https://github.com/StackOneHQ/hub/commit/4fedac9deaa5f940e66be40f0e10642183c70f6b))
+
+
+### Bug Fixes
+
+* **ENG-823:** record field-validation failures on leaving the field, not per keystroke ([#221](https://github.com/StackOneHQ/hub/issues/221)) ([7ce24eb](https://github.com/StackOneHQ/hub/commit/7ce24eb23427b23e7d3108756c9ac80311678b5c))
+
 ## [1.11.4](https://github.com/StackOneHQ/hub/compare/hub-v1.11.3...hub-v1.11.4) (2026-09-18)
 
 
