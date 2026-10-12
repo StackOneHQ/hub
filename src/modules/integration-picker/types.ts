@@ -124,6 +124,8 @@ export interface FalconConnectorConfig {
     grantType?: 'authorization_code' | 'client_credentials';
     configFields?: Array<ConnectorConfigField>;
     configNotices?: Array<AuthenticationNotice>;
+    /** The identity provider links these accounts when the user signs in, so there is nothing to connect. */
+    linkedAtSignIn?: boolean;
     assets?: {
         icon: string;
     };
