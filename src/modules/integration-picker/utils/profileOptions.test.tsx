@@ -1,3 +1,4 @@
+import { isValidElement } from 'react';
 import { describe, expect, it } from 'vitest';
 import type { ConnectorProfile } from '../types';
 import { profileOptions } from './profileOptions';
@@ -26,7 +27,7 @@ describe('profileOptions', () => {
         expect(profileOptions([profile({})])).toEqual([]);
     });
 
-    it('labels each profile by its own name and auth method, and marks the default', () => {
+    it('labels each profile by its own name, marks the default, and tags its auth method in blue', () => {
         const items = profileOptions([
             profile({
                 integration_id: 'a',
@@ -37,10 +38,15 @@ describe('profileOptions', () => {
             profile({ integration_id: 'b', profile_name: 'Ashby US' }),
         ]);
 
-        expect(items).toEqual([
-            { id: 'a', label: 'Ashby EU', subtitle: 'OAuth 2.0', rightSideText: 'Default' },
-            { id: 'b', label: 'Ashby US', subtitle: undefined, rightSideText: undefined },
+        expect(items.map(({ id, label, subtitle }) => ({ id, label, subtitle }))).toEqual([
+            { id: 'a', label: 'Ashby EU', subtitle: 'Default' },
+            { id: 'b', label: 'Ashby US', subtitle: undefined },
         ]);
+        expect(isValidElement(items[0].badge) && items[0].badge.props).toMatchObject({
+            type: 'info',
+            value: 'OAuth 2.0',
+        });
+        expect(items[1].badge).toBeUndefined();
     });
 
     it('falls back to the connector name for a profile without one', () => {

@@ -1,4 +1,4 @@
-import { DropdownItem } from '@stackone/malachite';
+import { DropdownItem, Tag } from '@stackone/malachite';
 import { ConnectorProfile } from '../types';
 
 export function profileOptions(profiles: ConnectorProfile[] | null | undefined): DropdownItem[] {
@@ -9,7 +9,9 @@ export function profileOptions(profiles: ConnectorProfile[] | null | undefined):
     return profiles.map((profile) => ({
         id: profile.integration_id,
         label: profile.profile_name || profile.name,
-        subtitle: profile.authentication_config_label ?? undefined,
-        rightSideText: profile.is_default ? 'Default' : undefined,
+        subtitle: profile.is_default ? 'Default' : undefined,
+        badge: profile.authentication_config_label ? (
+            <Tag type="info" fontSize="xsmall" value={profile.authentication_config_label} />
+        ) : undefined,
     }));
 }
