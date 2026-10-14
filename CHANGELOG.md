@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/StackOneHQ/hub/compare/hub-v1.12.1...hub-v1.13.0) (2026-10-14)
+
+
+### Features
+
+* **ENG-3123:** let the end user switch connector profiles from the hub header ([#226](https://github.com/StackOneHQ/hub/issues/226)) ([7002e62](https://github.com/StackOneHQ/hub/commit/7002e62e5afb40a2ffeb9872593a15bf467fb928))
+
 ## [1.12.1](https://github.com/StackOneHQ/hub/compare/hub-v1.12.0...hub-v1.12.1) (2026-10-11)
 
 
