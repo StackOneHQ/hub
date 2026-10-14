@@ -120,6 +120,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     if (connectorData) {
         return (
             <IntegrationFormView
+                key={selectedIntegration?.integration_id}
                 fields={fields}
                 notices={notices}
                 error={connectionState.error}
