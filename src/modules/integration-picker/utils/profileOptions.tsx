@@ -11,7 +11,7 @@ export function profileOptions(profiles: ConnectorProfile[] | null | undefined):
         label: profile.profile_name || profile.name,
         subtitle: profile.is_default ? 'Default' : undefined,
         badge: profile.authentication_config_label ? (
-            <Tag type="info" fontSize="xsmall" value={profile.authentication_config_label} />
+            <Tag type="default" fontSize="xsmall" value={profile.authentication_config_label} />
         ) : undefined,
     }));
 }
