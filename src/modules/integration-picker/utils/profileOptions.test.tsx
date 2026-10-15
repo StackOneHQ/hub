@@ -27,7 +27,7 @@ describe('profileOptions', () => {
         expect(profileOptions([profile({})])).toEqual([]);
     });
 
-    it('labels each profile by its own name, marks the default, and tags its auth method in blue', () => {
+    it('labels each profile by its own name, marks the default, and tags its auth method in grey', () => {
         const items = profileOptions([
             profile({
                 integration_id: 'a',
@@ -43,7 +43,7 @@ describe('profileOptions', () => {
             { id: 'b', label: 'Ashby US', subtitle: undefined },
         ]);
         expect(isValidElement(items[0].badge) && items[0].badge.props).toMatchObject({
-            type: 'info',
+            type: 'default',
             value: 'OAuth 2.0',
         });
         expect(items[1].badge).toBeUndefined();
