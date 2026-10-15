@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/StackOneHQ/hub/compare/hub-v1.13.0...hub-v1.13.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **ENG-3123:** readable connector profile menu ([#228](https://github.com/StackOneHQ/hub/issues/228)) ([451d9ee](https://github.com/StackOneHQ/hub/commit/451d9eee63b567a3d55a9a5c84a213bfc089de6a))
+
 ## [1.13.0](https://github.com/StackOneHQ/hub/compare/hub-v1.12.1...hub-v1.13.0) (2026-10-14)
 
 
