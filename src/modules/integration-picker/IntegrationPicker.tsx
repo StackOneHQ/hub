@@ -40,6 +40,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         accountData,
         connectorData,
         selectedIntegration,
+        profiles,
         fields,
         notices,
         guide,
@@ -56,6 +57,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
 
         // Actions
         setSelectedIntegration,
+        selectProfile,
         setFormData,
         setIsFormValid,
         handleConnect,
@@ -132,6 +134,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                             hasOnlyOneIntegration
                         }
                         connectorData={connectorData?.config ?? null}
+                        profiles={profiles}
+                        selectedProfileId={selectedIntegration?.integration_id}
+                        onProfileChange={selectProfile}
                     />
                 )
             }

@@ -1,5 +1,7 @@
 import {
     Button,
+    Dropdown,
+    DropdownItem,
     Flex,
     FlexAlign,
     FlexDirection,
@@ -14,9 +16,19 @@ interface CardTitleProps {
     connectorData: ConnectorConfig;
     onBack?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
+    profileOptions?: DropdownItem[];
+    selectedProfileId?: string;
+    onProfileChange?: (integrationId: string) => void;
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) => {
+const CardTitle: React.FC<CardTitleProps> = ({
+    connectorData,
+    onBack,
+    guide,
+    profileOptions,
+    selectedProfileId,
+    onProfileChange,
+}) => {
     return (
         <Flex
             direction={FlexDirection.Horizontal}
@@ -40,13 +52,35 @@ const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, guide }) =
                     {connectorData.name}
                 </Typography.Text>
             </Flex>
-            {guide?.supportLink ? (
-                <Typography.LinkText href={guide.supportLink} target="_blank">
-                    <Button variant="outline" size="small">
-                        Connection guide
-                    </Button>
-                </Typography.LinkText>
-            ) : null}
+            <Flex
+                direction={FlexDirection.Horizontal}
+                align={FlexAlign.Center}
+                gapSize={FlexGapSize.Small}
+                justify={FlexJustify.Right}
+            >
+                {guide?.supportLink ? (
+                    <Typography.LinkText href={guide.supportLink} target="_blank">
+                        <Button variant="outline" size="small">
+                            Connection guide
+                        </Button>
+                    </Typography.LinkText>
+                ) : null}
+                {profileOptions && profileOptions.length > 0 && (
+                    <>
+                        <Typography.SecondaryText>Connector profile</Typography.SecondaryText>
+                        <Dropdown
+                            name="connector-profile"
+                            aria-label="Connector profile"
+                            size="small"
+                            minWidth={400}
+                            menuAlign="end"
+                            items={profileOptions}
+                            value={selectedProfileId}
+                            onItemSelected={(id) => id && onProfileChange?.(id)}
+                        />
+                    </>
+                )}
+            </Flex>
         </Flex>
     );
 };

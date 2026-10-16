@@ -6,6 +6,7 @@ import {
     createConnectionAttempt,
     getAccountData,
     getConnectorConfig,
+    getConnectorProfiles,
     getHubData,
     pollConnectionAttempt,
     updateAccount,
@@ -20,22 +21,34 @@ import {
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
 // Shared retry configuration for queries
+const errorStatus = (error: unknown): number | undefined => {
+    if (error && typeof error === 'object' && 'message' in error) {
+        try {
+            return JSON.parse(error.message as string).status;
+        } catch {
+            return undefined;
+        }
+    }
+    return undefined;
+};
+
 const RETRY_CONFIG = {
     retry: (failureCount: number, error: unknown) => {
         // Don't retry on authentication errors (401/403)
-        if (error && typeof error === 'object' && 'message' in error) {
-            try {
-                const parsedError = JSON.parse(error.message as string);
-                if (parsedError.status === 401 || parsedError.status === 403) {
-                    return false;
-                }
-            } catch {
-                // If parsing fails, allow retry
-            }
+        const status = errorStatus(error);
+        if (status === 401 || status === 403) {
+            return false;
         }
         return failureCount < 2;
     },
     retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+};
+
+// An API without the profiles route answers 404; that just means no switcher, not a retry.
+const PROFILES_RETRY_CONFIG = {
+    ...RETRY_CONFIG,
+    retry: (failureCount: number, error: unknown) =>
+        errorStatus(error) !== 404 && RETRY_CONFIG.retry(failureCount, error),
 };
 
 interface UseIntegrationPickerProps {
@@ -159,9 +172,13 @@ export const useIntegrationPicker = ({
 
     useEffect(() => {
         if (accountData && hubData) {
-            const matchingIntegration = hubData.integrations.find(
-                (integration) => integration.provider === accountData.provider,
-            );
+            const matchingIntegration =
+                hubData.integrations.find(
+                    (integration) => integration.integration_id === accountData.integrationId,
+                ) ??
+                hubData.integrations.find(
+                    (integration) => integration.provider === accountData.provider,
+                );
             setSelectedIntegration(matchingIntegration ?? null);
         }
     }, [accountData, hubData]);
@@ -177,28 +194,50 @@ export const useIntegrationPicker = ({
         }
     }, [hubData, selectedIntegration]);
 
+    const configIntegrationId = selectedIntegration?.integration_id ?? accountData?.integrationId;
+
+    // The account's own values only prefill while its own profile is selected.
+    const prefillAccount =
+        accountData &&
+        (!selectedIntegration || selectedIntegration.integration_id === accountData.integrationId)
+            ? accountData
+            : undefined;
+
     const {
         data: connectorData,
         isLoading: isLoadingConnectorData,
         error: errorConnectorData,
     } = useQuery({
-        queryKey: [
-            'connectorData',
-            accountData?.integrationId,
-            selectedIntegration?.integration_id,
-        ],
-        queryFn: async () => {
-            if (accountData) {
-                return getConnectorConfig(baseUrl, token, accountData.integrationId);
-            }
-            if (selectedIntegration) {
-                return getConnectorConfig(baseUrl, token, selectedIntegration.integration_id);
-            }
-            return null;
-        },
-        enabled: Boolean(selectedIntegration) || Boolean(accountData),
+        queryKey: ['connectorData', configIntegrationId],
+        queryFn: () =>
+            configIntegrationId ? getConnectorConfig(baseUrl, token, configIntegrationId) : null,
+        enabled: Boolean(configIntegrationId),
         ...RETRY_CONFIG,
     });
+
+    // Keyed on provider so switching between its profiles reuses the list instead of refetching it.
+    const { data: profilesData } = useQuery({
+        queryKey: ['connectorProfiles', selectedIntegration?.provider],
+        queryFn: () =>
+            selectedIntegration
+                ? getConnectorProfiles(baseUrl, token, selectedIntegration.integration_id)
+                : null,
+        enabled: Boolean(selectedIntegration),
+        ...PROFILES_RETRY_CONFIG,
+    });
+
+    const profiles = profilesData?.profiles;
+
+    const selectProfile = useCallback(
+        (integrationId: string) => {
+            const profile = profiles?.find((p) => p.integration_id === integrationId);
+            if (profile && profile.integration_id !== selectedIntegration?.integration_id) {
+                setConnectionState({ loading: false, success: false });
+                setSelectedIntegration(profile);
+            }
+        },
+        [profiles, selectedIntegration],
+    );
 
     const { fields, guide, notices } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
@@ -212,7 +251,7 @@ export const useIntegrationPicker = ({
                 connectorData.config.configFields ?? []
             )
                 .map((field) => {
-                    const setupValue = accountData?.setupInformation?.[field.key];
+                    const setupValue = prefillAccount?.setupInformation?.[field.key];
 
                     if (field.key === 'external-trigger-token') {
                         return {
@@ -222,8 +261,8 @@ export const useIntegrationPicker = ({
                         };
                     }
 
-                    if (accountData && (field.secret !== false || field.type === 'password')) {
-                        const secretValue = accountData.secrets?.[field.key];
+                    if (prefillAccount && (field.secret !== false || field.type === 'password')) {
+                        const secretValue = prefillAccount.secrets?.[field.key];
                         if (secretValue) {
                             return {
                                 ...field,
@@ -269,10 +308,10 @@ export const useIntegrationPicker = ({
         let environment = selectedIntegration.environment;
 
         // TODO: https://stackonehq.atlassian.net/browse/ENG-11396 load this from the account's linked integration config
-        if (accountData && accountData.authConfigKey) {
-            if (connectorData.config.authentication?.[accountData.authConfigKey]) {
-                authenticationConfigKey = accountData.authConfigKey;
-                environment = accountData.environment ?? selectedIntegration.environment;
+        if (prefillAccount?.authConfigKey) {
+            if (connectorData.config.authentication?.[prefillAccount.authConfigKey]) {
+                authenticationConfigKey = prefillAccount.authConfigKey;
+                environment = prefillAccount.environment ?? selectedIntegration.environment;
             }
         }
 
@@ -283,7 +322,7 @@ export const useIntegrationPicker = ({
 
         const fieldsWithPrefilledValues: ConnectorConfigField[] = baseFields
             .map((field) => {
-                const setupValue = accountData?.setupInformation?.[field.key];
+                const setupValue = prefillAccount?.setupInformation?.[field.key];
 
                 if (field.key === 'external-trigger-token') {
                     return {
@@ -293,8 +332,8 @@ export const useIntegrationPicker = ({
                     };
                 }
 
-                if (accountData && (field.secret !== false || field.type === 'password')) {
-                    const secretValue = accountData.secrets?.[field.key];
+                if (prefillAccount && (field.secret !== false || field.type === 'password')) {
+                    const secretValue = prefillAccount.secrets?.[field.key];
                     if (secretValue) {
                         return {
                             ...field,
@@ -331,7 +370,7 @@ export const useIntegrationPicker = ({
             notices: [],
             guide: authConfigForEnvironment?.guide,
         };
-    }, [connectorData, selectedIntegration, accountData, hubData]);
+    }, [connectorData, selectedIntegration, prefillAccount, hubData]);
 
     const authConfig = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
@@ -342,17 +381,17 @@ export const useIntegrationPicker = ({
             let environment = selectedIntegration.environment;
 
             // TODO: https://stackonehq.atlassian.net/browse/ENG-11396 load this from the account's linked integration config
-            if (accountData && accountData.authConfigKey) {
-                if (connectorData.config.authentication?.[accountData.authConfigKey]) {
-                    authenticationConfigKey = accountData.authConfigKey;
-                    environment = accountData.environment ?? selectedIntegration.environment;
+            if (prefillAccount?.authConfigKey) {
+                if (connectorData.config.authentication?.[prefillAccount.authConfigKey]) {
+                    authenticationConfigKey = prefillAccount.authConfigKey;
+                    environment = prefillAccount.environment ?? selectedIntegration.environment;
                 }
             }
 
             return connectorData.config.authentication?.[authenticationConfigKey]?.[environment];
         }
         return connectorData.config;
-    }, [connectorData, selectedIntegration, accountData]);
+    }, [connectorData, selectedIntegration, prefillAccount]);
 
     const [isFormValid, setIsFormValid] = useState(true);
 
@@ -787,6 +826,7 @@ export const useIntegrationPicker = ({
         accountData,
         connectorData,
         selectedIntegration,
+        profiles,
         fields,
         notices,
         guide,
@@ -805,6 +845,7 @@ export const useIntegrationPicker = ({
 
         // Actions
         setSelectedIntegration,
+        selectProfile,
         setFormData: setFormDataCallback,
         setIsFormValid,
         handleConnect,
