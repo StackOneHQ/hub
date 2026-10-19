@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Button,
     Dropdown,
     DropdownItem,
@@ -9,7 +10,6 @@ import {
     FlexJustify,
     Typography,
 } from '@stackone/malachite';
-import { Logo } from '../../../shared/components/Logo';
 import { ConnectorConfig } from '../types';
 
 interface CardTitleProps {
@@ -43,10 +43,11 @@ const CardTitle: React.FC<CardTitleProps> = ({
                 justify={FlexJustify.Left}
             >
                 {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
-                <Logo
+                <Avatar
                     src={connectorData.assets?.icon}
-                    alt={connectorData.key}
-                    style={{ width: '16px', height: '16px' }}
+                    name={connectorData.key}
+                    size={16}
+                    fallback="placeholder"
                 />
                 <Typography.Text fontWeight="semi-bold" size="medium">
                     {connectorData.name}

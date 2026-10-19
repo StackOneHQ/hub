@@ -1,4 +1,5 @@
 import {
+    Avatar,
     ButtonList,
     Divider,
     Flex,
@@ -15,7 +16,6 @@ import {
 } from '@stackone/malachite';
 import { useCallback, useMemo } from 'react';
 import { formatConnectorCategoryLabel, getConnectorCategoryKey } from '../../../shared/categories';
-import { Logo } from '../../../shared/components/Logo';
 import { Integration } from '../types';
 
 // The list renders only these, so the filter chips must be built from the same set:
@@ -43,10 +43,11 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                 justify={FlexJustify.Left}
                 width="100%"
             >
-                <Logo
+                <Avatar
                     src={integration.logo_url}
-                    alt={integration.provider}
-                    style={{ width: '24px', height: '24px' }}
+                    name={integration.provider}
+                    size={24}
+                    fallback="placeholder"
                 />
                 <Typography.Text textAlign="left">{integration.name ?? 'N/A'}</Typography.Text>
             </Flex>
