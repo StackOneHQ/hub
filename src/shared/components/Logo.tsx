@@ -16,7 +16,7 @@ export const Logo: React.FC<LogoProps> = ({
     style,
     className,
 }) => {
-    const [imageSrc, setImageSrc] = useState(src);
+    const [imageSrc, setImageSrc] = useState(src || fallbackUrl);
 
     const handleImageError = () => {
         setImageSrc(fallbackUrl);
