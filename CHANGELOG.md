@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/StackOneHQ/hub/compare/hub-v1.13.1...hub-v1.13.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **ENG-2005:** render connector logos through malachite's Avatar no-logo placeholder ([#230](https://github.com/StackOneHQ/hub/issues/230)) ([dace4fd](https://github.com/StackOneHQ/hub/commit/dace4fda3c8e8a94d24076c775201767dcf09972))
+
 ## [1.13.1](https://github.com/StackOneHQ/hub/compare/hub-v1.13.0...hub-v1.13.1) (2026-10-15)
 
 
