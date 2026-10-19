@@ -16,7 +16,6 @@ export const Logo: React.FC<LogoProps> = ({
     style,
     className,
 }) => {
-    // Remember which src failed rather than a flag, so a new src is tried instead of staying on the fallback.
     const [failedSrc, setFailedSrc] = useState<string>();
     const imageSrc = src && src !== failedSrc ? src : fallbackUrl;
 
