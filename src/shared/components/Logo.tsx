@@ -16,11 +16,9 @@ export const Logo: React.FC<LogoProps> = ({
     style,
     className,
 }) => {
-    const [imageSrc, setImageSrc] = useState(src || fallbackUrl);
-
-    const handleImageError = () => {
-        setImageSrc(fallbackUrl);
-    };
+    // Remember which src failed rather than a flag, so a new src is tried instead of staying on the fallback.
+    const [failedSrc, setFailedSrc] = useState<string>();
+    const imageSrc = src && src !== failedSrc ? src : fallbackUrl;
 
     return (
         <img
@@ -28,7 +26,7 @@ export const Logo: React.FC<LogoProps> = ({
             alt={alt}
             style={style}
             className={className}
-            onError={handleImageError}
+            onError={() => setFailedSrc(src)}
         />
     );
 };
