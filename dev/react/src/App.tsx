@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 const TOKEN_KEY = 'stackone-hub-token';
 const BASE_URL_KEY = 'stackone-hub-base-url';
 
-declare global {
+declare module 'react' {
     // biome-ignore lint/style/noNamespace: JSX intrinsic-element augmentation requires namespace syntax.
     namespace JSX {
         interface IntrinsicElements {
