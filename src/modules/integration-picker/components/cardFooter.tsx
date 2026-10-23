@@ -17,7 +17,6 @@ interface CardFooterProps {
     onBack?: () => void;
     onNext: () => void;
     isFormValid?: boolean;
-    isLoading?: boolean;
     showFooterLinks?: boolean;
 }
 
@@ -28,7 +27,6 @@ const CardFooter: React.FC<CardFooterProps> = ({
     onBack,
     onNext,
     isFormValid = true,
-    isLoading = false,
     showFooterLinks = true,
 }) => {
     const buttons = useMemo(() => {
@@ -41,7 +39,6 @@ const CardFooter: React.FC<CardFooterProps> = ({
             type: 'outline' | 'filled';
             onClick: () => void;
             disabled: boolean;
-            loading: boolean;
         }> = [];
 
         if (onBack) {
@@ -49,8 +46,7 @@ const CardFooter: React.FC<CardFooterProps> = ({
                 label: 'Back',
                 type: 'outline' as const,
                 onClick: onBack,
-                disabled: isLoading,
-                loading: false,
+                disabled: false,
             });
         }
 
@@ -58,12 +54,11 @@ const CardFooter: React.FC<CardFooterProps> = ({
             label: 'Connect',
             type: 'filled' as const,
             onClick: onNext,
-            disabled: !isFormValid || isLoading,
-            loading: isLoading,
+            disabled: !isFormValid,
         });
 
         return buttons;
-    }, [selectedIntegration, onBack, onNext, showActions, isFormValid, isLoading]);
+    }, [selectedIntegration, onBack, onNext, showActions, isFormValid]);
 
     if (buttons.length === 0) {
         if (!showFooterLinks) {
@@ -85,7 +80,6 @@ const CardFooter: React.FC<CardFooterProps> = ({
                                 variant={button.type}
                                 onClick={button.onClick}
                                 disabled={button.disabled}
-                                loading={button.loading}
                                 iconPosition="end"
                             >
                                 {button.label}
