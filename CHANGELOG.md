@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.3](https://github.com/StackOneHQ/hub/compare/hub-v1.13.2...hub-v1.13.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* hide hub footer actions until connector data has loaded ([#233](https://github.com/StackOneHQ/hub/issues/233)) ([6055cb0](https://github.com/StackOneHQ/hub/commit/6055cb08770415cdd7e7c4458bef73e8d076acd2))
+
 ## [1.13.2](https://github.com/StackOneHQ/hub/compare/hub-v1.13.1...hub-v1.13.2) (2026-10-19)
 
 
