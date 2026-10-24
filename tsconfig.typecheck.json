@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "types": [
+      "chai",
+      "deep-eql",
+      "estree",
+      "hast",
+      "node",
+      "prismjs",
+      "prop-types",
+      "react",
+      "react-dom",
+      "resolve",
+      "unist"
+    ]
+  }
+}
