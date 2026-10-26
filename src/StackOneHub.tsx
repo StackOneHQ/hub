@@ -31,10 +31,7 @@ interface StackOneHubProps {
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCloseLabel?: string;
-    /**
-     * Shows a close control in the hub's header before a link succeeds, calling `onClose`;
-     * without it the hub only offers Close on its success screen.
-     */
+    /** Shows a close in the hub's header before a link succeeds; it calls `onClose`. */
     closable?: boolean;
     showFooterLinks?: boolean;
     debug?: boolean;

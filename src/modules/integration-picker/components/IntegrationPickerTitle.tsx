@@ -9,7 +9,6 @@ interface IntegrationPickerTitleProps {
     connectorData: ConnectorConfig | null;
     accountData: unknown;
     onBack: () => void;
-    /** Set, the header carries a close control that calls it. */
     onClose?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
     isLoading: boolean;
@@ -58,8 +57,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
-        // A failed hub or connector load has no header of its own; the close still has to be
-        // somewhere, so it stands alone where the list's would have put it.
         return onClose ? (
             <Flex
                 direction={FlexDirection.Horizontal}

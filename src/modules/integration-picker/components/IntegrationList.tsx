@@ -94,7 +94,6 @@ export const IntegrationListHeader: React.FC<{
     return (
         <>
             <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
-                {/* A column, so the row does not shrink the field to its content width. */}
                 <Flex grow direction={FlexDirection.Vertical} align={FlexAlign.Stretch}>
                     <Input
                         name="search"
@@ -105,7 +104,6 @@ export const IntegrationListHeader: React.FC<{
                     />
                 </Flex>
                 {onClose && (
-                    // The same inset the connector form's header gives the control.
                     <div style={{ padding: '0 12px 0 8px' }}>
                         <HeaderCloseButton onClick={onClose} />
                     </div>
