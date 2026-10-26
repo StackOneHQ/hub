@@ -89,8 +89,11 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         return activeIntegrations.length === 1;
     }, [hubData]);
 
-    // Only the close in the header: nothing loaded yet, or nothing could be.
-    const loneClose = Boolean(closable) && (isLoading || hasError);
+    // Only the close in the header: nothing loaded yet, or nothing could be, and no connector
+    // header to stand in. A load that follows a change of account still has the old connector
+    // cached, so loading is decided first.
+    const connectorHeader = !isLoading && connectorData?.config != null;
+    const loneClose = Boolean(closable) && !connectorHeader && (isLoading || hasError);
 
     const onBack = () => {
         setSelectedIntegration(null);

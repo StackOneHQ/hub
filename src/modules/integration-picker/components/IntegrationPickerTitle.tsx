@@ -40,6 +40,20 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     selectedProfileId,
     onProfileChange,
 }) => {
+    const loneClose = onClose ? (
+        <Flex
+            direction={FlexDirection.Horizontal}
+            align={FlexAlign.Center}
+            justify={FlexJustify.Right}
+        >
+            <HeaderCloseButton onClick={onClose} standalone />
+        </Flex>
+    ) : null;
+
+    if (isLoading) {
+        return loneClose;
+    }
+
     if (connectorData) {
         return (
             <CardTitle
@@ -57,15 +71,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
-        return onClose ? (
-            <Flex
-                direction={FlexDirection.Horizontal}
-                align={FlexAlign.Center}
-                justify={FlexJustify.Right}
-            >
-                <HeaderCloseButton onClick={onClose} standalone />
-            </Flex>
-        ) : null;
+        return loneClose;
     }
 
     return (
