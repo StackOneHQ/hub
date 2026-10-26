@@ -16,7 +16,7 @@ interface IntegrationPickerProps {
     onClose?: () => void;
     showFooterLinks?: boolean;
     onCloseLabel?: string;
-    onCancel?: () => void;
+    closable?: boolean;
     debug?: boolean;
 }
 
@@ -30,7 +30,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     dashboardUrl,
     showFooterLinks = true,
     onCloseLabel,
-    onCancel,
+    closable,
     debug,
 }) => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -124,7 +124,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}
-                        onCancel={onCancel}
+                        onClose={closable ? onClose : undefined}
                         guide={guide}
                         isLoading={isLoading}
                         hasError={hasError}

@@ -69,19 +69,6 @@ class StackOneHubElement extends HTMLElement {
 
     onSuccess?: SuccessHandler;
     onClose?: CloseHandler;
-    private _onCancel?: CloseHandler;
-
-    /** Setting it shows the header's close control, the same as the `closable` attribute. */
-    get onCancel(): CloseHandler | undefined {
-        return this._onCancel;
-    }
-
-    set onCancel(value: CloseHandler | undefined) {
-        this._onCancel = value;
-        if (this.root) {
-            this.render();
-        }
-    }
 
     get themeObject(): PartialMalachiteTheme | undefined {
         return this._themeObject;
@@ -97,7 +84,6 @@ class StackOneHubElement extends HTMLElement {
     connectedCallback() {
         // A property set before the element upgraded (markup parsed ahead of this script) is an
         // own property that shadows the accessor; hand it back through the setter.
-        this.upgradeProperty('onCancel');
         this.upgradeProperty('themeObject');
         if (!this.root) {
             this.root = createRoot(this);
@@ -105,7 +91,7 @@ class StackOneHubElement extends HTMLElement {
         this.render();
     }
 
-    private upgradeProperty(name: 'onCancel' | 'themeObject') {
+    private upgradeProperty(name: 'themeObject') {
         if (Object.prototype.hasOwnProperty.call(this, name)) {
             const value = this[name];
             delete this[name];
@@ -153,19 +139,6 @@ class StackOneHubElement extends HTMLElement {
             this.onClose?.();
         };
 
-        // Only a host that asked for the header's close control, by attribute or by property,
-        // gets it, so an existing embed keeps the header it has.
-        const handleCancel: CloseHandler = () => {
-            this.dispatchEvent(
-                new CustomEvent('cancel', {
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-            this._onCancel?.();
-        };
-        const closable = parseBool(this.getAttribute('closable')) || this._onCancel !== undefined;
-
         const theme: ThemeProp =
             this._themeObject ?? parseTheme(this.getAttribute('theme')) ?? 'light';
 
@@ -183,7 +156,7 @@ class StackOneHubElement extends HTMLElement {
                 debug: parseBool(this.getAttribute('debug')),
                 onSuccess: handleSuccess,
                 onClose: handleClose,
-                onCancel: closable ? handleCancel : undefined,
+                closable: parseBool(this.getAttribute('closable')),
             }),
         );
     }

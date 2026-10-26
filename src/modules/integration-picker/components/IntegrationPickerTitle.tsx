@@ -1,15 +1,16 @@
 import { Flex, FlexAlign, FlexDirection, FlexJustify } from '@stackone/malachite';
 import { ConnectorConfig, ConnectorProfile, HubData } from '../types';
 import { profileOptions } from '../utils/profileOptions';
-import { CancelButton } from './cancelButton';
 import CardTitle from './cardTitle';
+import { HeaderCloseButton } from './headerCloseButton';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
 interface IntegrationPickerTitleProps {
     connectorData: ConnectorConfig | null;
     accountData: unknown;
     onBack: () => void;
-    onCancel?: () => void;
+    /** Set, the header carries a close control that calls it. */
+    onClose?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
     isLoading: boolean;
     hasError: boolean;
@@ -27,7 +28,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     connectorData,
     accountData,
     onBack,
-    onCancel,
+    onClose,
     guide,
     isLoading,
     hasError,
@@ -45,7 +46,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
             <CardTitle
                 connectorData={connectorData}
                 onBack={accountData || hideBackButton ? undefined : onBack}
-                onCancel={onCancel}
+                onClose={onClose}
                 guide={guide}
                 profileOptions={profileOptions(profiles)}
                 selectedProfileId={selectedProfileId}
@@ -59,14 +60,14 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     if (!shouldShowListHeader) {
         // A failed hub or connector load has no header of its own; the close still has to be
         // somewhere, so it stands alone where the list's would have put it.
-        return onCancel ? (
+        return onClose ? (
             <Flex
                 direction={FlexDirection.Horizontal}
                 align={FlexAlign.Center}
                 justify={FlexJustify.Right}
             >
                 <div style={{ padding: '0 12px 0 8px' }}>
-                    <CancelButton onClick={onCancel} />
+                    <HeaderCloseButton onClick={onClose} />
                 </div>
             </Flex>
         ) : null;
@@ -78,7 +79,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             onSearchChange={onSearchChange}
-            onCancel={onCancel}
+            onClose={onClose}
         />
     );
 };

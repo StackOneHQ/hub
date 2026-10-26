@@ -17,7 +17,7 @@ import {
 import { useCallback, useMemo } from 'react';
 import { formatConnectorCategoryLabel, getConnectorCategoryKey } from '../../../shared/categories';
 import { Integration } from '../types';
-import { CancelButton } from './cancelButton';
+import { HeaderCloseButton } from './headerCloseButton';
 
 // The list renders only these, so the filter chips must be built from the same set:
 // a category carried only by inactive connectors would otherwise offer an empty filter.
@@ -68,8 +68,8 @@ export const IntegrationListHeader: React.FC<{
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
-    onCancel?: () => void;
-}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange, onCancel }) => {
+    onClose?: () => void;
+}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange, onClose }) => {
     const handleCategoryClick = useCallback(
         (category: string) => {
             if (selectedCategory === category) {
@@ -104,10 +104,10 @@ export const IntegrationListHeader: React.FC<{
                         onChange={onSearchChange}
                     />
                 </Flex>
-                {onCancel && (
+                {onClose && (
                     // The same inset the connector form's header gives the control.
                     <div style={{ padding: '0 12px 0 8px' }}>
-                        <CancelButton onClick={onCancel} />
+                        <HeaderCloseButton onClick={onClose} />
                     </div>
                 )}
             </Flex>
