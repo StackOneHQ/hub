@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.14.0](https://github.com/StackOneHQ/hub/compare/hub-v1.13.2...hub-v1.14.0) (2026-10-26)
+
+
+### Features
+
+* **ENG-3439:** close control in the hub's header before a link succeeds ([#236](https://github.com/StackOneHQ/hub/issues/236)) ([a54bd8b](https://github.com/StackOneHQ/hub/commit/a54bd8b6962ef513088caff19d9612872ff0f68e))
+
+
+### Bug Fixes
+
+* hide hub footer actions until connector data has loaded ([#233](https://github.com/StackOneHQ/hub/issues/233)) ([6055cb0](https://github.com/StackOneHQ/hub/commit/6055cb08770415cdd7e7c4458bef73e8d076acd2))
+
 ## [1.13.2](https://github.com/StackOneHQ/hub/compare/hub-v1.13.1...hub-v1.13.2) (2026-10-19)
 
 
