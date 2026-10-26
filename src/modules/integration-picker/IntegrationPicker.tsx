@@ -89,6 +89,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         return activeIntegrations.length === 1;
     }, [hubData]);
 
+    // Only the close in the header: nothing loaded yet, or nothing could be.
+    const loneClose = Boolean(closable) && (isLoading || hasError);
+
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
@@ -120,7 +123,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 )
             }
             title={
-                isLoading || connectionState.loading || connectionState.success ? null : (
+                connectionState.loading ||
+                connectionState.success ||
+                (isLoading && !closable) ? null : (
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}
@@ -147,7 +152,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
             height={height}
             padding="0"
             headerConfig={
-                selectedIntegration && !hasError
+                selectedIntegration && !loneClose
                     ? undefined
                     : {
                           padding: '0',

@@ -63,7 +63,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 align={FlexAlign.Center}
                 justify={FlexJustify.Right}
             >
-                <div style={{ padding: '0 12px 0 8px' }}>
+                <div style={{ padding: '8px 12px 8px 8px' }}>
                     <HeaderCloseButton onClick={onClose} />
                 </div>
             </Flex>
