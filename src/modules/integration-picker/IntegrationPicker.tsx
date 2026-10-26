@@ -146,8 +146,9 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
             }
             height={height}
             padding="0"
+            // The list header and the lone close on the error screen bring their own inset.
             headerConfig={
-                selectedIntegration
+                selectedIntegration && !hasError
                     ? undefined
                     : {
                           padding: '0',
