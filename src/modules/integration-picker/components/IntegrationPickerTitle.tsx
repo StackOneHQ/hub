@@ -1,5 +1,7 @@
+import { Flex, FlexAlign, FlexDirection, FlexJustify, Padded } from '@stackone/malachite';
 import { ConnectorConfig, ConnectorProfile, HubData } from '../types';
 import { profileOptions } from '../utils/profileOptions';
+import { CancelButton } from './cancelButton';
 import CardTitle from './cardTitle';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
@@ -55,7 +57,19 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
-        return null;
+        // A failed hub or connector load has no header of its own; the close still has to be
+        // somewhere, so it stands alone where the list's would have put it.
+        return onCancel ? (
+            <Flex
+                direction={FlexDirection.Horizontal}
+                align={FlexAlign.Center}
+                justify={FlexJustify.Right}
+            >
+                <Padded vertical="none" horizontal="small" fullHeight={false}>
+                    <CancelButton onClick={onCancel} />
+                </Padded>
+            </Flex>
+        ) : null;
     }
 
     return (

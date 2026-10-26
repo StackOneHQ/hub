@@ -175,7 +175,7 @@ Callbacks are dispatched as `CustomEvent`s on the host element:
 | `close` | `undefined` — emitted when the user closes the picker. |
 | `cancel` | `undefined` — emitted when the user leaves through the header's close control (`closable`). |
 
-Both events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries.
+All three events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries.
 
 #### JS-only properties
 
