@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         if: steps.release.outputs.paths_released != '[]'
         with:
-          node-version: '22.14.x'
+          node-version-file: .nvmrc
           registry-url: 'https://registry.npmjs.org'
       - name: Build
         if: steps.release.outputs.paths_released != '[]'
