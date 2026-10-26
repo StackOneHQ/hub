@@ -11,10 +11,12 @@ import {
     Typography,
 } from '@stackone/malachite';
 import { ConnectorConfig } from '../types';
+import { CancelButton } from './cancelButton';
 
 interface CardTitleProps {
     connectorData: ConnectorConfig;
     onBack?: () => void;
+    onCancel?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
     profileOptions?: DropdownItem[];
     selectedProfileId?: string;
@@ -24,6 +26,7 @@ interface CardTitleProps {
 const CardTitle: React.FC<CardTitleProps> = ({
     connectorData,
     onBack,
+    onCancel,
     guide,
     profileOptions,
     selectedProfileId,
@@ -81,6 +84,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         />
                     </>
                 )}
+                {onCancel && <CancelButton onClick={onCancel} />}
             </Flex>
         </Flex>
     );

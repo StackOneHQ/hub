@@ -162,6 +162,7 @@ All scalar `StackOneHub` props are exposed as kebab-case HTML attributes:
 | `account-id` | string | Optional account filter. |
 | `on-close-label` | string | Override the close-button label. |
 | `show-footer-links` | boolean attr | Presence = `true`, value `"false"` = `false`. |
+| `closable` | boolean attr | Shows a close control in the hub's header before a link succeeds; emits `cancel`. |
 | `debug` | boolean attr | Enables debug logging. |
 
 #### Events
@@ -172,6 +173,7 @@ Callbacks are dispatched as `CustomEvent`s on the host element:
 |---|---|
 | `success` | `{ id: string; provider: string }` — emitted when an account is connected. |
 | `close` | `undefined` — emitted when the user closes the picker. |
+| `cancel` | `undefined` — emitted when the user leaves through the header's close control (`closable`). |
 
 Both events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries.
 
@@ -183,6 +185,7 @@ For values that don't fit in HTML attributes, set them as JS properties on the e
 |---|---|---|
 | `el.onSuccess` | `(account) => void` | Function alternative to the `success` event. |
 | `el.onClose` | `() => void` | Function alternative to the `close` event. |
+| `el.onCancel` | `() => void` | Function alternative to the `cancel` event. |
 | `el.themeObject` | `PartialMalachiteTheme` | Structured theme; overrides the `theme` attribute. |
 
 #### Vanilla HTML

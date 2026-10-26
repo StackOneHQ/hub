@@ -31,6 +31,11 @@ interface StackOneHubProps {
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCloseLabel?: string;
+    /**
+     * The user left before linking: shows a close control in the hub's header, since the hub
+     * only offers `onClose` once a link has succeeded. Absent, the header stays as it is.
+     */
+    onCancel?: () => void;
     showFooterLinks?: boolean;
     debug?: boolean;
 }
@@ -46,6 +51,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     onSuccess,
     onClose,
     onCloseLabel,
+    onCancel,
     showFooterLinks,
     debug,
 }) => {
@@ -124,6 +130,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                         accountId={accountId}
                         onClose={onClose}
                         onCloseLabel={onCloseLabel}
+                        onCancel={onCancel}
                         showFooterLinks={showFooterLinks}
                         debug={debug}
                     />

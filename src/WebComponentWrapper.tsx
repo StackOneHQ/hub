@@ -18,6 +18,7 @@ const OBSERVED_ATTRS = [
     'account-id',
     'on-close-label',
     'show-footer-links',
+    'closable',
     'debug',
 ] as const;
 
@@ -68,6 +69,7 @@ class StackOneHubElement extends HTMLElement {
 
     onSuccess?: SuccessHandler;
     onClose?: CloseHandler;
+    onCancel?: CloseHandler;
 
     get themeObject(): PartialMalachiteTheme | undefined {
         return this._themeObject;
@@ -126,6 +128,18 @@ class StackOneHubElement extends HTMLElement {
             this.onClose?.();
         };
 
+        // Only a host that asked for the header's close control gets the event, so an existing
+        // embed keeps the header it has.
+        const handleCancel: CloseHandler = () => {
+            this.dispatchEvent(
+                new CustomEvent('cancel', {
+                    bubbles: true,
+                    composed: true,
+                }),
+            );
+            this.onCancel?.();
+        };
+
         const theme: ThemeProp =
             this._themeObject ?? parseTheme(this.getAttribute('theme')) ?? 'light';
 
@@ -143,6 +157,7 @@ class StackOneHubElement extends HTMLElement {
                 debug: parseBool(this.getAttribute('debug')),
                 onSuccess: handleSuccess,
                 onClose: handleClose,
+                onCancel: parseBool(this.getAttribute('closable')) ? handleCancel : undefined,
             }),
         );
     }

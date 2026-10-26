@@ -7,6 +7,7 @@ interface IntegrationPickerTitleProps {
     connectorData: ConnectorConfig | null;
     accountData: unknown;
     onBack: () => void;
+    onCancel?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
     isLoading: boolean;
     hasError: boolean;
@@ -24,6 +25,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     connectorData,
     accountData,
     onBack,
+    onCancel,
     guide,
     isLoading,
     hasError,
@@ -41,6 +43,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
             <CardTitle
                 connectorData={connectorData}
                 onBack={accountData || hideBackButton ? undefined : onBack}
+                onCancel={onCancel}
                 guide={guide}
                 profileOptions={profileOptions(profiles)}
                 selectedProfileId={selectedProfileId}
@@ -61,6 +64,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             onSearchChange={onSearchChange}
+            onCancel={onCancel}
         />
     );
 };

@@ -17,6 +17,7 @@ import {
 import { useCallback, useMemo } from 'react';
 import { formatConnectorCategoryLabel, getConnectorCategoryKey } from '../../../shared/categories';
 import { Integration } from '../types';
+import { CancelButton } from './cancelButton';
 
 // The list renders only these, so the filter chips must be built from the same set:
 // a category carried only by inactive connectors would otherwise offer an empty filter.
@@ -67,7 +68,8 @@ export const IntegrationListHeader: React.FC<{
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
-}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange }) => {
+    onCancel?: () => void;
+}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange, onCancel }) => {
     const handleCategoryClick = useCallback(
         (category: string) => {
             if (selectedCategory === category) {
@@ -91,13 +93,20 @@ export const IntegrationListHeader: React.FC<{
 
     return (
         <>
-            <Input
-                name="search"
-                placeholder="Search Integrations"
-                variant="ghost"
-                size="large"
-                onChange={onSearchChange}
-            />
+            <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
+                <Input
+                    name="search"
+                    placeholder="Search Integrations"
+                    variant="ghost"
+                    size="large"
+                    onChange={onSearchChange}
+                />
+                {onCancel && (
+                    <Padded vertical="none" horizontal="small" fullHeight={false}>
+                        <CancelButton onClick={onCancel} />
+                    </Padded>
+                )}
+            </Flex>
             {availableCategories.length > 1 && (
                 <>
                     <Divider />
