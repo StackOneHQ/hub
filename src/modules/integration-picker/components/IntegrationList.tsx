@@ -94,7 +94,9 @@ export const IntegrationListHeader: React.FC<{
     return (
         <>
             <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
-                <Flex grow>
+                {/* A column so the field stretches to the row rather than sitting at its own
+                    width in the middle of the header. */}
+                <Flex grow direction={FlexDirection.Vertical} align={FlexAlign.Stretch}>
                     <Input
                         name="search"
                         placeholder="Search Integrations"
