@@ -94,13 +94,15 @@ export const IntegrationListHeader: React.FC<{
     return (
         <>
             <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
-                <Input
-                    name="search"
-                    placeholder="Search Integrations"
-                    variant="ghost"
-                    size="large"
-                    onChange={onSearchChange}
-                />
+                <Flex grow>
+                    <Input
+                        name="search"
+                        placeholder="Search Integrations"
+                        variant="ghost"
+                        size="large"
+                        onChange={onSearchChange}
+                    />
+                </Flex>
                 {onCancel && (
                     <Padded vertical="none" horizontal="small" fullHeight={false}>
                         <CancelButton onClick={onCancel} />
