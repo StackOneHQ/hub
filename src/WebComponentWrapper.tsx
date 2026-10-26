@@ -95,10 +95,23 @@ class StackOneHubElement extends HTMLElement {
     }
 
     connectedCallback() {
+        // A property set before the element upgraded (markup parsed ahead of this script) is an
+        // own property that shadows the accessor; hand it back through the setter.
+        this.upgradeProperty('onCancel');
+        this.upgradeProperty('themeObject');
         if (!this.root) {
             this.root = createRoot(this);
         }
         this.render();
+    }
+
+    private upgradeProperty(name: 'onCancel' | 'themeObject') {
+        if (Object.prototype.hasOwnProperty.call(this, name)) {
+            const value = this[name];
+            delete this[name];
+            // biome-ignore lint/suspicious/noExplicitAny: the two accessors take different types
+            (this as any)[name] = value;
+        }
     }
 
     disconnectedCallback() {
