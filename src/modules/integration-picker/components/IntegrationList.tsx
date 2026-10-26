@@ -103,11 +103,7 @@ export const IntegrationListHeader: React.FC<{
                         onChange={onSearchChange}
                     />
                 </Flex>
-                {onClose && (
-                    <div style={{ padding: '0 12px 0 8px' }}>
-                        <HeaderCloseButton onClick={onClose} />
-                    </div>
-                )}
+                {onClose && <HeaderCloseButton onClick={onClose} standalone />}
             </Flex>
             {availableCategories.length > 1 && (
                 <>
