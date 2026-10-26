@@ -31,6 +31,8 @@ interface StackOneHubProps {
     onSuccess?: (account: { id: string; provider: string }) => void;
     onClose?: () => void;
     onCloseLabel?: string;
+    /** A close in the hub's header while the user can still leave, calling `onClose`; not during an OAuth round trip or after success. */
+    closable?: boolean;
     showFooterLinks?: boolean;
     debug?: boolean;
 }
@@ -46,6 +48,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     onSuccess,
     onClose,
     onCloseLabel,
+    closable,
     showFooterLinks,
     debug,
 }) => {
@@ -124,6 +127,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                         accountId={accountId}
                         onClose={onClose}
                         onCloseLabel={onCloseLabel}
+                        closable={closable}
                         showFooterLinks={showFooterLinks}
                         debug={debug}
                     />

@@ -16,6 +16,7 @@ interface IntegrationPickerProps {
     onClose?: () => void;
     showFooterLinks?: boolean;
     onCloseLabel?: string;
+    closable?: boolean;
     debug?: boolean;
 }
 
@@ -29,6 +30,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     dashboardUrl,
     showFooterLinks = true,
     onCloseLabel,
+    closable,
     debug,
 }) => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -87,6 +89,12 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         return activeIntegrations.length === 1;
     }, [hubData]);
 
+    // Only the close in the header: nothing loaded yet, or nothing could be, and no connector
+    // header to stand in. A load that follows a change of account still has the old connector
+    // cached, so loading is decided first.
+    const connectorHeader = !isLoading && connectorData?.config != null;
+    const loneClose = Boolean(closable) && !connectorHeader && (isLoading || hasError);
+
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
@@ -118,10 +126,13 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 )
             }
             title={
-                isLoading || connectionState.loading || connectionState.success ? null : (
+                connectionState.loading ||
+                connectionState.success ||
+                (isLoading && !closable) ? null : (
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}
+                        onClose={closable ? onClose : undefined}
                         guide={guide}
                         isLoading={isLoading}
                         hasError={hasError}
@@ -144,7 +155,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
             height={height}
             padding="0"
             headerConfig={
-                selectedIntegration
+                selectedIntegration && !loneClose
                     ? undefined
                     : {
                           padding: '0',
