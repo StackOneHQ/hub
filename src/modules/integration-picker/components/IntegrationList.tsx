@@ -94,8 +94,7 @@ export const IntegrationListHeader: React.FC<{
     return (
         <>
             <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
-                {/* A column so the field stretches to the row rather than sitting at its own
-                    width in the middle of the header. */}
+                {/* A column, so the row does not shrink the field to its content width. */}
                 <Flex grow direction={FlexDirection.Vertical} align={FlexAlign.Stretch}>
                     <Input
                         name="search"
@@ -106,9 +105,10 @@ export const IntegrationListHeader: React.FC<{
                     />
                 </Flex>
                 {onCancel && (
-                    <Padded vertical="none" horizontal="small" fullHeight={false}>
+                    // The same inset the connector form's header gives the control.
+                    <div style={{ padding: '0 12px 0 8px' }}>
                         <CancelButton onClick={onCancel} />
-                    </Padded>
+                    </div>
                 )}
             </Flex>
             {availableCategories.length > 1 && (

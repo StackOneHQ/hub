@@ -69,7 +69,19 @@ class StackOneHubElement extends HTMLElement {
 
     onSuccess?: SuccessHandler;
     onClose?: CloseHandler;
-    onCancel?: CloseHandler;
+    private _onCancel?: CloseHandler;
+
+    /** Setting it shows the header's close control, the same as the `closable` attribute. */
+    get onCancel(): CloseHandler | undefined {
+        return this._onCancel;
+    }
+
+    set onCancel(value: CloseHandler | undefined) {
+        this._onCancel = value;
+        if (this.root) {
+            this.render();
+        }
+    }
 
     get themeObject(): PartialMalachiteTheme | undefined {
         return this._themeObject;
@@ -128,8 +140,8 @@ class StackOneHubElement extends HTMLElement {
             this.onClose?.();
         };
 
-        // Only a host that asked for the header's close control gets the event, so an existing
-        // embed keeps the header it has.
+        // Only a host that asked for the header's close control, by attribute or by property,
+        // gets it, so an existing embed keeps the header it has.
         const handleCancel: CloseHandler = () => {
             this.dispatchEvent(
                 new CustomEvent('cancel', {
@@ -137,8 +149,9 @@ class StackOneHubElement extends HTMLElement {
                     composed: true,
                 }),
             );
-            this.onCancel?.();
+            this._onCancel?.();
         };
+        const closable = parseBool(this.getAttribute('closable')) || this._onCancel !== undefined;
 
         const theme: ThemeProp =
             this._themeObject ?? parseTheme(this.getAttribute('theme')) ?? 'light';
@@ -157,7 +170,7 @@ class StackOneHubElement extends HTMLElement {
                 debug: parseBool(this.getAttribute('debug')),
                 onSuccess: handleSuccess,
                 onClose: handleClose,
-                onCancel: parseBool(this.getAttribute('closable')) ? handleCancel : undefined,
+                onCancel: closable ? handleCancel : undefined,
             }),
         );
     }

@@ -1,4 +1,4 @@
-import { Flex, FlexAlign, FlexDirection, FlexJustify, Padded } from '@stackone/malachite';
+import { Flex, FlexAlign, FlexDirection, FlexJustify } from '@stackone/malachite';
 import { ConnectorConfig, ConnectorProfile, HubData } from '../types';
 import { profileOptions } from '../utils/profileOptions';
 import { CancelButton } from './cancelButton';
@@ -65,9 +65,9 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 align={FlexAlign.Center}
                 justify={FlexJustify.Right}
             >
-                <Padded vertical="none" horizontal="small" fullHeight={false}>
+                <div style={{ padding: '0 12px 0 8px' }}>
                     <CancelButton onClick={onCancel} />
-                </Padded>
+                </div>
             </Flex>
         ) : null;
     }

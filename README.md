@@ -175,7 +175,7 @@ Callbacks are dispatched as `CustomEvent`s on the host element:
 | `close` | `undefined` — emitted when the user closes the picker. |
 | `cancel` | `undefined` — emitted when the user leaves through the header's close control (`closable`). |
 
-All three events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries.
+All three events are dispatched with `bubbles: true` and `composed: true`, so they bubble and cross shadow-DOM boundaries. A host `<dialog>` that listens for `cancel` will hear the hub's `cancel` too.
 
 #### JS-only properties
 
@@ -185,7 +185,7 @@ For values that don't fit in HTML attributes, set them as JS properties on the e
 |---|---|---|
 | `el.onSuccess` | `(account) => void` | Function alternative to the `success` event. |
 | `el.onClose` | `() => void` | Function alternative to the `close` event. |
-| `el.onCancel` | `() => void` | Function alternative to the `cancel` event. |
+| `el.onCancel` | `() => void` | Function alternative to the `cancel` event; setting it shows the close control, the same as `closable`. |
 | `el.themeObject` | `PartialMalachiteTheme` | Structured theme; overrides the `theme` attribute. |
 
 #### Vanilla HTML
