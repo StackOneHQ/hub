@@ -54,10 +54,10 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         isFormValid,
 
         // Errors
-        errorHubData,
-        errorConnectorData,
+        loadError,
 
         // Actions
+        retryLoad,
         setSelectedIntegration,
         selectProfile,
         setFormData,
@@ -174,8 +174,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 hubData={hubData ?? null}
                 fields={fields}
                 notices={notices}
-                errorHubData={(errorHubData as Error) ?? null}
-                errorConnectorData={(errorConnectorData as Error) ?? null}
+                loadError={loadError}
+                onRetryLoad={retryLoad}
                 onSelect={setSelectedIntegration}
                 onChange={setFormData}
                 onValidationChange={handleValidationChange}

@@ -9,6 +9,19 @@ export const isErrorsDetails = (error: unknown): error is ErrorDetails => {
     return (error as ErrorDetails).statusCode !== undefined;
 };
 
+/** A request the API answered with an error: its status, its message, and anything else it sent. */
+export class HubRequestError extends Error {
+    readonly status: number;
+    readonly details: Record<string, unknown>;
+
+    constructor(status: number, message: string, details: Record<string, unknown> = {}) {
+        super(message);
+        this.name = 'HubRequestError';
+        this.status = status;
+        this.details = details;
+    }
+}
+
 export interface RequestParams {
     url: string;
     body?: Record<string, unknown>;
@@ -60,13 +73,10 @@ export async function request<T>({
             if (!response.ok) {
                 const errorResponse = (await response.json()) as ErrorDetails;
                 if (errorResponse && isErrorsDetails(errorResponse)) {
-                    const { statusCode, ...rest } = errorResponse;
-                    throw new Error(
-                        JSON.stringify({
-                            status: statusCode,
-                            ...rest,
-                        }),
-                    );
+                    const { statusCode, message, ...rest } = errorResponse;
+                    // Validation errors answer with a list of messages rather than one.
+                    const text = Array.isArray(message) ? message.join(', ') : (message ?? '');
+                    throw new HubRequestError(statusCode, String(text), rest);
                 }
             }
 
