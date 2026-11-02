@@ -2,8 +2,12 @@ import { HubRequestError } from '../../../shared/httpClient';
 
 export const LOAD_ERROR_TITLE = "Couldn't load integrations";
 export const LOAD_ERROR_FALLBACK = 'Check your connection and try again.';
+export const SERVER_ERROR_FALLBACK = 'Something went wrong on our side. Please try again.';
 export const CONNECT_ERROR_FALLBACK = 'An unexpected error occurred';
 export const PROVIDER_RESPONSE_FALLBACK = 'Please try again later';
+
+// A timeout or a rate limit clears on its own, like a server error.
+const RETRYABLE_CLIENT_STATUSES = [408, 429];
 
 export const errorStatus = (error: unknown): number | undefined =>
     error instanceof HubRequestError ? error.status : undefined;
@@ -15,15 +19,16 @@ export interface LoadErrorDescription {
 }
 
 /**
- * What the hub says when it cannot load what it needs to open. A server error or a failed
- * request can pass on a second try; a 4xx answer will not, so it gets no retry.
+ * What the hub says when it cannot load what it needs to open. A server error, a timeout, a
+ * rate limit or a failed request can pass on a second try; any other 4xx will not, so it gets
+ * no retry.
  */
 export const describeLoadError = (error: unknown): LoadErrorDescription => {
     if (error instanceof HubRequestError) {
         return {
             title: LOAD_ERROR_TITLE,
-            message: error.message || LOAD_ERROR_FALLBACK,
-            retryable: error.status >= 500,
+            message: error.message || SERVER_ERROR_FALLBACK,
+            retryable: error.status >= 500 || RETRYABLE_CLIENT_STATUSES.includes(error.status),
         };
     }
 

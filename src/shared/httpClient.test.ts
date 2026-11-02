@@ -42,4 +42,26 @@ describe('request', () => {
             new HubRequestError(400, 'name is required, key must be a string'),
         );
     });
+
+    it("keeps the status of an error answer that isn't the API's own shape", async () => {
+        const actual = request({
+            url: 'https://api.example/hub/connectors',
+            method: 'GET',
+            requestFn: answering(404, { message: 'Not Found' }),
+            logger: quietLogger,
+        });
+
+        await expect(actual).rejects.toMatchObject({ status: 404, message: 'Not Found' });
+    });
+
+    it('keeps the status of an error page with no JSON in it', async () => {
+        const actual = request({
+            url: 'https://api.example/hub/connectors',
+            method: 'GET',
+            requestFn: async () => new Response('<html>Bad Gateway</html>', { status: 502 }),
+            logger: quietLogger,
+        });
+
+        await expect(actual).rejects.toMatchObject({ status: 502, message: '' });
+    });
 });

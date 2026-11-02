@@ -9,8 +9,12 @@ import {
 } from '@stackone/malachite';
 import React from 'react';
 
-// A server message can run long, so it wraps inside the card instead of meeting its edges.
-const MESSAGE_STYLE: React.CSSProperties = { padding: '0 24px', textAlign: 'center' };
+// A server message can run long, or carry an id or URL with no spaces, so it wraps inside the card.
+const MESSAGE_STYLE: React.CSSProperties = {
+    padding: '0 24px',
+    textAlign: 'center',
+    overflowWrap: 'anywhere',
+};
 
 interface ErrorViewProps {
     message: string;

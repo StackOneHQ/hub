@@ -1,14 +1,5 @@
 import { HUB_VERSION, HUB_VERSION_HEADER } from './version';
 
-export interface ErrorDetails {
-    message: string;
-    statusCode: number;
-}
-
-export const isErrorsDetails = (error: unknown): error is ErrorDetails => {
-    return (error as ErrorDetails).statusCode !== undefined;
-};
-
 /** A request the API answered with an error: its status, its message, and anything else it sent. */
 export class HubRequestError extends Error {
     readonly status: number;
@@ -21,6 +12,32 @@ export class HubRequestError extends Error {
         this.details = details;
     }
 }
+
+const parseJson = (text: string): unknown => {
+    try {
+        return JSON.parse(text);
+    } catch {
+        return undefined;
+    }
+};
+
+// Validation errors answer with a list of messages rather than one.
+const messageText = (message: unknown): string => {
+    if (Array.isArray(message)) {
+        return message.join(', ');
+    }
+    return typeof message === 'string' ? message : '';
+};
+
+// Any error answer, including a gateway's own body or an HTML page, keeps the status it came with.
+const errorFromResponse = async (response: Response): Promise<HubRequestError> => {
+    const body = parseJson(await response.text());
+    if (body === null || typeof body !== 'object' || Array.isArray(body)) {
+        return new HubRequestError(response.status, '');
+    }
+    const { statusCode: _statusCode, message, ...rest } = body as Record<string, unknown>;
+    return new HubRequestError(response.status, messageText(message), rest);
+};
 
 export interface RequestParams {
     url: string;
@@ -71,13 +88,7 @@ export async function request<T>({
             return null;
         } else {
             if (!response.ok) {
-                const errorResponse = (await response.json()) as ErrorDetails;
-                if (errorResponse && isErrorsDetails(errorResponse)) {
-                    const { statusCode, message, ...rest } = errorResponse;
-                    // Validation errors answer with a list of messages rather than one.
-                    const text = Array.isArray(message) ? message.join(', ') : (message ?? '');
-                    throw new HubRequestError(statusCode, String(text), rest);
-                }
+                throw await errorFromResponse(response);
             }
 
             const text = await response.text();

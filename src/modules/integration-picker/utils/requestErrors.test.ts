@@ -5,6 +5,7 @@ import {
     LOAD_ERROR_FALLBACK,
     LOAD_ERROR_TITLE,
     PROVIDER_RESPONSE_FALLBACK,
+    SERVER_ERROR_FALLBACK,
     describeConnectError,
     describeLoadError,
     errorStatus,
@@ -50,8 +51,20 @@ describe('describeLoadError', () => {
         });
     });
 
-    it('falls back to the generic line when the server sent no message', () => {
-        expect(describeLoadError(new HubRequestError(500, '')).message).toBe(LOAD_ERROR_FALLBACK);
+    it('says the fault is on our side when the server sent no message', () => {
+        expect(describeLoadError(new HubRequestError(502, '')).message).toBe(SERVER_ERROR_FALLBACK);
+    });
+
+    it('offers a retry when the request timed out', () => {
+        expect(describeLoadError(new HubRequestError(408, 'Request timed out')).retryable).toBe(
+            true,
+        );
+    });
+
+    it('offers a retry when the hub was rate limited', () => {
+        expect(describeLoadError(new HubRequestError(429, 'Too many requests')).retryable).toBe(
+            true,
+        );
     });
 });
 
