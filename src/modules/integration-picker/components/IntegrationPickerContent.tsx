@@ -6,6 +6,7 @@ import {
     HubData,
     Integration,
 } from '../types';
+import { describeLoadError } from '../utils/requestErrors';
 import { ErrorView } from './views/ErrorView';
 import { IntegrationFormView } from './views/IntegrationFormView';
 import { IntegrationListView } from './views/IntegrationListView';
@@ -35,10 +36,10 @@ interface IntegrationPickerContentProps {
     search: string;
 
     // Errors
-    errorHubData: Error | null;
-    errorConnectorData: Error | null;
+    loadError: unknown;
 
     // Actions
+    onRetryLoad: () => void;
     onSelect: (integration: Integration) => void;
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
@@ -58,8 +59,8 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     notices,
     selectedCategory,
     search,
-    errorHubData,
-    errorConnectorData,
+    loadError,
+    onRetryLoad,
     onSelect,
     onChange,
     onValidationChange,
@@ -89,9 +90,12 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
 
     // Error states
     if (hasError) {
+        const { title, message, retryable } = describeLoadError(loadError);
         return (
             <ErrorView
-                message={errorHubData?.message || errorConnectorData?.message || 'Unknown error'}
+                title={title}
+                message={message}
+                onRetry={retryable ? onRetryLoad : undefined}
             />
         );
     }
