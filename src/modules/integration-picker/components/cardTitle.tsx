@@ -44,6 +44,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                 align={FlexAlign.Center}
                 gapSize={FlexGapSize.Small}
                 justify={FlexJustify.Left}
+                shrink
             >
                 {onBack && <Button variant="ghost" onClick={onBack} icon="←" size="small" />}
                 <Avatar
@@ -52,36 +53,45 @@ const CardTitle: React.FC<CardTitleProps> = ({
                     size={16}
                     fallback="placeholder"
                 />
-                <Typography.Text fontWeight="semi-bold" size="medium">
+                <Typography.EllipsisText
+                    fontWeight="semi-bold"
+                    size="medium"
+                    tooltip={connectorData.name}
+                    tooltipPlacement="bottom"
+                    tooltipWhenTruncated
+                >
                     {connectorData.name}
-                </Typography.Text>
+                </Typography.EllipsisText>
             </Flex>
             <Flex
                 direction={FlexDirection.Horizontal}
                 align={FlexAlign.Center}
                 gapSize={FlexGapSize.Small}
                 justify={FlexJustify.Right}
+                shrink
             >
                 {guide?.supportLink ? (
                     <Typography.LinkText href={guide.supportLink} target="_blank">
                         <Button variant="outline" size="small">
-                            Connection guide
+                            Guide
                         </Button>
                     </Typography.LinkText>
                 ) : null}
                 {profileOptions && profileOptions.length > 0 && (
                     <>
-                        <Typography.SecondaryText>Connector profile</Typography.SecondaryText>
-                        <Dropdown
-                            name="connector-profile"
-                            aria-label="Connector profile"
-                            size="small"
-                            minWidth={400}
-                            menuAlign="end"
-                            items={profileOptions}
-                            value={selectedProfileId}
-                            onItemSelected={(id) => id && onProfileChange?.(id)}
-                        />
+                        <Typography.SecondaryText>Profile</Typography.SecondaryText>
+                        <div style={{ minWidth: 0 }}>
+                            <Dropdown
+                                name="connector-profile"
+                                aria-label="Profile"
+                                size="small"
+                                minWidth={400}
+                                menuAlign="end"
+                                items={profileOptions}
+                                value={selectedProfileId}
+                                onItemSelected={(id) => id && onProfileChange?.(id)}
+                            />
+                        </div>
                     </>
                 )}
                 {onClose && <HeaderCloseButton onClick={onClose} />}
