@@ -1,3 +1,4 @@
+import { Question } from '@phosphor-icons/react';
 import {
     Avatar,
     Button,
@@ -70,17 +71,6 @@ const CardTitle: React.FC<CardTitleProps> = ({
                 justify={FlexJustify.Right}
                 shrink
             >
-                {guide?.supportLink ? (
-                    <Button
-                        variant="outline"
-                        size="small"
-                        href={guide.supportLink}
-                        target="_blank"
-                        aria-label="Connection guide"
-                    >
-                        Guide
-                    </Button>
-                ) : null}
                 {profileOptions && profileOptions.length > 0 && (
                     <>
                         <Typography.SecondaryText>Profile</Typography.SecondaryText>
@@ -98,6 +88,19 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         </div>
                     </>
                 )}
+                {guide?.supportLink ? (
+                    <Button
+                        variant="ghost"
+                        size="small"
+                        href={guide.supportLink}
+                        target="_blank"
+                        aria-label="Connection guide"
+                        tooltip="Connection guide"
+                        tooltipPlacement="bottom"
+                        icon={<Question size={16} />}
+                        iconOnly
+                    />
+                ) : null}
                 {onClose && <HeaderCloseButton onClick={onClose} />}
             </Flex>
         </Flex>
