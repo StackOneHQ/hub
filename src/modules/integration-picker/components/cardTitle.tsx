@@ -71,19 +71,23 @@ const CardTitle: React.FC<CardTitleProps> = ({
                 shrink
             >
                 {guide?.supportLink ? (
-                    <Typography.LinkText href={guide.supportLink} target="_blank">
-                        <Button variant="outline" size="small">
-                            Guide
-                        </Button>
-                    </Typography.LinkText>
+                    <Button
+                        variant="outline"
+                        size="small"
+                        href={guide.supportLink}
+                        target="_blank"
+                        aria-label="Connection guide"
+                    >
+                        Guide
+                    </Button>
                 ) : null}
                 {profileOptions && profileOptions.length > 0 && (
                     <>
                         <Typography.SecondaryText>Profile</Typography.SecondaryText>
-                        <div style={{ minWidth: 0 }}>
+                        <div style={{ minWidth: 96 }}>
                             <Dropdown
                                 name="connector-profile"
-                                aria-label="Profile"
+                                aria-label="Connector profile"
                                 size="small"
                                 minWidth={400}
                                 menuAlign="end"
