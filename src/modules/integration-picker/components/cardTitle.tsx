@@ -1,4 +1,3 @@
-import { Question } from '@phosphor-icons/react';
 import {
     Avatar,
     Button,
@@ -9,6 +8,7 @@ import {
     FlexDirection,
     FlexGapSize,
     FlexJustify,
+    InfoIcon,
     Typography,
 } from '@stackone/malachite';
 import { ConnectorConfig } from '../types';
@@ -77,7 +77,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         <div style={{ minWidth: 96 }}>
                             <Dropdown
                                 name="connector-profile"
-                                aria-label="Connector profile"
+                                aria-label="Profile"
                                 size="small"
                                 minWidth={400}
                                 menuAlign="end"
@@ -97,7 +97,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         aria-label="Connection guide"
                         tooltip="Connection guide"
                         tooltipPlacement="bottom"
-                        icon={<Question size={20} />}
+                        icon={<InfoIcon size={16} />}
                         iconOnly
                     />
                 ) : null}
