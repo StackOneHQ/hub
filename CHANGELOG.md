@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.1](https://github.com/StackOneHQ/hub/compare/hub-v1.14.0...hub-v1.14.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **ENG-3925:** keep the hub header's profile picker inside the panel ([#245](https://github.com/StackOneHQ/hub/issues/245)) ([13cffe5](https://github.com/StackOneHQ/hub/commit/13cffe5c9a383bc6aaca3c95e1d960adf542f5c0))
+* show a readable error with a retry when the hub fails to load ([#242](https://github.com/StackOneHQ/hub/issues/242)) ([acef93a](https://github.com/StackOneHQ/hub/commit/acef93a420c5a0be4f5ee8bec545c7530008e081))
+
 ## [1.14.0](https://github.com/StackOneHQ/hub/compare/hub-v1.13.2...hub-v1.14.0) (2026-10-26)
 
 
