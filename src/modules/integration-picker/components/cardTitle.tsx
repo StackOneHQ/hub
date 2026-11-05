@@ -97,7 +97,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         aria-label="Connection guide"
                         tooltip="Connection guide"
                         tooltipPlacement="bottom"
-                        icon={<InfoIcon size={16} />}
+                        icon={<InfoIcon size={18} />}
                         iconOnly
                     />
                 ) : null}
