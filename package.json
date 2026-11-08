@@ -1,6 +1,6 @@
 {
     "name": "@stackone/hub",
-    "version": "1.14.0",
+    "version": "1.14.1",
     "devEngines": {
         "runtime": {
             "name": "node",

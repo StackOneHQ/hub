@@ -18,20 +18,10 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
+import { describeConnectError, errorStatus } from '../utils/requestErrors';
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
 // Shared retry configuration for queries
-const errorStatus = (error: unknown): number | undefined => {
-    if (error && typeof error === 'object' && 'message' in error) {
-        try {
-            return JSON.parse(error.message as string).status;
-        } catch {
-            return undefined;
-        }
-    }
-    return undefined;
-};
-
 const RETRY_CONFIG = {
     retry: (failureCount: number, error: unknown) => {
         // Don't retry on authentication errors (401/403)
@@ -144,6 +134,7 @@ export const useIntegrationPicker = ({
         data: accountData,
         isLoading: isLoadingAccountData,
         error: errorAccountData,
+        refetch: refetchAccountData,
     } = useQuery({
         queryKey: ['accountData', accountId],
         queryFn: async () => {
@@ -158,6 +149,7 @@ export const useIntegrationPicker = ({
         data: hubData,
         isLoading: isLoadingHubData,
         error: errorHubData,
+        refetch: refetchHubData,
     } = useQuery({
         queryKey: ['hubData', accountData?.provider],
         queryFn: () => {
@@ -207,6 +199,7 @@ export const useIntegrationPicker = ({
         data: connectorData,
         isLoading: isLoadingConnectorData,
         error: errorConnectorData,
+        refetch: refetchConnectorData,
     } = useQuery({
         queryKey: ['connectorData', configIntegrationId],
         queryFn: () =>
@@ -716,38 +709,10 @@ export const useIntegrationPicker = ({
 
             handleSuccess(successData);
         } catch (error) {
-            let errorMessage = 'An unexpected error occurred';
-            let providerResponse = 'Please try again later';
-
-            try {
-                const parsedError = JSON.parse((error as Error).message) as {
-                    status: number;
-                    message: string;
-                    provider_response?: string;
-                };
-
-                try {
-                    const doubleParsedError = JSON.parse(parsedError.message) as {
-                        message: string;
-                        provider_response: string;
-                    };
-                    errorMessage = doubleParsedError.message || errorMessage;
-                    providerResponse = doubleParsedError.provider_response || providerResponse;
-                } catch {
-                    errorMessage = parsedError.message || errorMessage;
-                    providerResponse = parsedError.provider_response || providerResponse;
-                }
-            } catch {
-                errorMessage = (error as Error).message || errorMessage;
-            }
-
             setConnectionState({
                 loading: false,
                 success: false,
-                error: {
-                    message: errorMessage,
-                    provider_response: providerResponse,
-                },
+                error: describeConnectError(error),
             });
         }
     }, [
@@ -786,6 +751,26 @@ export const useIntegrationPicker = ({
 
     const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
+    const loadError = errorAccountData ?? errorHubData ?? errorConnectorData ?? null;
+
+    const retryLoad = useCallback(() => {
+        if (errorAccountData) {
+            refetchAccountData();
+        }
+        if (errorHubData) {
+            refetchHubData();
+        }
+        if (errorConnectorData) {
+            refetchConnectorData();
+        }
+    }, [
+        errorAccountData,
+        errorHubData,
+        errorConnectorData,
+        refetchAccountData,
+        refetchHubData,
+        refetchConnectorData,
+    ]);
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: selectedIntegration is intentionally used to reset editing state when integration changes
     useEffect(() => {
@@ -842,8 +827,10 @@ export const useIntegrationPicker = ({
         errorHubData,
         errorConnectorData,
         errorAccountData,
+        loadError,
 
         // Actions
+        retryLoad,
         setSelectedIntegration,
         selectProfile,
         setFormData: setFormDataCallback,
