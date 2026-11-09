@@ -1,6 +1,5 @@
 import { Flex, FlexAlign, FlexDirection, FlexJustify } from '@stackone/malachite';
-import { ConnectorConfig, ConnectorProfile, HubData } from '../types';
-import { profileOptions } from '../utils/profileOptions';
+import { ConnectorConfig, HubData } from '../types';
 import CardTitle from './cardTitle';
 import { HeaderCloseButton } from './headerCloseButton';
 import { IntegrationListHeader } from './views/IntegrationListView';
@@ -18,9 +17,6 @@ interface IntegrationPickerTitleProps {
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
     hideBackButton?: boolean;
-    profiles?: ConnectorProfile[];
-    selectedProfileId?: string;
-    onProfileChange?: (integrationId: string) => void;
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -36,9 +32,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     onCategoryChange,
     onSearchChange,
     hideBackButton,
-    profiles,
-    selectedProfileId,
-    onProfileChange,
 }) => {
     const loneClose = onClose ? (
         <Flex
@@ -61,9 +54,6 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 onBack={accountData || hideBackButton ? undefined : onBack}
                 onClose={onClose}
                 guide={guide}
-                profileOptions={profileOptions(profiles)}
-                selectedProfileId={selectedProfileId}
-                onProfileChange={onProfileChange}
             />
         );
     }

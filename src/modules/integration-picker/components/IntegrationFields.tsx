@@ -226,6 +226,7 @@ const ErrorBlock = ({ error }: { error?: { message: string; provider_response: s
 };
 interface IntegrationFieldsProps {
     fields: Array<ConnectorConfigField>;
+    profilePicker?: React.ReactNode;
     notices?: Array<AuthenticationNotice>;
     error?: {
         message: string;
@@ -241,9 +242,10 @@ interface IntegrationFieldsProps {
 
 const NoFieldsView: React.FC<{
     integrationName: string;
+    profilePicker?: React.ReactNode;
     error?: { message: string; provider_response: string };
     notices?: AuthenticationNotice[];
-}> = ({ integrationName, error, notices = [] }) => {
+}> = ({ integrationName, profilePicker, error, notices = [] }) => {
     // No fields for a notice to sit above or below, so position is irrelevant here —
     // render every notice together rather than orphaning bottom ones under the card.
     return (
@@ -257,6 +259,7 @@ const NoFieldsView: React.FC<{
                     <ErrorBlock error={error} />
                 </Alert>
             )}
+            {profilePicker}
             {notices.map((n) => (
                 <Alert key={n.key} type={n.type} message={n.description} hasMargin={false} />
             ))}
@@ -284,6 +287,7 @@ const NoFieldsView: React.FC<{
 
 export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     fields,
+    profilePicker,
     notices = [],
     onChange,
     error,
@@ -354,7 +358,14 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     };
 
     if (displayedFields.length === 0) {
-        return <NoFieldsView integrationName={integrationName} error={error} notices={notices} />;
+        return (
+            <NoFieldsView
+                integrationName={integrationName}
+                profilePicker={profilePicker}
+                error={error}
+                notices={notices}
+            />
+        );
     }
 
     return (
@@ -366,6 +377,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
                     </Alert>
                 )}
                 <Form>
+                    {profilePicker}
                     {displayedFields.map((field) => {
                         const key =
                             typeof field.key === 'object'

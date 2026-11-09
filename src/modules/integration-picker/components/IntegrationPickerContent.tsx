@@ -3,10 +3,12 @@ import {
     AuthenticationNotice,
     ConnectorConfig,
     ConnectorConfigField,
+    ConnectorProfile,
     HubData,
     Integration,
 } from '../types';
 import { describeLoadError } from '../utils/requestErrors';
+import { ProfilePicker } from './ProfilePicker';
 import { ErrorView } from './views/ErrorView';
 import { IntegrationFormView } from './views/IntegrationFormView';
 import { IntegrationListView } from './views/IntegrationListView';
@@ -31,6 +33,7 @@ interface IntegrationPickerContentProps {
     connectorData: ConnectorConfig | null;
     hubData: HubData | null;
     fields: ConnectorConfigField[];
+    profiles?: ConnectorProfile[];
     notices?: AuthenticationNotice[];
     selectedCategory: string | null;
     search: string;
@@ -44,6 +47,7 @@ interface IntegrationPickerContentProps {
     onChange: (data: Record<string, string>) => void;
     onValidationChange?: (isValid: boolean) => void;
     onCancelOAuth?: () => void;
+    onProfileChange: (integrationId: string) => void;
     editingSecrets?: Set<string>;
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
@@ -56,6 +60,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     connectorData,
     hubData,
     fields,
+    profiles,
     notices,
     selectedCategory,
     search,
@@ -65,6 +70,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     onChange,
     onValidationChange,
     onCancelOAuth,
+    onProfileChange,
     editingSecrets,
     setEditingSecrets,
 }) => {
@@ -126,6 +132,13 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
             <IntegrationFormView
                 key={selectedIntegration?.integration_id}
                 fields={fields}
+                profilePicker={
+                    <ProfilePicker
+                        profiles={profiles}
+                        selectedProfileId={selectedIntegration.integration_id}
+                        onProfileChange={onProfileChange}
+                    />
+                }
                 notices={notices}
                 error={connectionState.error}
                 onChange={onChange}
