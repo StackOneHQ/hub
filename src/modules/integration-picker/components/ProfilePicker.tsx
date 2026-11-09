@@ -2,6 +2,8 @@ import { Dropdown } from '@stackone/malachite';
 import { ConnectorProfile } from '../types';
 import { profileOptions } from '../utils/profileOptions';
 
+const PICKER_STYLE: React.CSSProperties = { padding: '28px 14px 0' };
+
 interface ProfilePickerProps {
     profiles?: ConnectorProfile[];
     selectedProfileId?: string;
@@ -19,17 +21,19 @@ export const ProfilePicker: React.FC<ProfilePickerProps> = ({
     }
 
     return (
-        <Dropdown
-            name="connector-profile"
-            label="Connection profile"
-            required
-            size="large"
-            fullWidth
-            subtitleLayout="stacked"
-            showSubtitleInTrigger
-            items={items}
-            value={selectedProfileId}
-            onItemSelected={(id) => id && onProfileChange(id)}
-        />
+        <div style={PICKER_STYLE}>
+            <Dropdown
+                name="connector-profile"
+                label="Connection profile"
+                required
+                size="large"
+                fullWidth
+                subtitleLayout="stacked"
+                showSubtitleInTrigger
+                items={items}
+                value={selectedProfileId}
+                onItemSelected={(id) => id && onProfileChange(id)}
+            />
+        </div>
     );
 };

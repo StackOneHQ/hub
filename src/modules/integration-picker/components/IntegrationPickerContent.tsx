@@ -15,6 +15,15 @@ import { IntegrationListView } from './views/IntegrationListView';
 import { LoadingView } from './views/LoadingView';
 import { SuccessView } from './views/SuccessView';
 
+// The picker sits outside the keyed form so a profile switch does not remount it and drop its focus.
+const FORM_LAYOUT_STYLE: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+};
+
+const FORM_REGION_STYLE: React.CSSProperties = { flex: 1, minHeight: 0 };
+
 interface IntegrationPickerContentProps {
     // State flags
     isLoading: boolean;
@@ -129,25 +138,27 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     // Form view (when integration is selected and connector data is available)
     if (connectorData) {
         return (
-            <IntegrationFormView
-                key={selectedIntegration?.integration_id}
-                fields={fields}
-                profilePicker={
-                    <ProfilePicker
-                        profiles={profiles}
-                        selectedProfileId={selectedIntegration.integration_id}
-                        onProfileChange={onProfileChange}
+            <div style={FORM_LAYOUT_STYLE}>
+                <ProfilePicker
+                    profiles={profiles}
+                    selectedProfileId={selectedIntegration.integration_id}
+                    onProfileChange={onProfileChange}
+                />
+                <div style={FORM_REGION_STYLE}>
+                    <IntegrationFormView
+                        key={selectedIntegration.integration_id}
+                        fields={fields}
+                        notices={notices}
+                        error={connectionState.error}
+                        onChange={onChange}
+                        onValidationChange={onValidationChange}
+                        integrationName={connectorData.name}
+                        connectorKey={connectorData.key}
+                        editingSecrets={editingSecrets}
+                        setEditingSecrets={setEditingSecrets}
                     />
-                }
-                notices={notices}
-                error={connectionState.error}
-                onChange={onChange}
-                onValidationChange={onValidationChange}
-                integrationName={connectorData.name}
-                connectorKey={connectorData.key}
-                editingSecrets={editingSecrets}
-                setEditingSecrets={setEditingSecrets}
-            />
+                </div>
+            </div>
         );
     }
 

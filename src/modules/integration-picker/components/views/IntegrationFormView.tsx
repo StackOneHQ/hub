@@ -4,7 +4,6 @@ import { IntegrationForm } from '../IntegrationFields';
 
 interface IntegrationFormViewProps {
     fields: ConnectorConfigField[];
-    profilePicker?: React.ReactNode;
     notices?: AuthenticationNotice[];
     error?: {
         message: string;
@@ -20,7 +19,6 @@ interface IntegrationFormViewProps {
 
 export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     fields,
-    profilePicker,
     notices,
     error,
     onChange,
@@ -33,7 +31,6 @@ export const IntegrationFormView: React.FC<IntegrationFormViewProps> = ({
     return (
         <IntegrationForm
             fields={fields}
-            profilePicker={profilePicker}
             notices={notices}
             error={error}
             onChange={onChange}
