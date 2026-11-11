@@ -146,9 +146,6 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                             hasOnlyOneIntegration
                         }
                         connectorData={connectorData?.config ?? null}
-                        profiles={profiles}
-                        selectedProfileId={selectedIntegration?.integration_id}
-                        onProfileChange={selectProfile}
                     />
                 )
             }
@@ -173,6 +170,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 connectorData={connectorData?.config ?? null}
                 hubData={hubData ?? null}
                 fields={fields}
+                profiles={profiles}
                 notices={notices}
                 loadError={loadError}
                 onRetryLoad={retryLoad}
@@ -180,6 +178,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 onChange={setFormData}
                 onValidationChange={handleValidationChange}
                 onCancelOAuth={handleCancelOAuth}
+                onProfileChange={selectProfile}
                 selectedCategory={selectedCategory}
                 search={search}
                 editingSecrets={editingSecrets}
