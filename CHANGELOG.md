@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.14.1](https://github.com/StackOneHQ/hub/compare/hub-v1.14.0...hub-v1.14.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **ENG-3925:** keep the hub header's profile picker inside the panel ([#245](https://github.com/StackOneHQ/hub/issues/245)) ([13cffe5](https://github.com/StackOneHQ/hub/commit/13cffe5c9a383bc6aaca3c95e1d960adf542f5c0))
+* show a readable error with a retry when the hub fails to load ([#242](https://github.com/StackOneHQ/hub/issues/242)) ([acef93a](https://github.com/StackOneHQ/hub/commit/acef93a420c5a0be4f5ee8bec545c7530008e081))
+
+## [1.14.0](https://github.com/StackOneHQ/hub/compare/hub-v1.13.2...hub-v1.14.0) (2026-10-26)
+
+
+### Features
+
+* **ENG-3439:** close control in the hub's header before a link succeeds ([#236](https://github.com/StackOneHQ/hub/issues/236)) ([a54bd8b](https://github.com/StackOneHQ/hub/commit/a54bd8b6962ef513088caff19d9612872ff0f68e))
+
+
+### Bug Fixes
+
+* hide hub footer actions until connector data has loaded ([#233](https://github.com/StackOneHQ/hub/issues/233)) ([6055cb0](https://github.com/StackOneHQ/hub/commit/6055cb08770415cdd7e7c4458bef73e8d076acd2))
+
+## [1.13.2](https://github.com/StackOneHQ/hub/compare/hub-v1.13.1...hub-v1.13.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **ENG-2005:** render connector logos through malachite's Avatar no-logo placeholder ([#230](https://github.com/StackOneHQ/hub/issues/230)) ([dace4fd](https://github.com/StackOneHQ/hub/commit/dace4fda3c8e8a94d24076c775201767dcf09972))
+
 ## [1.13.1](https://github.com/StackOneHQ/hub/compare/hub-v1.13.0...hub-v1.13.1) (2026-10-15)
 
 

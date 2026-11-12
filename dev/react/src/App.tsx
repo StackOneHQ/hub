@@ -18,6 +18,7 @@ declare module 'react' {
                     'account-id'?: string;
                     'on-close-label'?: string;
                     'show-footer-links'?: boolean;
+                    closable?: boolean;
                     debug?: boolean;
                 },
                 HTMLElement

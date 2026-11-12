@@ -1,12 +1,15 @@
+import { Flex, FlexAlign, FlexDirection, FlexJustify } from '@stackone/malachite';
 import { ConnectorConfig, ConnectorProfile, HubData } from '../types';
 import { profileOptions } from '../utils/profileOptions';
 import CardTitle from './cardTitle';
+import { HeaderCloseButton } from './headerCloseButton';
 import { IntegrationListHeader } from './views/IntegrationListView';
 
 interface IntegrationPickerTitleProps {
     connectorData: ConnectorConfig | null;
     accountData: unknown;
     onBack: () => void;
+    onClose?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
     isLoading: boolean;
     hasError: boolean;
@@ -24,6 +27,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     connectorData,
     accountData,
     onBack,
+    onClose,
     guide,
     isLoading,
     hasError,
@@ -36,11 +40,26 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     selectedProfileId,
     onProfileChange,
 }) => {
+    const loneClose = onClose ? (
+        <Flex
+            direction={FlexDirection.Horizontal}
+            align={FlexAlign.Center}
+            justify={FlexJustify.Right}
+        >
+            <HeaderCloseButton onClick={onClose} standalone />
+        </Flex>
+    ) : null;
+
+    if (isLoading) {
+        return loneClose;
+    }
+
     if (connectorData) {
         return (
             <CardTitle
                 connectorData={connectorData}
                 onBack={accountData || hideBackButton ? undefined : onBack}
+                onClose={onClose}
                 guide={guide}
                 profileOptions={profileOptions(profiles)}
                 selectedProfileId={selectedProfileId}
@@ -52,7 +71,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     const shouldShowListHeader = !isLoading && !hasError && hubData?.integrations;
 
     if (!shouldShowListHeader) {
-        return null;
+        return loneClose;
     }
 
     return (
@@ -61,6 +80,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             onSearchChange={onSearchChange}
+            onClose={onClose}
         />
     );
 };
