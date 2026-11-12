@@ -16,6 +16,7 @@ interface IntegrationPickerProps {
     onClose?: () => void;
     showFooterLinks?: boolean;
     onCloseLabel?: string;
+    closable?: boolean;
     debug?: boolean;
 }
 
@@ -29,6 +30,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     dashboardUrl,
     showFooterLinks = true,
     onCloseLabel,
+    closable,
     debug,
 }) => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -40,6 +42,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         accountData,
         connectorData,
         selectedIntegration,
+        profiles,
         fields,
         notices,
         guide,
@@ -51,11 +54,12 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         isFormValid,
 
         // Errors
-        errorHubData,
-        errorConnectorData,
+        loadError,
 
         // Actions
+        retryLoad,
         setSelectedIntegration,
+        selectProfile,
         setFormData,
         setIsFormValid,
         handleConnect,
@@ -85,6 +89,12 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
         return activeIntegrations.length === 1;
     }, [hubData]);
 
+    // Only the close in the header: nothing loaded yet, or nothing could be, and no connector
+    // header to stand in. A load that follows a change of account still has the old connector
+    // cached, so loading is decided first.
+    const connectorHeader = !isLoading && connectorData?.config != null;
+    const loneClose = Boolean(closable) && !connectorHeader && (isLoading || hasError);
+
     const onBack = () => {
         setSelectedIntegration(null);
         resetConnectionState();
@@ -105,20 +115,24 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 ) : (
                     <CardFooter
                         selectedIntegration={selectedIntegration}
-                        showActions={!connectionState.loading && !connectionState.success}
+                        showActions={
+                            !isLoading && !connectionState.loading && !connectionState.success
+                        }
                         onBack={accountData || hasOnlyOneIntegration ? undefined : onBack}
                         onNext={handleConnect}
                         isFormValid={isFormValid}
-                        isLoading={isLoading}
                         showFooterLinks={showFooterLinks}
                     />
                 )
             }
             title={
-                isLoading || connectionState.loading || connectionState.success ? null : (
+                connectionState.loading ||
+                connectionState.success ||
+                (isLoading && !closable) ? null : (
                     <IntegrationPickerTitle
                         accountData={accountData}
                         onBack={onBack}
+                        onClose={closable ? onClose : undefined}
                         guide={guide}
                         isLoading={isLoading}
                         hasError={hasError}
@@ -132,13 +146,16 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                             hasOnlyOneIntegration
                         }
                         connectorData={connectorData?.config ?? null}
+                        profiles={profiles}
+                        selectedProfileId={selectedIntegration?.integration_id}
+                        onProfileChange={selectProfile}
                     />
                 )
             }
             height={height}
             padding="0"
             headerConfig={
-                selectedIntegration
+                selectedIntegration && !loneClose
                     ? undefined
                     : {
                           padding: '0',
@@ -157,8 +174,8 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                 hubData={hubData ?? null}
                 fields={fields}
                 notices={notices}
-                errorHubData={(errorHubData as Error) ?? null}
-                errorConnectorData={(errorConnectorData as Error) ?? null}
+                loadError={loadError}
+                onRetryLoad={retryLoad}
                 onSelect={setSelectedIntegration}
                 onChange={setFormData}
                 onValidationChange={handleValidationChange}

@@ -18,6 +18,7 @@ const OBSERVED_ATTRS = [
     'account-id',
     'on-close-label',
     'show-footer-links',
+    'closable',
     'debug',
 ] as const;
 
@@ -143,6 +144,7 @@ class StackOneHubElement extends HTMLElement {
                 debug: parseBool(this.getAttribute('debug')),
                 onSuccess: handleSuccess,
                 onClose: handleClose,
+                closable: parseBool(this.getAttribute('closable')),
             }),
         );
     }

@@ -4,6 +4,7 @@ import {
     AccountData,
     ConnectorConfig,
     HubConnectorConfig,
+    HubConnectorProfiles,
     HubData,
 } from './types';
 
@@ -28,6 +29,20 @@ export const getHubData = async (token: string, baseUrl: string, provider?: stri
 export const getConnectorConfig = async (baseUrl: string, token: string, integrationId: string) => {
     return await getRequest<HubConnectorConfig>({
         url: `${baseUrl}/hub/connectors/${integrationId}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-hub-session-token': token,
+        },
+    });
+};
+
+export const getConnectorProfiles = async (
+    baseUrl: string,
+    token: string,
+    integrationId: string,
+) => {
+    return await getRequest<HubConnectorProfiles>({
+        url: `${baseUrl}/hub/connectors/${integrationId}/profiles`,
         headers: {
             'Content-Type': 'application/json',
             'x-hub-session-token': token,

@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.14.1](https://github.com/StackOneHQ/hub/compare/hub-v1.14.0...hub-v1.14.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **ENG-3925:** keep the hub header's profile picker inside the panel ([#245](https://github.com/StackOneHQ/hub/issues/245)) ([13cffe5](https://github.com/StackOneHQ/hub/commit/13cffe5c9a383bc6aaca3c95e1d960adf542f5c0))
+* show a readable error with a retry when the hub fails to load ([#242](https://github.com/StackOneHQ/hub/issues/242)) ([acef93a](https://github.com/StackOneHQ/hub/commit/acef93a420c5a0be4f5ee8bec545c7530008e081))
+
+## [1.14.0](https://github.com/StackOneHQ/hub/compare/hub-v1.13.2...hub-v1.14.0) (2026-10-26)
+
+
+### Features
+
+* **ENG-3439:** close control in the hub's header before a link succeeds ([#236](https://github.com/StackOneHQ/hub/issues/236)) ([a54bd8b](https://github.com/StackOneHQ/hub/commit/a54bd8b6962ef513088caff19d9612872ff0f68e))
+
+
+### Bug Fixes
+
+* hide hub footer actions until connector data has loaded ([#233](https://github.com/StackOneHQ/hub/issues/233)) ([6055cb0](https://github.com/StackOneHQ/hub/commit/6055cb08770415cdd7e7c4458bef73e8d076acd2))
+
+## [1.13.2](https://github.com/StackOneHQ/hub/compare/hub-v1.13.1...hub-v1.13.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **ENG-2005:** render connector logos through malachite's Avatar no-logo placeholder ([#230](https://github.com/StackOneHQ/hub/issues/230)) ([dace4fd](https://github.com/StackOneHQ/hub/commit/dace4fda3c8e8a94d24076c775201767dcf09972))
+
+## [1.13.1](https://github.com/StackOneHQ/hub/compare/hub-v1.13.0...hub-v1.13.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **ENG-3123:** readable connector profile menu ([#228](https://github.com/StackOneHQ/hub/issues/228)) ([451d9ee](https://github.com/StackOneHQ/hub/commit/451d9eee63b567a3d55a9a5c84a213bfc089de6a))
+
+## [1.13.0](https://github.com/StackOneHQ/hub/compare/hub-v1.12.1...hub-v1.13.0) (2026-10-14)
+
+
+### Features
+
+* **ENG-3123:** let the end user switch connector profiles from the hub header ([#226](https://github.com/StackOneHQ/hub/issues/226)) ([7002e62](https://github.com/StackOneHQ/hub/commit/7002e62e5afb40a2ffeb9872593a15bf467fb928))
+
+## [1.12.1](https://github.com/StackOneHQ/hub/compare/hub-v1.12.0...hub-v1.12.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* bump @stackone/malachite to ^2.43.0 ([#222](https://github.com/StackOneHQ/hub/issues/222)) ([cbbc1f4](https://github.com/StackOneHQ/hub/commit/cbbc1f45c91d043e6aa509f8f159fe2d258468b7))
+
+## [1.12.0](https://github.com/StackOneHQ/hub/compare/hub-v1.11.4...hub-v1.12.0) (2026-10-11)
+
+
+### Features
+
+* **ENG-823:** setup and config field validation ([#183](https://github.com/StackOneHQ/hub/issues/183)) ([4fedac9](https://github.com/StackOneHQ/hub/commit/4fedac9deaa5f940e66be40f0e10642183c70f6b))
+
+
+### Bug Fixes
+
+* **ENG-823:** record field-validation failures on leaving the field, not per keystroke ([#221](https://github.com/StackOneHQ/hub/issues/221)) ([7ce24eb](https://github.com/StackOneHQ/hub/commit/7ce24eb23427b23e7d3108756c9ac80311678b5c))
+
 ## [1.11.4](https://github.com/StackOneHQ/hub/compare/hub-v1.11.3...hub-v1.11.4) (2026-09-18)
 
 

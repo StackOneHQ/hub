@@ -10,6 +10,16 @@ export interface Integration {
     logo_url: string;
 }
 
+export interface ConnectorProfile extends Integration {
+    profile_name: string;
+    is_default: boolean;
+    authentication_config_label: string | null;
+}
+
+export interface HubConnectorProfiles {
+    profiles: Array<ConnectorProfile>;
+}
+
 export interface HubData {
     integrations: Array<Integration>;
     external_trigger_token?: string;

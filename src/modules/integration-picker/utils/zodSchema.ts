@@ -163,12 +163,10 @@ export type RecordValidationFailure = (
 // window.addEventListener('stackone-hub:field-validation-failed', ...).
 //
 // Lifetime: the recorder must be owned by the rendering component for the life of the
-// form session (useMemo keyed on the connector) and passed into createFormSchema — NOT
-// created per schema build. The schema is rebuilt whenever the connector or account data
-// changes (useIntegrationPicker's `fields` memo, deps [connectorData, selectedIntegration,
-// accountData, hubData]), so a recorder owned by the schema would reset its per-field
-// dedupe on each of those rebuilds; owning it in the component keeps the dedupe for the
-// whole session. No-op outside the browser (e.g. the npm-test vector check).
+// form session (useMemo keyed on the connector), NOT per schema build. The schema is
+// rebuilt whenever the connector or account data changes (useIntegrationPicker's `fields`
+// memo), so a recorder rebuilt with it would reset its per-field dedupe. No-op outside
+// the browser (e.g. the npm-test vector check).
 export function createValidationFailureRecorder(connector?: string): RecordValidationFailure {
     const firedFields = new Set<string>();
 
@@ -194,9 +192,44 @@ export function createValidationFailureRecorder(connector?: string): RecordValid
     };
 }
 
+export type FieldRules = Map<string, ValidationRule>;
+
+// Compiled once per `fields` and shared by the schema and failsFieldRule, so each
+// pattern is linted and compiled (and any skip warned about) once, not per keystroke.
+// Optional number fields never had their rule applied on V2, so they get none; required
+// ones do (Falcon number fields carry no `validation:`, but V2 ones restrict the range).
+export function resolveFieldRules(fields: ConnectorConfigField[]): FieldRules {
+    const rules: FieldRules = new Map();
+    for (const field of fields) {
+        if (field.type === 'number' && !field.required) continue;
+        const rule = resolveValidationRule(field);
+        if (rule) rules.set(field.key, rule);
+    }
+    return rules;
+}
+
+// A saved secret is pre-filled as the redacted sentinel (`__secretvalue:**…`), not the
+// value the customer typed. RHF validates `defaultValues` on mount, so without this the
+// sentinel fails the rule before anyone touches it and gates Connect on reconnect. Empty
+// is a "required" failure (or valid on an optional field), never a rule failure.
+function violatesRule(rule: ValidationRule | undefined, value: unknown): boolean {
+    if (!rule || typeof value !== 'string' || value === '' || isSecretPlaceholder(value)) {
+        return false;
+    }
+    return !rule.pattern.test(value);
+}
+
+export function failsFieldRule(
+    field: ConnectorConfigField,
+    rules: FieldRules,
+    value: unknown,
+): boolean {
+    return violatesRule(rules.get(field.key), value);
+}
+
 function createFieldSchema(
     field: ConnectorConfigField,
-    recordFailure: RecordValidationFailure,
+    rule: ValidationRule | undefined,
 ): z.ZodTypeAny {
     let schema: z.ZodString = z.string();
 
@@ -219,46 +252,24 @@ function createFieldSchema(
         );
     }
 
-    // Required number fields fall through to the rule too: Falcon number fields carry no
-    // `validation:`, but V2 ones do (e.g. an html-pattern restricting the range). Optional
-    // number fields never had their rule applied on V2, so they stay numeric-only.
-    const validation = field.validation;
-    const rule = field.type === 'number' && !field.required ? null : resolveValidationRule(field);
-    if (rule && validation) {
-        const testWithMetric = (val: string) => {
-            // A saved secret is pre-filled as the redacted sentinel (`__secretvalue:**…`),
-            // not the real value the customer typed. RHF validates `defaultValues` eagerly,
-            // so without this guard the sentinel would fail the rule before the user touches
-            // anything — blocking reconnect (gating the Connect button) and emitting a
-            // failure event for an untouched field. Treat it as valid.
-            if (isSecretPlaceholder(val)) return true;
-            const ok = rule.pattern.test(val);
-            if (!ok) {
-                recordFailure(field, validation);
-            }
-            return ok;
-        };
-        schema = schema.refine(unlessEmpty(testWithMetric), rule.errorMessage);
+    if (rule) {
+        schema = schema.refine(
+            unlessEmpty((val) => !violatesRule(rule, val)),
+            rule.errorMessage,
+        );
     }
 
     return schema;
 }
 
-// `recordFailure` is owned by the caller and must outlive this schema (see
-// createValidationFailureRecorder's lifetime note) — schemas are rebuilt when the
-// connector or account data changes, so a recorder created here would reset its
-// per-field dedupe on each rebuild.
-// Defaults to a no-op for callers without telemetry (tests, the vector check).
-const noopRecorder: RecordValidationFailure = () => undefined;
-
 export function createFormSchema(
     fields: ConnectorConfigField[],
-    recordFailure: RecordValidationFailure = noopRecorder,
+    rules: FieldRules = resolveFieldRules(fields),
 ) {
     const schemaShape: Record<string, z.ZodTypeAny> = {};
 
     for (const field of fields) {
-        schemaShape[field.key] = createFieldSchema(field, recordFailure);
+        schemaShape[field.key] = createFieldSchema(field, rules.get(field.key));
     }
 
     return z.object(schemaShape);

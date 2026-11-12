@@ -1,4 +1,5 @@
 import {
+    Avatar,
     ButtonList,
     Divider,
     Flex,
@@ -15,8 +16,8 @@ import {
 } from '@stackone/malachite';
 import { useCallback, useMemo } from 'react';
 import { formatConnectorCategoryLabel, getConnectorCategoryKey } from '../../../shared/categories';
-import { Logo } from '../../../shared/components/Logo';
 import { Integration } from '../types';
+import { HeaderCloseButton } from './headerCloseButton';
 
 // The list renders only these, so the filter chips must be built from the same set:
 // a category carried only by inactive connectors would otherwise offer an empty filter.
@@ -43,10 +44,11 @@ const IntegrationRow: React.FC<IntegrationRowProps> = ({ integration }) => {
                 justify={FlexJustify.Left}
                 width="100%"
             >
-                <Logo
+                <Avatar
                     src={integration.logo_url}
-                    alt={integration.provider}
-                    style={{ width: '24px', height: '24px' }}
+                    name={integration.provider}
+                    size={24}
+                    fallback="placeholder"
                 />
                 <Typography.Text textAlign="left">{integration.name ?? 'N/A'}</Typography.Text>
             </Flex>
@@ -66,7 +68,8 @@ export const IntegrationListHeader: React.FC<{
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
-}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange }) => {
+    onClose?: () => void;
+}> = ({ integrations, selectedCategory, onCategoryChange, onSearchChange, onClose }) => {
     const handleCategoryClick = useCallback(
         (category: string) => {
             if (selectedCategory === category) {
@@ -90,13 +93,18 @@ export const IntegrationListHeader: React.FC<{
 
     return (
         <>
-            <Input
-                name="search"
-                placeholder="Search Integrations"
-                variant="ghost"
-                size="large"
-                onChange={onSearchChange}
-            />
+            <Flex direction={FlexDirection.Horizontal} align={FlexAlign.Center}>
+                <Flex grow direction={FlexDirection.Vertical} align={FlexAlign.Stretch}>
+                    <Input
+                        name="search"
+                        placeholder="Search Integrations"
+                        variant="ghost"
+                        size="large"
+                        onChange={onSearchChange}
+                    />
+                </Flex>
+                {onClose && <HeaderCloseButton onClick={onClose} standalone />}
+            </Flex>
             {availableCategories.length > 1 && (
                 <>
                     <Divider />
