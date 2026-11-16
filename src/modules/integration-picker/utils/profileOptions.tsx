@@ -9,7 +9,7 @@ export function profileOptions(profiles: ConnectorProfile[] | null | undefined):
     return profiles.map((profile) => ({
         id: profile.integration_id,
         label: profile.profile_name || profile.name,
-        subtitle: profile.authentication_config_label ?? undefined,
+        subtitle: profile.authentication_config_label || undefined,
         badge: profile.is_default ? (
             <Tag type="default" fontSize="xsmall" textTransform="none" value="Default" />
         ) : undefined,

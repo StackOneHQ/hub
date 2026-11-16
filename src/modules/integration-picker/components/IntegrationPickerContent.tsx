@@ -22,6 +22,7 @@ const FORM_LAYOUT_STYLE: React.CSSProperties = {
     height: '100%',
 };
 
+// A tall form scrolls inside its own region, above the footer, only while this can shrink below its content.
 const FORM_REGION_STYLE: React.CSSProperties = { flex: 1, minHeight: 0 };
 
 interface IntegrationPickerContentProps {

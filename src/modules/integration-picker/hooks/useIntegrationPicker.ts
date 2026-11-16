@@ -209,7 +209,11 @@ export const useIntegrationPicker = ({
     });
 
     // Keyed on provider so switching between its profiles reuses the list instead of refetching it.
-    const { data: profilesData } = useQuery({
+    const {
+        data: profilesData,
+        isLoading: isLoadingProfiles,
+        failureCount: profilesFailureCount,
+    } = useQuery({
         queryKey: ['connectorProfiles', selectedIntegration?.provider],
         queryFn: () =>
             selectedIntegration
@@ -749,7 +753,12 @@ export const useIntegrationPicker = ({
         }
     }, [baseUrl, token, closeOAuthPopup]);
 
-    const isLoading = isLoadingHubData || isLoadingConnectorData || isLoadingAccountData;
+    // The form waits for the first profiles answer so the picker never pushes the fields down, but not for retries.
+    const isLoading =
+        isLoadingHubData ||
+        isLoadingConnectorData ||
+        isLoadingAccountData ||
+        (isLoadingProfiles && profilesFailureCount === 0);
     const hasError = !!(errorHubData || errorConnectorData || errorAccountData);
     const loadError = errorAccountData ?? errorHubData ?? errorConnectorData ?? null;
 

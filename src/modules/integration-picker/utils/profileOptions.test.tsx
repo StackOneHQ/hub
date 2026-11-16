@@ -57,6 +57,15 @@ describe('profileOptions', () => {
         expect(items[1].badge).toBeUndefined();
     });
 
+    it('leaves out an empty auth method label', () => {
+        const items = profileOptions([
+            profile({ integration_id: 'a', authentication_config_label: '' }),
+            profile({ integration_id: 'b' }),
+        ]);
+
+        expect(items[0].subtitle).toBeUndefined();
+    });
+
     it('falls back to the connector name for a profile without one', () => {
         const items = profileOptions([
             profile({ integration_id: 'a', profile_name: '' }),
