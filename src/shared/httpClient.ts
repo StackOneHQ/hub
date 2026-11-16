@@ -45,6 +45,7 @@ export interface RequestParams {
     headers?: Record<string, string>;
     requestFn?: typeof fetch;
     logger?: Console;
+    timeoutMs?: number;
 }
 
 const withHubVersion = (headers?: Record<string, string>): Record<string, string> => {
@@ -75,12 +76,18 @@ export async function request<T>({
     method,
     requestFn = fetch,
     logger = console,
+    timeoutMs,
 }: RequestParams & { method: 'PATCH' | 'POST' | 'DELETE' | 'GET' }): Promise<T | null> {
+    // A timer and AbortController rather than AbortSignal.timeout, which older Safari and WebViews lack.
+    const controller = new AbortController();
+    const timer =
+        timeoutMs === undefined ? undefined : setTimeout(() => controller.abort(), timeoutMs);
     try {
         const response = await requestFn(url, {
             method,
             headers: withHubVersion(headers),
             body: JSON.stringify(body),
+            signal: controller.signal,
         });
 
         if (isTokenExpired(response)) {
@@ -99,6 +106,8 @@ export async function request<T>({
         logger.error(`Error making request to ${url}`, error);
 
         throw error;
+    } finally {
+        clearTimeout(timer);
     }
 }
 
