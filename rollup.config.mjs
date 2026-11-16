@@ -8,6 +8,7 @@ import del from "rollup-plugin-delete";
 import dts from "rollup-plugin-dts";
 import external from "rollup-plugin-peer-deps-external";
 import postcss from "rollup-plugin-postcss";
+import { inlineMalachiteFonts } from "./scripts/inline-malachite-fonts.mjs";
 
 const pkg = createRequire(import.meta.url)("./package.json");
 
@@ -79,6 +80,7 @@ export default [
       inlineDynamicImports: true,
     },
     plugins: [
+      inlineMalachiteFonts(),
       resolve({
         preferBuiltins: false,
         browser: true,
