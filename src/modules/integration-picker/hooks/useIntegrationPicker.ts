@@ -18,6 +18,7 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
+import { connectionGuideFor } from '../utils/guideScopes';
 import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
 // Shared retry configuration for queries
@@ -239,7 +240,7 @@ export const useIntegrationPicker = ({
         [profiles, selectedIntegration],
     );
 
-    const { fields, guide, notices } = useMemo(() => {
+    const { fields, guide, connectionGuide, notices } = useMemo(() => {
         if (!connectorData || !selectedIntegration) {
             const fields: ConnectorConfigField[] = [];
             const notices: AuthenticationNotice[] = [];
@@ -294,6 +295,8 @@ export const useIntegrationPicker = ({
                 })
                 .filter((value) => value != null);
 
+            const accountLinkingGuide = connectorData.config.support?.guides?.config ?? undefined;
+
             return {
                 fields: fieldsWithPrefilledValues,
                 notices: connectorData.config.configNotices ?? [],
@@ -301,6 +304,13 @@ export const useIntegrationPicker = ({
                     supportLink: connectorData.config.support?.link,
                     description: connectorData.config.support?.description ?? '',
                 },
+                // `setup` is the admin's connector-profile guide and is deliberately left
+                // behind. A scope dependent guide is left behind too until the payload
+                // says which scopes apply.
+                connectionGuide: connectionGuideFor(
+                    accountLinkingGuide,
+                    connectorData.config.requiredScopes,
+                ),
             };
         }
 
@@ -369,6 +379,7 @@ export const useIntegrationPicker = ({
             fields: fieldsWithPrefilledValues,
             notices: [],
             guide: authConfigForEnvironment?.guide,
+            connectionGuide: undefined,
         };
     }, [connectorData, selectedIntegration, prefillAccount, hubData]);
 
@@ -830,6 +841,7 @@ export const useIntegrationPicker = ({
         fields,
         notices,
         guide,
+        connectionGuide,
 
         // State
         formData,

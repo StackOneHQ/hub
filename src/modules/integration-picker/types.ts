@@ -127,6 +127,49 @@ export function hasAnchor(
     );
 }
 
+/**
+ * Mirrors the guide types in `@stackone/core`, which is a server-side package the hub
+ * deliberately does not depend on.
+ */
+export interface GuideImage {
+    src: string;
+    alt: string;
+}
+
+export interface GuideStep {
+    title: string;
+    content?: string;
+    list?: Array<string>;
+    image?: GuideImage;
+    displayScopes?: boolean;
+    /** A list of scope names on the wire, or a space-separated string. */
+    applicableScopes?: ReadonlyArray<string> | string;
+}
+
+export interface GuideSection {
+    title: string;
+    content?: string;
+    list?: Array<string>;
+    image?: GuideImage;
+    steps?: Array<GuideStep>;
+    /** A list of scope names on the wire, or a space-separated string. */
+    applicableScopes?: ReadonlyArray<string> | string;
+}
+
+export interface Guide {
+    warning?: string;
+    sections: Array<GuideSection>;
+}
+
+/**
+ * `config` is the account linking guide an end user follows in the hub; `setup` is the
+ * one-time connector profile guide for an admin and has no place in this flow.
+ */
+export interface AuthenticationGuides {
+    config?: Guide | null;
+    setup?: Guide | null;
+}
+
 export interface FalconConnectorConfig {
     key: string;
     name: string;
@@ -134,6 +177,8 @@ export interface FalconConnectorConfig {
     grantType?: 'authorization_code' | 'client_credentials';
     configFields?: Array<ConnectorConfigField>;
     configNotices?: Array<AuthenticationNotice>;
+    /** Sent only when the guide is scope dependent; absent means unknown and `[]` means none. */
+    requiredScopes?: ReadonlyArray<string>;
     assets?: {
         icon: string;
     };
@@ -144,6 +189,7 @@ export interface FalconConnectorConfig {
     support?: {
         link?: string | null;
         description?: string | null;
+        guides?: AuthenticationGuides | null;
     } | null;
 }
 

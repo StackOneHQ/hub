@@ -7,7 +7,7 @@ import {
     Integration,
 } from '../types';
 import { ErrorView } from './views/ErrorView';
-import { IntegrationFormView } from './views/IntegrationFormView';
+import { IntegrationFormGuide, IntegrationFormView } from './views/IntegrationFormView';
 import { IntegrationListView } from './views/IntegrationListView';
 import { LoadingView } from './views/LoadingView';
 import { SuccessView } from './views/SuccessView';
@@ -31,6 +31,7 @@ interface IntegrationPickerContentProps {
     hubData: HubData | null;
     fields: ConnectorConfigField[];
     notices?: AuthenticationNotice[];
+    guide?: IntegrationFormGuide;
     selectedCategory: string | null;
     search: string;
 
@@ -47,6 +48,29 @@ interface IntegrationPickerContentProps {
     setEditingSecrets?: (updater: (prev: Set<string>) => Set<string>) => void;
 }
 
+interface FormVisibilityState {
+    isLoading: boolean;
+    hasError: boolean;
+    connectionState: { loading: boolean; success: boolean };
+    selectedIntegration: Integration | null;
+    connectorData: ConnectorConfig | null;
+}
+
+/** Whether the credential form is the view on screen, in the order the content chooses its views. */
+export const showsIntegrationForm = ({
+    isLoading,
+    hasError,
+    connectionState,
+    selectedIntegration,
+    connectorData,
+}: FormVisibilityState): boolean =>
+    !isLoading &&
+    !hasError &&
+    !connectionState.loading &&
+    !connectionState.success &&
+    selectedIntegration !== null &&
+    connectorData !== null;
+
 export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> = ({
     isLoading,
     hasError,
@@ -56,6 +80,7 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     hubData,
     fields,
     notices,
+    guide,
     selectedCategory,
     search,
     errorHubData,
@@ -117,12 +142,22 @@ export const IntegrationPickerContent: React.FC<IntegrationPickerContentProps> =
     }
 
     // Form view (when integration is selected and connector data is available)
-    if (connectorData) {
+    if (
+        connectorData &&
+        showsIntegrationForm({
+            isLoading,
+            hasError,
+            connectionState,
+            selectedIntegration,
+            connectorData,
+        })
+    ) {
         return (
             <IntegrationFormView
                 key={selectedIntegration?.integration_id}
                 fields={fields}
                 notices={notices}
+                guide={guide}
                 error={connectionState.error}
                 onChange={onChange}
                 onValidationChange={onValidationChange}
