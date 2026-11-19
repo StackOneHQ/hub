@@ -22,41 +22,30 @@ const untouchedSecretKeys = (
             .map((field) => field.key),
     );
 
-const clearedKeys = (
-    formData: Record<string, string>,
-    fields: ConnectorConfigField[],
-    storedSetupInformation: Record<string, string>,
-) =>
+const emptiedKeys = (formData: Record<string, string>, fields: ConnectorConfigField[]) =>
     new Set(
         fields
-            .filter(
-                (field) =>
-                    !isSecretField(field) &&
-                    formData[field.key] === '' &&
-                    !!storedSetupInformation[field.key],
-            )
+            .filter((field) => !isSecretField(field) && !!field.value && formData[field.key] === '')
             .map((field) => field.key),
     );
 
 /**
- * A field the form showed with its stored value and the user emptied is sent as `null`, so the
- * API removes it. Secrets are never cleared this way: opening one empties it before any typing.
+ * On an edit, a field the form showed with a value and the user emptied is sent as `null`, so
+ * the API removes it. Secrets are never cleared this way: opening one empties it before any typing.
  */
 export const buildCredentialsPayload = ({
     formData,
     fields,
     editingSecrets,
-    storedSetupInformation,
+    editing,
 }: {
     formData: Record<string, string>;
     fields: ConnectorConfigField[];
     editingSecrets: Set<string>;
-    storedSetupInformation?: Record<string, string>;
+    editing: boolean;
 }): CredentialsPayload => {
-    const keptSecrets = storedSetupInformation
-        ? untouchedSecretKeys(formData, fields, editingSecrets)
-        : new Set<string>();
-    const cleared = clearedKeys(formData, fields, storedSetupInformation ?? {});
+    const keptSecrets = editing ? untouchedSecretKeys(formData, fields, editingSecrets) : new Set();
+    const cleared = editing ? emptiedKeys(formData, fields) : new Set();
 
     return Object.fromEntries(
         Object.entries(formData)

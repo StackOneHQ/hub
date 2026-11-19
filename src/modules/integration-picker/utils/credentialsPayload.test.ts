@@ -14,46 +14,49 @@ const field = (overrides: Partial<ConnectorConfigField>): ConnectorConfigField =
 
 const placeholder = '__secretvalue:**redacted**1234';
 
-const fields = [
-    field({ key: 'apiUrl', required: true }),
-    field({ key: 'region' }),
-    field({ key: 'retries' }),
-    field({ key: 'apiKey', secret: true, required: true }),
-    field({ key: 'apiToken', type: 'password' }),
+const shownFields = [
+    field({ key: 'apiUrl', required: true, value: 'https://api.example.com' }),
+    field({ key: 'region', value: 'eu' }),
+    field({ key: 'retries', value: '3' }),
+    field({ key: 'subdomain' }),
+    field({ key: 'apiKey', secret: true, required: true, value: placeholder }),
+    field({ key: 'apiToken', type: 'password', value: placeholder }),
 ];
-
-const stored = { apiUrl: 'https://api.example.com', region: 'eu' };
 
 describe('buildCredentialsPayload', () => {
     describe('when editing an account', () => {
-        it('sends a field the user emptied as null', () => {
+        it('sends a field the form showed with a value and the user emptied as null', () => {
             const actual = buildCredentialsPayload({
-                formData: { apiUrl: 'https://api.example.com', region: '' },
-                fields,
+                formData: { apiUrl: 'https://api.example.com', region: '', retries: '' },
+                fields: shownFields,
                 editingSecrets: new Set(),
-                storedSetupInformation: stored,
+                editing: true,
             });
 
-            expect(actual).toEqual({ apiUrl: 'https://api.example.com', region: null });
+            expect(actual).toEqual({
+                apiUrl: 'https://api.example.com',
+                region: null,
+                retries: null,
+            });
         });
 
-        it('leaves out an empty field that had no stored value to show', () => {
+        it('leaves out an empty field the form showed without a value', () => {
             const actual = buildCredentialsPayload({
-                formData: { apiUrl: 'https://api.example.com', region: 'eu', retries: '' },
-                fields,
+                formData: { apiUrl: 'https://api.example.com', subdomain: '' },
+                fields: shownFields,
                 editingSecrets: new Set(),
-                storedSetupInformation: stored,
+                editing: true,
             });
 
-            expect(actual).toEqual({ apiUrl: 'https://api.example.com', region: 'eu' });
+            expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
         });
 
         it('leaves out a secret the user did not open, so the stored one is kept', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', apiKey: placeholder },
-                fields,
+                fields: shownFields,
                 editingSecrets: new Set(),
-                storedSetupInformation: stored,
+                editing: true,
             });
 
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
@@ -62,20 +65,9 @@ describe('buildCredentialsPayload', () => {
         it('leaves out a secret the user opened and left empty, so the stored one is kept', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', apiToken: '' },
-                fields,
+                fields: shownFields,
                 editingSecrets: new Set(['apiToken']),
-                storedSetupInformation: stored,
-            });
-
-            expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
-        });
-
-        it('never clears a secret field, even one with a stored setup value', () => {
-            const actual = buildCredentialsPayload({
-                formData: { apiUrl: 'https://api.example.com', apiToken: '' },
-                fields,
-                editingSecrets: new Set(['apiToken']),
-                storedSetupInformation: { ...stored, apiToken: 'legacy-token' },
+                editing: true,
             });
 
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
@@ -84,9 +76,9 @@ describe('buildCredentialsPayload', () => {
         it('sends a placeholder the user opened as it stands', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', apiKey: placeholder },
-                fields,
+                fields: shownFields,
                 editingSecrets: new Set(['apiKey']),
-                storedSetupInformation: stored,
+                editing: true,
             });
 
             expect(actual).toEqual({ apiUrl: 'https://api.example.com', apiKey: placeholder });
@@ -95,9 +87,9 @@ describe('buildCredentialsPayload', () => {
         it('sends a value the user entered', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', apiKey: 'new-key', region: 'us' },
-                fields,
+                fields: shownFields,
                 editingSecrets: new Set(['apiKey']),
-                storedSetupInformation: stored,
+                editing: true,
             });
 
             expect(actual).toEqual({
@@ -108,12 +100,13 @@ describe('buildCredentialsPayload', () => {
         });
     });
 
-    describe('when nothing stored was shown, as on a new account or another profile', () => {
+    describe('when nothing stored is shown, as on a new account or another profile', () => {
         it('leaves out an empty field', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', region: '', apiToken: '' },
-                fields,
+                fields: shownFields,
                 editingSecrets: new Set(),
+                editing: false,
             });
 
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
