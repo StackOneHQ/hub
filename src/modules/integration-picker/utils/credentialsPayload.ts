@@ -3,6 +3,9 @@ import { isSecretPlaceholder } from './secretPlaceholder';
 
 export type CredentialsPayload = Record<string, string | null>;
 
+export const shownFieldValue = (field: ConnectorConfigField): string =>
+    field.value === undefined ? '' : field.value.toString();
+
 const isSecretField = (field: ConnectorConfigField) =>
     field.secret !== false || field.type === 'password';
 
@@ -25,7 +28,12 @@ const untouchedSecretKeys = (
 const emptiedKeys = (formData: Record<string, string>, fields: ConnectorConfigField[]) =>
     new Set(
         fields
-            .filter((field) => !isSecretField(field) && !!field.value && formData[field.key] === '')
+            .filter(
+                (field) =>
+                    !isSecretField(field) &&
+                    shownFieldValue(field) !== '' &&
+                    formData[field.key] === '',
+            )
             .map((field) => field.key),
     );
 
@@ -44,8 +52,8 @@ export const buildCredentialsPayload = ({
     editingSecrets: Set<string>;
     editing: boolean;
 }): CredentialsPayload => {
-    const keptSecrets = editing ? untouchedSecretKeys(formData, fields, editingSecrets) : new Set();
-    const cleared = editing ? emptiedKeys(formData, fields) : new Set();
+    const keptSecrets = untouchedSecretKeys(formData, fields, editingSecrets);
+    const cleared = editing ? emptiedKeys(formData, fields) : new Set<string>();
 
     return Object.fromEntries(
         Object.entries(formData)

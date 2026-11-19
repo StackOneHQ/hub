@@ -40,6 +40,31 @@ describe('buildCredentialsPayload', () => {
             });
         });
 
+        it('sends a field showing a connector default the user emptied as null', () => {
+            const actual = buildCredentialsPayload({
+                formData: { apiUrl: 'https://api.example.com', timeout: '' },
+                fields: [...shownFields, field({ key: 'timeout', type: 'number', value: 0 })],
+                editingSecrets: new Set(),
+                editing: true,
+            });
+
+            expect(actual).toEqual({ apiUrl: 'https://api.example.com', timeout: null });
+        });
+
+        it('never clears a secret field, even one showing a real value', () => {
+            const actual = buildCredentialsPayload({
+                formData: { apiUrl: 'https://api.example.com', apiToken: '' },
+                fields: [
+                    ...shownFields.filter((f) => f.key !== 'apiToken'),
+                    field({ key: 'apiToken', type: 'password', value: 'legacy-token' }),
+                ],
+                editingSecrets: new Set(['apiToken']),
+                editing: true,
+            });
+
+            expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
+        });
+
         it('leaves out an empty field the form showed without a value', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', subdomain: '' },
