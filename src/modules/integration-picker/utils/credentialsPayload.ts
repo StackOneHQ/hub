@@ -11,36 +11,57 @@ const untouchedSecretKeys = (
     fields: ConnectorConfigField[],
     editingSecrets: Set<string>,
 ) =>
-    fields
-        .filter(
-            (field) =>
-                isSecretField(field) &&
-                isSecretPlaceholder(formData[field.key]) &&
-                !editingSecrets.has(field.key),
-        )
-        .map((field) => field.key);
+    new Set(
+        fields
+            .filter(
+                (field) =>
+                    isSecretField(field) &&
+                    isSecretPlaceholder(formData[field.key]) &&
+                    !editingSecrets.has(field.key),
+            )
+            .map((field) => field.key),
+    );
+
+const clearedKeys = (
+    formData: Record<string, string>,
+    fields: ConnectorConfigField[],
+    storedSetupInformation: Record<string, string>,
+) =>
+    new Set(
+        fields
+            .filter(
+                (field) =>
+                    !isSecretField(field) &&
+                    formData[field.key] === '' &&
+                    !!storedSetupInformation[field.key],
+            )
+            .map((field) => field.key),
+    );
 
 /**
- * An edit sends a cleared field as `null` so the API removes the stored value; a new account
- * has nothing stored, so it simply omits the field.
+ * A field the form showed with its stored value and the user emptied is sent as `null`, so the
+ * API removes it. Secrets are never cleared this way: opening one empties it before any typing.
  */
 export const buildCredentialsPayload = ({
     formData,
     fields,
     editingSecrets,
-    editing,
+    storedSetupInformation,
 }: {
     formData: Record<string, string>;
     fields: ConnectorConfigField[];
     editingSecrets: Set<string>;
-    editing: boolean;
+    storedSetupInformation?: Record<string, string>;
 }): CredentialsPayload => {
-    const keptSecrets = editing ? untouchedSecretKeys(formData, fields, editingSecrets) : [];
+    const keptSecrets = storedSetupInformation
+        ? untouchedSecretKeys(formData, fields, editingSecrets)
+        : new Set<string>();
+    const cleared = clearedKeys(formData, fields, storedSetupInformation ?? {});
 
     return Object.fromEntries(
         Object.entries(formData)
-            .filter(([key, value]) => !keptSecrets.includes(key) && (editing || value !== ''))
-            .map(([key, value]) => [key, value === '' ? null : value]),
+            .filter(([key, value]) => !keptSecrets.has(key) && (value !== '' || cleared.has(key)))
+            .map(([key, value]) => [key, cleared.has(key) ? null : value]),
     );
 };
 

@@ -565,7 +565,9 @@ export const useIntegrationPicker = ({
                 formData,
                 fields,
                 editingSecrets,
-                editing: !!accountData,
+                storedSetupInformation: prefillAccount
+                    ? (prefillAccount.setupInformation ?? {})
+                    : undefined,
             });
             const filledCredentials = withoutClearedFields(credentials);
 
@@ -688,7 +690,7 @@ export const useIntegrationPicker = ({
                 const response = await connectAccount({
                     baseUrl,
                     token,
-                    credentials: filledCredentials,
+                    credentials,
                     integrationId: selectedIntegration.integration_id,
                 });
                 if (!response) {
@@ -713,7 +715,7 @@ export const useIntegrationPicker = ({
         formData,
         editingSecrets,
         handleSuccess,
-        accountData,
+        prefillAccount,
         fields,
         accountId,
         authConfig,
