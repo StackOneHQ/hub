@@ -65,6 +65,17 @@ describe('buildCredentialsPayload', () => {
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
         });
 
+        it('never clears a required field, leaving the stored value to the API', () => {
+            const actual = buildCredentialsPayload({
+                formData: { apiUrl: '', region: 'eu' },
+                fields: shownFields,
+                editingSecrets: new Set(),
+                editing: true,
+            });
+
+            expect(actual).toEqual({ region: 'eu' });
+        });
+
         it('leaves out an empty field the form showed without a value', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: 'https://api.example.com', subdomain: '' },
