@@ -65,6 +65,20 @@ describe('buildCredentialsPayload', () => {
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
         });
 
+        it('treats a field without a secret flag as a secret, as the API stores it', () => {
+            const actual = buildCredentialsPayload({
+                formData: { apiUrl: 'https://api.example.com', webhookKey: '' },
+                fields: [
+                    ...shownFields,
+                    field({ key: 'webhookKey', secret: undefined, value: placeholder }),
+                ],
+                editingSecrets: new Set(['webhookKey']),
+                editing: true,
+            });
+
+            expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
+        });
+
         it('never clears a required field, leaving the stored value to the API', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: '', region: 'eu' },
