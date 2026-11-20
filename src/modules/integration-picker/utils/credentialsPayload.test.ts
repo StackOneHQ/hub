@@ -79,6 +79,20 @@ describe('buildCredentialsPayload', () => {
             expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
         });
 
+        it.each([
+            ['read-only', { readOnly: true }],
+            ['computed', { computed: true }],
+        ])('never clears a %s field', (_, flags) => {
+            const actual = buildCredentialsPayload({
+                formData: { apiUrl: 'https://api.example.com', tenant: '' },
+                fields: [...shownFields, field({ key: 'tenant', value: 'acme', ...flags })],
+                editingSecrets: new Set(),
+                editing: true,
+            });
+
+            expect(actual).toEqual({ apiUrl: 'https://api.example.com' });
+        });
+
         it('never clears a required field, leaving the stored value to the API', () => {
             const actual = buildCredentialsPayload({
                 formData: { apiUrl: '', region: 'eu' },

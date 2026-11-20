@@ -32,6 +32,8 @@ const emptiedKeys = (formData: Record<string, string>, fields: ConnectorConfigFi
                 (field) =>
                     !isSecretField(field) &&
                     field.required !== true &&
+                    field.readOnly !== true &&
+                    field.computed !== true &&
                     shownFieldValue(field) !== '' &&
                     formData[field.key] === '',
             )
