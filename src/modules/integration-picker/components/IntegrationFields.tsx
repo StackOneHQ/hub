@@ -20,6 +20,7 @@ import { FieldErrors, UseFormSetValue } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import { AuthenticationNotice, ConnectorConfigField } from '../types';
+import { shownFieldValue } from '../utils/credentialsPayload';
 import { partitionNotices } from '../utils/partitionNotices';
 import { formatSecretPlaceholder, isSecretPlaceholder } from '../utils/secretPlaceholder';
 import {
@@ -309,15 +310,7 @@ export const IntegrationForm: React.FC<IntegrationFieldsProps> = ({
     const schema = useMemo(() => createFormSchema(fields, rules), [fields, rules]);
 
     const defaultValues = useMemo(() => {
-        const initialData: Record<string, string> = {};
-        fields.forEach((field) => {
-            if (field.value !== undefined) {
-                initialData[field.key] = field.value.toString();
-            } else {
-                initialData[field.key] = '';
-            }
-        });
-        return initialData;
+        return Object.fromEntries(fields.map((field) => [field.key, shownFieldValue(field)]));
     }, [fields]);
 
     const { formState, watch, reset, setValue, getValues } = useForm({

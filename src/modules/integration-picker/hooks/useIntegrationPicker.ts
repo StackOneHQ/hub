@@ -18,8 +18,8 @@ import {
     isFalconConnectorConfig,
     isLegacyConnectorConfig,
 } from '../types';
+import { buildCredentialsPayload, withoutClearedFields } from '../utils/credentialsPayload';
 import { describeConnectError, errorStatus } from '../utils/requestErrors';
-import { isSecretPlaceholder } from '../utils/secretPlaceholder';
 
 // Shared retry configuration for queries
 const RETRY_CONFIG = {
@@ -561,23 +561,13 @@ export const useIntegrationPicker = ({
         setConnectionState({ loading: true, success: false });
 
         try {
-            const cleanedFormData = { ...formData };
-            if (accountData) {
-                fields.forEach((field) => {
-                    if (field.secret !== false || field.type === 'password') {
-                        const fieldValue = cleanedFormData[field.key];
-                        if (isSecretPlaceholder(fieldValue) && !editingSecrets.has(field.key)) {
-                            delete cleanedFormData[field.key];
-                        }
-                    }
-                });
-            }
-
-            Object.keys(cleanedFormData).forEach((key) => {
-                if (cleanedFormData[key] === '') {
-                    delete cleanedFormData[key];
-                }
+            const credentials = buildCredentialsPayload({
+                formData,
+                fields,
+                editingSecrets,
+                editing: !!prefillAccount,
             });
+            const filledCredentials = withoutClearedFields(credentials);
 
             const shouldRedirectForOAuth =
                 authConfig?.type === 'oauth2' &&
@@ -624,8 +614,8 @@ export const useIntegrationPicker = ({
                     `${dashboardUrl}/embedded/accounts/callback`,
                 );
                 let windowUrl = `${baseUrl}/connect/oauth2/${selectedIntegration.integration_id}?redirect_uri=${callbackEmbeddedAccountsUrl}&token=${token}&connection_attempt_id=${attemptId}`;
-                Object.keys(cleanedFormData).forEach((key) => {
-                    windowUrl += `&${key}=${encodeURIComponent(cleanedFormData[key])}`;
+                Object.keys(filledCredentials).forEach((key) => {
+                    windowUrl += `&${key}=${encodeURIComponent(filledCredentials[key])}`;
                 });
 
                 const width = 1024;
@@ -691,14 +681,14 @@ export const useIntegrationPicker = ({
                     accountId,
                     token,
                     integrationId: selectedIntegration.integration_id,
-                    credentials: cleanedFormData,
+                    credentials,
                 });
                 successData = { id: accountId, provider: selectedIntegration.provider };
             } else {
                 const response = await connectAccount({
                     baseUrl,
                     token,
-                    credentials: cleanedFormData,
+                    credentials: filledCredentials,
                     integrationId: selectedIntegration.integration_id,
                 });
                 if (!response) {
@@ -723,7 +713,7 @@ export const useIntegrationPicker = ({
         formData,
         editingSecrets,
         handleSuccess,
-        accountData,
+        prefillAccount,
         fields,
         accountId,
         authConfig,

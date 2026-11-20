@@ -58,6 +58,7 @@ export interface ConnectorConfigField {
     key: string;
     required: boolean;
     readOnly: boolean;
+    computed?: boolean;
     secret: boolean;
     placeholder: string;
     options?: Array<{
