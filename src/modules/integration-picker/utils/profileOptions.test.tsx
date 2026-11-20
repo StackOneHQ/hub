@@ -27,7 +27,7 @@ describe('profileOptions', () => {
         expect(profileOptions([profile({})])).toEqual([]);
     });
 
-    it('labels each profile by its own name, marks the default, and tags its auth method in grey', () => {
+    it('puts the auth method on the second line and marks the default with a pill', () => {
         const items = profileOptions([
             profile({
                 integration_id: 'a',
@@ -38,15 +38,32 @@ describe('profileOptions', () => {
             profile({ integration_id: 'b', profile_name: 'Ashby US' }),
         ]);
 
-        expect(items.map(({ id, label, subtitle }) => ({ id, label, subtitle }))).toEqual([
-            { id: 'a', label: 'Ashby EU', subtitle: 'Default' },
-            { id: 'b', label: 'Ashby US', subtitle: undefined },
+        expect(
+            items.map(({ id, label, subtitle, triggerTag }) => ({
+                id,
+                label,
+                subtitle,
+                triggerTag,
+            })),
+        ).toEqual([
+            { id: 'a', label: 'Ashby EU', subtitle: 'OAuth 2.0', triggerTag: 'Default' },
+            { id: 'b', label: 'Ashby US', subtitle: undefined, triggerTag: undefined },
         ]);
+        expect(items[0].badgePlacement).toBe('label');
         expect(isValidElement(items[0].badge) && items[0].badge.props).toMatchObject({
             type: 'default',
-            value: 'OAuth 2.0',
+            value: 'Default',
         });
         expect(items[1].badge).toBeUndefined();
+    });
+
+    it('leaves out an empty auth method label', () => {
+        const items = profileOptions([
+            profile({ integration_id: 'a', authentication_config_label: '' }),
+            profile({ integration_id: 'b' }),
+        ]);
+
+        expect(items[0].subtitle).toBeUndefined();
     });
 
     it('falls back to the connector name for a profile without one', () => {
