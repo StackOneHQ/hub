@@ -14,6 +14,8 @@
 | Auto-fix lint/format | `npm run lint:fix` and `npm run code:format:fix` |
 | Regenerate Relay artifacts | `npm run relay` |
 
+The lint script invokes the native TypeScript 7 compiler explicitly for its typecheck. TypeScript 5 remains installed for Rollup and declaration compiler API compatibility. Both packages expose `tsc`, so use `npm run lint` instead of bare `tsc`.
+
 Always run `npm run lint` before committing. Biome is the only linter — don't add ESLint/Prettier configs.
 
 ## Project layout
