@@ -36,7 +36,7 @@ const HubWrapper: React.FC = () => {
     const isCorsProtected = !apiUrl.includes('localhost');
     const [manualToken, setManualToken] = useState<string>('');
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
-    const [showConnectionGuide, setShowConnectionGuide] = useState(true);
+    const [showConnectionGuideLink, setShowConnectionGuideLink] = useState(true);
     const [accountId, setAccountId] = useState<string>();
     const [integrationId, setIntegrationId] =
         useState<string>(
@@ -208,10 +208,10 @@ const HubWrapper: React.FC = () => {
             <label>
                 <input
                     type="checkbox"
-                    checked={showConnectionGuide}
-                    onChange={(e) => setShowConnectionGuide(e.target.checked)}
+                    checked={showConnectionGuideLink}
+                    onChange={(e) => setShowConnectionGuideLink(e.target.checked)}
                 />{' '}
-                Show connection guide
+                Show connection guide link
             </label>
             <h1>StackOneHub Demo</h1>
             <StackOneHub
@@ -228,7 +228,7 @@ const HubWrapper: React.FC = () => {
                 }}
                 accountId={accountId}
                 appUrl={appUrl}
-                showConnectionGuide={showConnectionGuide}
+                showConnectionGuideLink={showConnectionGuideLink}
             />
         </div>
     );

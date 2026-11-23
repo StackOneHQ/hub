@@ -16,9 +16,9 @@ describe('CardTitle connection guide link', () => {
         expect(html).toContain(guide.supportLink);
     });
 
-    it('hides the connection guide link when showConnectionGuide is false', () => {
+    it('hides the connection guide link when showConnectionGuideLink is false', () => {
         const html = renderToStaticMarkup(
-            <CardTitle connectorData={connector} guide={guide} showConnectionGuide={false} />,
+            <CardTitle connectorData={connector} guide={guide} showConnectionGuideLink={false} />,
         );
 
         expect(html).not.toContain('aria-label="Connection guide"');
@@ -27,7 +27,7 @@ describe('CardTitle connection guide link', () => {
 });
 
 describe('IntegrationPickerTitle connection guide link', () => {
-    const render = (showConnectionGuide?: boolean) =>
+    const render = (showConnectionGuideLink?: boolean) =>
         renderToStaticMarkup(
             <IntegrationPickerTitle
                 connectorData={connector}
@@ -40,11 +40,11 @@ describe('IntegrationPickerTitle connection guide link', () => {
                 selectedCategory={null}
                 onCategoryChange={noop}
                 onSearchChange={noop}
-                showConnectionGuide={showConnectionGuide}
+                showConnectionGuideLink={showConnectionGuideLink}
             />,
         );
 
-    it('passes showConnectionGuide down to the connector header', () => {
+    it('passes showConnectionGuideLink down to the connector header', () => {
         expect(render()).toContain('aria-label="Connection guide"');
         expect(render(false)).not.toContain('aria-label="Connection guide"');
     });

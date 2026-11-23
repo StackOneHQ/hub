@@ -21,7 +21,7 @@ interface IntegrationPickerTitleProps {
     profiles?: ConnectorProfile[];
     selectedProfileId?: string;
     onProfileChange?: (integrationId: string) => void;
-    showConnectionGuide?: boolean;
+    showConnectionGuideLink?: boolean;
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -40,7 +40,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     profiles,
     selectedProfileId,
     onProfileChange,
-    showConnectionGuide,
+    showConnectionGuideLink,
 }) => {
     const loneClose = onClose ? (
         <Flex
@@ -66,7 +66,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 profileOptions={profileOptions(profiles)}
                 selectedProfileId={selectedProfileId}
                 onProfileChange={onProfileChange}
-                showConnectionGuide={showConnectionGuide}
+                showConnectionGuideLink={showConnectionGuideLink}
             />
         );
     }

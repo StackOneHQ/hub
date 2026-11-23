@@ -17,7 +17,7 @@ interface IntegrationPickerProps {
     showFooterLinks?: boolean;
     onCloseLabel?: string;
     closable?: boolean;
-    showConnectionGuide?: boolean;
+    showConnectionGuideLink?: boolean;
     debug?: boolean;
 }
 
@@ -32,7 +32,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
     showFooterLinks = true,
     onCloseLabel,
     closable,
-    showConnectionGuide,
+    showConnectionGuideLink,
     debug,
 }) => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -136,7 +136,7 @@ export const IntegrationPicker: React.FC<IntegrationPickerProps> = ({
                         onBack={onBack}
                         onClose={closable ? onClose : undefined}
                         guide={guide}
-                        showConnectionGuide={showConnectionGuide}
+                        showConnectionGuideLink={showConnectionGuideLink}
                         isLoading={isLoading}
                         hasError={hasError}
                         hubData={hubData}

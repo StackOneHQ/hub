@@ -35,7 +35,7 @@ interface StackOneHubProps {
     closable?: boolean;
     showFooterLinks?: boolean;
     /** Shows the Connection guide link in the integration header. Defaults to `true`. */
-    showConnectionGuide?: boolean;
+    showConnectionGuideLink?: boolean;
     debug?: boolean;
 }
 
@@ -52,7 +52,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
     onCloseLabel,
     closable,
     showFooterLinks,
-    showConnectionGuide,
+    showConnectionGuideLink,
     debug,
 }) => {
     const defaultBaseUrl = 'https://api.stackone.com';
@@ -132,7 +132,7 @@ export const StackOneHub: React.FC<StackOneHubProps> = ({
                         onCloseLabel={onCloseLabel}
                         closable={closable}
                         showFooterLinks={showFooterLinks}
-                        showConnectionGuide={showConnectionGuide}
+                        showConnectionGuideLink={showConnectionGuideLink}
                         debug={debug}
                     />
                 </QueryClientProvider>

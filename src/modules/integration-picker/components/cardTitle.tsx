@@ -35,7 +35,7 @@ interface CardTitleProps {
     profileOptions?: DropdownItem[];
     selectedProfileId?: string;
     onProfileChange?: (integrationId: string) => void;
-    showConnectionGuide?: boolean;
+    showConnectionGuideLink?: boolean;
 }
 
 const CardTitle: React.FC<CardTitleProps> = ({
@@ -46,7 +46,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
     profileOptions,
     selectedProfileId,
     onProfileChange,
-    showConnectionGuide = true,
+    showConnectionGuideLink = true,
 }) => {
     return (
         <Flex
@@ -107,7 +107,7 @@ const CardTitle: React.FC<CardTitleProps> = ({
                         </div>
                     </>
                 )}
-                {showConnectionGuide && guide?.supportLink ? (
+                {showConnectionGuideLink && guide?.supportLink ? (
                     <Button
                         variant="ghost"
                         size="small"
