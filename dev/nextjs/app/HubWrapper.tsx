@@ -13,6 +13,7 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
     const [token, setToken] = useState(initialToken);
     const [manualToken, setManualToken] = useState('');
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [showConnectionGuide, setShowConnectionGuide] = useState(true);
 
     return (
         <div className={theme}>
@@ -50,6 +51,14 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
                     server-side fetching, or paste one above.
                 </p>
             )}
+            <label>
+                <input
+                    type="checkbox"
+                    checked={showConnectionGuide}
+                    onChange={(e) => setShowConnectionGuide(e.target.checked)}
+                />{' '}
+                Show connection guide
+            </label>
             <StackOneHub
                 key={token}
                 mode="integration-picker"
@@ -57,6 +66,7 @@ export default function HubWrapper({ initialToken, apiUrl, appUrl }: HubWrapperP
                 baseUrl={apiUrl}
                 appUrl={appUrl}
                 theme={theme}
+                showConnectionGuide={showConnectionGuide}
                 onSuccess={(account) => {
                     alert(`success: ${JSON.stringify(account)}`);
                 }}
