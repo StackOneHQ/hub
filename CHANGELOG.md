@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.2](https://github.com/StackOneHQ/hub/compare/hub-v1.14.1...hub-v1.14.2) (2026-11-20)
+
+
+### Bug Fixes
+
+* **ENG-902:** send a cleared optional field as null on account edit ([#250](https://github.com/StackOneHQ/hub/issues/250)) ([ed8667d](https://github.com/StackOneHQ/hub/commit/ed8667d4ca52412d6b4da652ecf40fd9a4f5ef7f))
+
 ## [1.14.1](https://github.com/StackOneHQ/hub/compare/hub-v1.14.0...hub-v1.14.1) (2026-11-05)
 
 
