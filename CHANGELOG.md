@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/StackOneHQ/hub/compare/hub-v1.14.2...hub-v1.15.0) (2026-11-25)
+
+
+### Features
+
+* **ENG-4358:** hub: option to hide the Connection guide link ([#253](https://github.com/StackOneHQ/hub/issues/253)) ([e20848a](https://github.com/StackOneHQ/hub/commit/e20848a2a1c4d692fb5a52440de369f4f5c0a948))
+
 ## [1.14.2](https://github.com/StackOneHQ/hub/compare/hub-v1.14.1...hub-v1.14.2) (2026-11-20)
 
 
