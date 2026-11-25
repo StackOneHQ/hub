@@ -15,6 +15,7 @@ interface HubProps {
     onClose?: () => void;
     onCloseLabel?: string;
     closable?: boolean;
+    showConnectionGuideLink?: boolean;
     accountId?: string;
     showFooterLinks?: boolean;
     debug?: boolean;
@@ -29,6 +30,7 @@ export const Hub = memo(
         onSuccess,
         onClose,
         closable,
+        showConnectionGuideLink,
         accountId,
         showFooterLinks,
         onCloseLabel,
@@ -51,6 +53,7 @@ export const Hub = memo(
                         onClose={onClose}
                         onCloseLabel={onCloseLabel}
                         closable={closable}
+                        showConnectionGuideLink={showConnectionGuideLink}
                         accountId={accountId ?? settings?.existing_account_id}
                         showFooterLinks={showFooterLinks}
                         debug={debug}

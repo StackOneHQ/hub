@@ -162,6 +162,7 @@ All scalar `StackOneHub` props are exposed as kebab-case HTML attributes:
 | `account-id` | string | Optional account filter. |
 | `on-close-label` | string | Override the close-button label. |
 | `show-footer-links` | boolean attr | Presence = `true`, value `"false"` = `false`. |
+| `show-connection-guide-link` | boolean attr | Shows the Connection guide link in the integration header. Defaults to `true`; value `"false"` hides it. |
 | `closable` | boolean attr | A close control in the hub's header while the user can still leave (not during an OAuth round trip or after success); it emits `close`. |
 | `debug` | boolean attr | Enables debug logging. |
 
