@@ -17,9 +17,16 @@ interface CardTitleProps {
     onBack?: () => void;
     onClose?: () => void;
     guide?: { supportLink?: string | null; description?: string | null };
+    showConnectionGuideLink?: boolean;
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, onClose, guide }) => {
+const CardTitle: React.FC<CardTitleProps> = ({
+    connectorData,
+    onBack,
+    onClose,
+    guide,
+    showConnectionGuideLink = true,
+}) => {
     return (
         <Flex
             direction={FlexDirection.Horizontal}
@@ -57,7 +64,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ connectorData, onBack, onClose, g
                 gapSize={FlexGapSize.Small}
                 justify={FlexJustify.Right}
             >
-                {guide?.supportLink ? (
+                {showConnectionGuideLink && guide?.supportLink ? (
                     <Button
                         variant="ghost"
                         size="small"

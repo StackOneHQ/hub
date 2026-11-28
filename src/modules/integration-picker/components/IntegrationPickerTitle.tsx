@@ -17,6 +17,7 @@ interface IntegrationPickerTitleProps {
     onCategoryChange: (category: string | null) => void;
     onSearchChange: (search: string) => void;
     hideBackButton?: boolean;
+    showConnectionGuideLink?: boolean;
 }
 
 export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
@@ -32,6 +33,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
     onCategoryChange,
     onSearchChange,
     hideBackButton,
+    showConnectionGuideLink,
 }) => {
     const loneClose = onClose ? (
         <Flex
@@ -54,6 +56,7 @@ export const IntegrationPickerTitle: React.FC<IntegrationPickerTitleProps> = ({
                 onBack={accountData || hideBackButton ? undefined : onBack}
                 onClose={onClose}
                 guide={guide}
+                showConnectionGuideLink={showConnectionGuideLink}
             />
         );
     }

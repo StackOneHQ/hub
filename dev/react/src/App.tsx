@@ -18,6 +18,7 @@ declare global {
                     'account-id'?: string;
                     'on-close-label'?: string;
                     'show-footer-links'?: boolean;
+                    'show-connection-guide-link'?: boolean;
                     closable?: boolean;
                     debug?: boolean;
                 },
