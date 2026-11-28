@@ -64,4 +64,21 @@ describe('request', () => {
 
         await expect(actual).rejects.toMatchObject({ status: 502, message: '' });
     });
+
+    it('gives up on a request that never answers once its timeout passes', async () => {
+        const neverAnswering = (_url: RequestInfo | URL, init?: RequestInit) =>
+            new Promise<Response>((_resolve, reject) => {
+                init?.signal?.addEventListener('abort', () => reject(init.signal?.reason));
+            });
+
+        const actual = request({
+            url: 'https://api.example/hub/connectors/hibob/profiles',
+            method: 'GET',
+            requestFn: neverAnswering,
+            logger: quietLogger,
+            timeoutMs: 10,
+        });
+
+        await expect(actual).rejects.toMatchObject({ name: 'AbortError' });
+    });
 });

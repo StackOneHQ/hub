@@ -36,6 +36,9 @@ export const getConnectorConfig = async (baseUrl: string, token: string, integra
     });
 };
 
+// The form waits for the first profiles answer, so a stalled request has to fail rather than hang.
+const PROFILES_TIMEOUT_MS = 10_000;
+
 export const getConnectorProfiles = async (
     baseUrl: string,
     token: string,
@@ -47,6 +50,7 @@ export const getConnectorProfiles = async (
             'Content-Type': 'application/json',
             'x-hub-session-token': token,
         },
+        timeoutMs: PROFILES_TIMEOUT_MS,
     });
 };
 
